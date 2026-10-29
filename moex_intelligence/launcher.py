@@ -156,8 +156,7 @@ def worker(port, control_port, token):
     child = None
     signal.signal(signal.SIGTERM, lambda *_: done.set())
     try:
-        child = subprocess.Popen([sys.executable, '-m', 'streamlit', 'run', str(ROOT / 'app.py'),
-                                  '--server.address', '127.0.0.1', '--server.port', str(port)], cwd=ROOT)
+        child = subprocess.Popen([sys.executable, '-m', 'moex_intelligence.server_runtime', str(port)], cwd=ROOT)
         while child.poll() is None and not done.wait(.1):
             pass
         return child.returncode or 0

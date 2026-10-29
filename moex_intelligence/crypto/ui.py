@@ -21,10 +21,7 @@ from .quality import assess,QualityPolicy
 from .risk import metrics,plan,protection_plan,RiskError,floor_step
 from ..config import Settings
 ASSETS=Path(__file__).resolve().parents[1]/'components'
-@lru_cache(maxsize=1)
-def hub():return Hub()
-@lru_cache(maxsize=4)
-def monitor(path):return PaperMonitor(Store(path),hub())
+from .runtime import hub, monitor
 
 @st.cache_data(max_entries=24,show_spinner=False)
 def potential(rows,symbol,interval):return provisional(rows,symbol,interval)
@@ -94,7 +91,7 @@ def terminal(store,symbol,interval,mode):
     except MarketError as e:st.error(str(e));return
     result=calculation(snap['candles'],symbol,interval)
     store.publish(result['signals']);signals=store.signals(symbol,interval)
-    paper.protect(quotes,rules);state=paper.mark(quotes);m=metrics(state,quotes,rules=rules)
+    state=paper.mark(quotes);m=metrics(state,quotes,rules=rules)
     key='crypto_terminal'
     context=symbol+':'+interval
     saved=st.session_state.get('crypto_inputs',{})
