@@ -1,0 +1,8 @@
+mcp==1.30.0
+httpx[socks]==0.28.1
+streamlit==1.66.1
+numpy==2.5.4
+pandas==2.3.3
+plotly==6.9.0
+requests==2.34.2
+websockets==17.3

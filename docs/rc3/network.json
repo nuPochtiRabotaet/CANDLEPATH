@@ -1,0 +1,14 @@
+{
+  "checked_at": 1793277150.1825273,
+  "type": "REAL NETWORK; no mocks",
+  "rest": {
+    "http_status": 200,
+    "json": false,
+    "site_unavailable": true
+  },
+  "websocket": {
+    "connected": false,
+    "error": "TimeoutError",
+    "message": "timed out during opening handshake"
+  }
+}

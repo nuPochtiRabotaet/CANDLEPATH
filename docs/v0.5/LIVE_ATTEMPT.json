@@ -1,0 +1,8 @@
+{
+  "date_moscow": "2026-10-25",
+  "symbols": ["SBER", "SBMX", "SU26232RMFS7"],
+  "result": "all requests timed out in this execution environment",
+  "fallback_to_synthetic_or_cost": false,
+  "online_validation": "not confirmed for v0.5",
+  "note": "The historical close fallback is covered by fixtures, not a successful live fetch in this iteration."
+}

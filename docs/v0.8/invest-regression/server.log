@@ -1,0 +1,39 @@
+2026-10-27 21:33:05.063 Uvicorn server started on 127.0.0.1:44729
+
+  You can now view your Streamlit app in your browser.
+
+  URL: http://127.0.0.1:44729
+
+2026-10-27 21:33:37.836 The widget with key "advisor_use_saved" was created with a default value but also had its value set via the Session State API.
+Stack (most recent call last):
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/threading.py", line 1032, in _bootstrap
+    self._bootstrap_inner()
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+    self.run()
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/threading.py", line 1012, in run
+    self._target(*self._args, **self._kwargs)
+  File "/workspace/scratch/5b6eddb3686f/moex-intelligence-v0.7/.venv/lib/python3.12/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 436, in _run_script_thread
+    self._run_script(request.rerun_data)
+  File "/workspace/scratch/5b6eddb3686f/moex-intelligence-v0.7/.venv/lib/python3.12/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 949, in _run_script
+    ) = exec_func_with_error_handling(code_to_exec, ctx)
+  File "/workspace/scratch/5b6eddb3686f/moex-intelligence-v0.7/.venv/lib/python3.12/site-packages/streamlit/runtime/scriptrunner/exec_code.py", line 136, in exec_func_with_error_handling
+    result = func()
+  File "/workspace/scratch/5b6eddb3686f/moex-intelligence-v0.7/.venv/lib/python3.12/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 924, in code_to_exec
+    exec(code, module.__dict__)  # noqa: S102
+  File "/workspace/scratch/5b6eddb3686f/moex-intelligence-v0.8/tests/ui_fixture.py", line 55, in <module>
+    main()
+  File "/workspace/scratch/5b6eddb3686f/moex-intelligence-v0.8/moex_intelligence/workbench.py", line 468, in main
+    elif section=='Investment Advisor':advisor_page(dataset)
+  File "/workspace/scratch/5b6eddb3686f/moex-intelligence-v0.8/moex_intelligence/workbench.py", line 258, in advisor_page
+    use_saved=st.checkbox('Использовать мой портфель при оценке покупки',value=True,key='advisor_use_saved',disabled=saved_context is None)
+  File "/workspace/scratch/5b6eddb3686f/moex-intelligence-v0.7/.venv/lib/python3.12/site-packages/streamlit/runtime/metrics_util.py", line 725, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+  File "/workspace/scratch/5b6eddb3686f/moex-intelligence-v0.7/.venv/lib/python3.12/site-packages/streamlit/elements/widgets/checkbox.py", line 266, in checkbox
+    return self._checkbox(
+  File "/workspace/scratch/5b6eddb3686f/moex-intelligence-v0.7/.venv/lib/python3.12/site-packages/streamlit/elements/widgets/checkbox.py", line 525, in _checkbox
+    check_widget_policies(
+  File "/workspace/scratch/5b6eddb3686f/moex-intelligence-v0.7/.venv/lib/python3.12/site-packages/streamlit/elements/lib/policies.py", line 146, in check_widget_policies
+    check_session_state_rules(
+  File "/workspace/scratch/5b6eddb3686f/moex-intelligence-v0.7/.venv/lib/python3.12/site-packages/streamlit/elements/lib/policies.py", line 90, in check_session_state_rules
+    _LOGGER.warning(
+  Stopping...

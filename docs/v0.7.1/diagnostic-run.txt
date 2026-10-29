@@ -1,0 +1,7 @@
+dns_direct: НЕ ПРОШЛО · gaierror
+tls_direct: НЕ ПРОШЛО · gaierror
+http_environment_route: НЕ ПРОШЛО · ReadTimeout
+SBER: НЕ ПОЛУЧЕНА КОТИРОВКА
+SBMX: НЕ ПОЛУЧЕНА КОТИРОВКА
+SU26238RMFS4: НЕ ПОЛУЧЕНА КОТИРОВКА
+Отчёт: /workspace/scratch/5b6eddb3686f/moex-intelligence-v0.7.1/docs/v0.7.1/live-diagnostics.json

@@ -1,0 +1,50 @@
+{
+  "checked_at_utc": "2026-10-27T11:27:47.439914+00:00",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "python": "3.12.14",
+  "proxy_environment_present": true,
+  "dns_direct": {
+    "passed": false,
+    "error_type": "gaierror",
+    "errno": -3
+  },
+  "tls_direct": {
+    "passed": false,
+    "error_type": "gaierror",
+    "errno": -3
+  },
+  "http_environment_route": {
+    "passed": false,
+    "error_type": "ReadTimeout"
+  },
+  "interpretation": "DNS и TLS проверяют прямой маршрут, HTTP учитывает системный proxy. Ограничение прямой сети не доказывает ошибку ISS или приложения. SSL-проверка не отключается.",
+  "quotes": [
+    {
+      "symbol": "SBER",
+      "passed": false,
+      "error": "MOEX не ответила за 10 секунд.",
+      "price": null,
+      "lot": null,
+      "provenance": null,
+      "source": "actual MOEX request; no cache/demo fallback"
+    },
+    {
+      "symbol": "SBMX",
+      "passed": false,
+      "error": "MOEX не ответила за 10 секунд.",
+      "price": null,
+      "lot": null,
+      "provenance": null,
+      "source": "actual MOEX request; no cache/demo fallback"
+    },
+    {
+      "symbol": "SU26238RMFS4",
+      "passed": false,
+      "error": "MOEX не ответила за 10 секунд.",
+      "price": null,
+      "lot": null,
+      "provenance": null,
+      "source": "actual MOEX request; no cache/demo fallback"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "checked_at_utc": "2026-10-25T15:40:08.497451+00:00",
+  "browser": "Chromium headless via Playwright 1.51.0",
+  "pages": 9,
+  "simulation_paths": 10000,
+  "actions": [
+    "demo history",
+    "candles",
+    "simulation",
+    "backtest",
+    "research report",
+    "portfolio deposit",
+    "advisor",
+    "immutable history",
+    "settings"
+  ],
+  "page_errors": [],
+  "health": "ok"
+}

@@ -1,0 +1,14 @@
+{
+  "python": "3.12.14",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "packages": {
+    "mcp": "1.30.0",
+    "httpx": "0.28.1",
+    "numpy": "2.5.4",
+    "pandas": "2.3.3",
+    "plotly": "6.9.0",
+    "streamlit": "1.66.1",
+    "pytest": "9.1.1",
+    "pytest-asyncio": "1.4.0"
+  }
+}

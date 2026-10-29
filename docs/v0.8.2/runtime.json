@@ -1,0 +1,16 @@
+{
+  "checked_at_utc": "2026-10-28T12:38:06.554104+00:00",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "shell_syntax": [
+    "setup.command",
+    "start.command",
+    "stop.command",
+    "check_moex.command"
+  ],
+  "launcher_start_health": "PASS",
+  "reuse_own_instance": "PASS",
+  "stop_own_instance": "PASS",
+  "physical_mac_tested": false,
+  "gatekeeper_finder_safari_tested": false,
+  "data": "isolated temporary directory"
+}

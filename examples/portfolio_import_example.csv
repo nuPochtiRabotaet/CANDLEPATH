@@ -1,0 +1,3 @@
+date;kind;symbol;quantity;price;amount;fee;currency;external_id
+2026-01-02;deposit;;;;1000;0;RUB;sample-deposit-1
+2026-01-02;buy;SBER;2;100;;1;RUB;sample-trade-1

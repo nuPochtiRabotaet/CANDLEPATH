@@ -1,0 +1,9 @@
+Final source test run (Python 3.12.14, Linux x86_64):
+........................................................................ [ 55%]
+.........................................................                [100%]
+129 passed in 8.50s
+
+HTTP: PASS HTTP health, MCP initialize/list/call, invalid ticker and hostile Host
+Preservation: PASS Reader, quantitative engines, research storage, MCP, dependency locks and Mac launchers unchanged
+CSS: PASS unchanged from v0.4
+Live MOEX: not confirmed; all three attempted symbols timed out in this environment

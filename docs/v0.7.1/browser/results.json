@@ -1,0 +1,215 @@
+{
+  "browser": "153.0.8010.0",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "processor": "x86_64",
+  "cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+  "cpu_count": 9,
+  "rendering": "headless Chromium, software SwiftShader; not physical Mac hardware",
+  "fixture": "controlled synthetic data only",
+  "checks": [
+    "overview: capital, source, incomplete history and actionable structure",
+    "selection and continuous navigation preserve symbol/quantity",
+    "buy 1 -> 3 lots, partial sale and blocked oversell; commission and cash agree",
+    "three distinct scenario findings, concentration/loss, working tariff action",
+    "rapid input, zero/invalid lots, rejected-input stability, full reset, pinned A",
+    "late model response never overwrites latest input; history cached once; stress separate",
+    "compatible detailed Advisor context without changing permanent profile",
+    "decimal fee boundary 0.29 × 50 × 1% -> 0.15 fee, same in JS and Python",
+    "bond percent+nominal+accrued; original saved quote date under offline failure",
+    "all sandbox interactions leave actual journal unchanged",
+    "external journal revision invalidates sandbox, explicit snapshot refresh recovers",
+    "explicit CSV import + repeat has no duplicate, empty save disabled"
+  ],
+  "layouts": [
+    {
+      "section": "Overview",
+      "width": 1440,
+      "height": 900,
+      "page_overflow": false,
+      "numeric_clipping": false
+    },
+    {
+      "section": "Portfolio",
+      "width": 1440,
+      "height": 900,
+      "page_overflow": false,
+      "numeric_clipping": false
+    },
+    {
+      "section": "Laboratory",
+      "width": 1440,
+      "height": 900,
+      "page_overflow": false,
+      "numeric_clipping": false
+    },
+    {
+      "section": "Research",
+      "width": 1440,
+      "height": 900,
+      "page_overflow": false,
+      "numeric_clipping": false
+    },
+    {
+      "section": "Overview",
+      "width": 1280,
+      "height": 800,
+      "page_overflow": false,
+      "numeric_clipping": false
+    },
+    {
+      "section": "Portfolio",
+      "width": 1280,
+      "height": 800,
+      "page_overflow": false,
+      "numeric_clipping": false
+    },
+    {
+      "section": "Laboratory",
+      "width": 1280,
+      "height": 800,
+      "page_overflow": false,
+      "numeric_clipping": false
+    },
+    {
+      "section": "Research",
+      "width": 1280,
+      "height": 800,
+      "page_overflow": false,
+      "numeric_clipping": false
+    },
+    {
+      "section": "Overview",
+      "width": 1024,
+      "height": 768,
+      "page_overflow": false,
+      "numeric_clipping": false
+    },
+    {
+      "section": "Portfolio",
+      "width": 1024,
+      "height": 768,
+      "page_overflow": false,
+      "numeric_clipping": false
+    },
+    {
+      "section": "Laboratory",
+      "width": 1024,
+      "height": 768,
+      "page_overflow": false,
+      "numeric_clipping": false
+    },
+    {
+      "section": "Research",
+      "width": 1024,
+      "height": 768,
+      "page_overflow": false,
+      "numeric_clipping": false
+    },
+    {
+      "section": "Overview",
+      "width": 390,
+      "height": 844,
+      "page_overflow": false,
+      "numeric_clipping": false
+    },
+    {
+      "section": "Portfolio",
+      "width": 390,
+      "height": 844,
+      "page_overflow": false,
+      "numeric_clipping": false
+    },
+    {
+      "section": "Laboratory",
+      "width": 390,
+      "height": 844,
+      "page_overflow": false,
+      "numeric_clipping": false
+    },
+    {
+      "section": "Research",
+      "width": 390,
+      "height": 844,
+      "page_overflow": false,
+      "numeric_clipping": false
+    }
+  ],
+  "js_errors": [],
+  "journal_unchanged_through_sandbox": true,
+  "history_loads": 1,
+  "performance": {
+    "method": "input -> next animation frame; chart RAF runs before sample RAF; 5 warmups excluded, 30 samples each, no model open",
+    "quantity": {
+      "median_ms": 21.100000000558794,
+      "p95_ms": 36.09999999962747,
+      "samples_ms": [
+        22.5,
+        21.300000000745058,
+        23.799999999813735,
+        33.700000000186265,
+        22.700000000186265,
+        16.700000000186265,
+        19.799999999813735,
+        22.299999999813735,
+        20.90000000037253,
+        25,
+        23.299999999813735,
+        20.399999999441206,
+        16.699999999254942,
+        18.700000000186265,
+        24.59999999962747,
+        16.799999999813735,
+        24.09999999962747,
+        25,
+        16.299999999813735,
+        17.799999999813735,
+        20,
+        18.40000000037253,
+        37.299999999813735,
+        15.200000000186265,
+        13.900000000372529,
+        19.100000000558794,
+        39.10000000055879,
+        22.899999999441206,
+        16.799999999813735,
+        36.09999999962747
+      ]
+    },
+    "stress": {
+      "median_ms": 18.09999999962747,
+      "p95_ms": 24.90000000037253,
+      "samples_ms": [
+        14.699999999254942,
+        17.299999999813735,
+        32.40000000037253,
+        18.299999999813735,
+        23.700000000186265,
+        20.59999999962747,
+        23.200000000186265,
+        15.599999999627471,
+        18.899999999441206,
+        17.800000000745058,
+        15.700000000186265,
+        15.200000000186265,
+        24,
+        15.799999999813735,
+        20.100000000558794,
+        19.90000000037253,
+        53.700000000186265,
+        15.5,
+        14.5,
+        14.5,
+        15,
+        16.899999999441206,
+        20.5,
+        24.700000000186265,
+        24.90000000037253,
+        19.899999999441206,
+        14.5,
+        17.5,
+        21.700000000186265,
+        17.899999999441206
+      ]
+    }
+  }
+}

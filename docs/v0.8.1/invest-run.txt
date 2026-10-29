@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/5b6eddb3686f/moex-intelligence-v0.8.1/scripts/verify_v071_browser.py", line 239, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/workspace/scratch/5b6eddb3686f/moex-intelligence-v0.8.1/scripts/verify_v071_browser.py", line 152, in main
+    assert page.get_by_label('На сколько месяцев',exact=True).input_value()=='18'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

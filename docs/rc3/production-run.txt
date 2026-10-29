@@ -1,0 +1,8 @@
+{
+  "status": "Connection Lost",
+  "fresh": false,
+  "error": "Bybit вернул страницу вместо JSON (Site Unavailable / ограничение сети)",
+  "candle_count": 0,
+  "source": "production Bybit connector",
+  "browser_errors": []
+}

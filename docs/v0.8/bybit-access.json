@@ -1,0 +1,10 @@
+{
+  "checked_at": "2026-10-27T20:25:27.339046+00:00",
+  "rest_url": "https://api.bybit.com/v5/market/kline?category=spot&symbol=BTCUSDT&interval=15&limit=2",
+  "ws_url": "wss://stream.bybit.com/v5/public/spot",
+  "http_status": 200,
+  "content_type": "text/html",
+  "json_market_data": false,
+  "response_excerpt": "<html>\n    <head><title>Site Unavailable</title></head>\n    <body>\n      <center>\n        <h1>Site Unavailable</h1>\n        <p>Unable to access this site.</p>\n      </center>\n    </body>\n</html>\n",
+  "ws_error": "InvalidStatus: server rejected WebSocket connection: HTTP 200"
+}

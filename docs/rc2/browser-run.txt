@@ -1,0 +1,23 @@
+{
+  "checks": [
+    "Invest overview",
+    "Trade navigation collapsed",
+    "Chart instance preserved",
+    "Intracandle signal lifecycle",
+    "Layer toggle preserves viewport",
+    "Zoom",
+    "25 USDT preview without execution; consent required",
+    "Escape cancellation waits for server",
+    "Cancel does not create an order",
+    "All-inclusive budget in server preview",
+    "Confirmed local BUY",
+    "Confirmed partial SELL",
+    "Drag changes draft only, not active protection",
+    "Four laptop/desktop widths: chart >50%, no horizontal overflow",
+    "Stale market blocks actions",
+    "Full close uses confirmation",
+    "Custom base fee UI agrees with ledger net quantity",
+    "Return to preserved Invest"
+  ],
+  "errors": []
+}

@@ -1,0 +1,25 @@
+........................................................................ [ 20%]
+........................................................................ [ 41%]
+.........................F
+=================================== FAILURES ===================================
+_____________ test_aggregate_risk_includes_non_executable_residue ______________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-4/test_aggregate_risk_includes_n0')
+
+    def test_aggregate_risk_includes_non_executable_residue(tmp_path):
+     from moex_intelligence.crypto.risk import metrics
+     s,p,g,q,r=fixture(tmp_path);pos=p.state()['positions']['BTCUSDT']
+     from moex_intelligence.crypto.inventory import liquidation_at
+     _,proceeds=liquidation_at(pos,pos['stop'],r['BTCUSDT'],CostModel.from_state(p.state()))
+     m=metrics(p.state(),q,rules=r)
+>    assert D(m['risk_decimal'])==D(pos['qty'])*D(q['BTCUSDT']['bid'])-proceeds
+E    AssertionError: assert Decimal('3.22820087610') == ((Decimal('0.9987') * Decimal('99.9899999999999948840923025272786617279052734375')) - Decimal('96.63181212390'))
+E     +  where Decimal('3.22820087610') = D('3.22820087610')
+E     +  and   Decimal('0.9987') = D('0.9987')
+E     +  and   Decimal('99.9899999999999948840923025272786617279052734375') = D(99.99)
+
+tests/test_inventory_protection_rc3.py:194: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_inventory_protection_rc3.py::test_aggregate_risk_includes_non_executable_residue
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 169 passed in 19.33s

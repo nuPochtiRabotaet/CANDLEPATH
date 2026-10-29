@@ -1,0 +1,24 @@
+{
+  "checks": [
+    "Existing Invest overview loads",
+    "Candles and canvas render",
+    "Formula-generated ribbon and confirmed signals present",
+    "Fragment updates retain chart instance",
+    "Intracandle Potential displayed and withdrawn explicitly",
+    "Clean preset removes layers",
+    "Mouse wheel zoom",
+    "Drag scroll",
+    "Quantity changes live calculations and server risk gate",
+    "Draggable stop synchronizes calculator",
+    "Manual paper BUY persists position",
+    "Partial virtual exit",
+    "Stale data blocks buy and sell",
+    "Instrument switch",
+    "Timeframe switch",
+    "Laptop layouts 1920/1440/1280/1024",
+    "Return to existing Invest"
+  ],
+  "browser_errors": [],
+  "data": "Synthetic QA fixture, not Bybit live",
+  "count": 17
+}

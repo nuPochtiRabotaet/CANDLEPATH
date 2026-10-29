@@ -1,0 +1,16 @@
+{
+  "tested_archive_sha256": "b51c2c3d01a0c615023823a6be767422b12c832dff921f35f1bf52157fe993d2",
+  "unpacked_full_test_count": 197,
+  "unpacked_full_test_result": "PASS",
+  "same_runtime_and_test_source_in_final_assembly": true,
+  "source_files_checked": 93,
+  "source_digest_sha256": "b1297de416a2c783df365094722b09518f920bedb28137b282dd7aaceb436399",
+  "zip_crc": "PASS",
+  "all_manifest_entries": "PASS",
+  "command_executable_metadata": "PASS",
+  "component_assets_present": "PASS",
+  "no_local_databases_or_secrets": "PASS",
+  "fresh_dependency_install_tested": false,
+  "physical_mac_tested": false,
+  "note": "After this source test the final archive only adds verification documents and their manifest entries."
+}

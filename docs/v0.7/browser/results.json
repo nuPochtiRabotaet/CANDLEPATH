@@ -1,0 +1,48 @@
+{
+  "browser": "153.0.8010.0",
+  "fixture": "explicit synthetic; not live MOEX",
+  "checks": "buy, sell, invalid lot, fees, topup, bond, scenario reset/switch, model separation/cache/save, constraints, responsive, unchanged journal",
+  "layouts": [
+    {
+      "viewport_width": 1440,
+      "width": 980,
+      "scroll": 980,
+      "client": 980,
+      "columns": "354.219px 597.781px"
+    },
+    {
+      "viewport_width": 1280,
+      "width": 820,
+      "scroll": 820,
+      "client": 820,
+      "columns": "294.688px 497.297px"
+    },
+    {
+      "viewport_width": 1024,
+      "width": 564,
+      "scroll": 564,
+      "client": 564,
+      "columns": "260px 275.984px"
+    },
+    {
+      "viewport_width": 390,
+      "width": 364.40625,
+      "scroll": 364,
+      "client": 364,
+      "columns": "364.406px"
+    }
+  ],
+  "input_to_animation_frame_ms": [
+    67.80000000004657,
+    68.30000000004657,
+    72.29999999981374,
+    70.89999999990687,
+    85.89999999990687,
+    70.5
+  ],
+  "median_ms": 70.69999999995343,
+  "max_ms": 85.89999999990687,
+  "history_loads": 1,
+  "journal_unchanged": true,
+  "js_errors": []
+}

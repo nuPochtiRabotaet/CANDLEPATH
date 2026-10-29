@@ -1,14 +1,52 @@
-# MOEX Intelligence
+# MOEX Intelligence v0.8.2-rc3
 
-Private repository for MOEX Intelligence development with Codex.
+Рабочий промежуточный релиз на пути к v0.9, **не FINAL и не готов к реальным средствам**. Существующие Invest и Crypto сохранены. Добавлены безопасная работа с дробными остатками, изменение активных Stop/Target через подтверждение, статистика полного журнала и сохраняемые настройки оверлея.
 
-## Target snapshot
-- **v0.8.2-rc3** (2026-10-29), not older v0.8.2.
-- Design Bible: specification, concept board, and 4 visual references.
-- **Live trading remains disabled.**
+## Запуск на macOS / Apple Silicon
 
-## Import status
-The full source snapshot is prepared separately for import. This is only a bootstrap README; **the application code is not uploaded yet**. After importing the prepared archive on the owner's Mac, this README will be replaced by the release's actual README.
+1. Остановите старую версию через её `stop.command`. Сохраните старую папку и резервную копию `~/.moex-intelligence` (или вашего `MOEX_DATA_DIR`). Не удаляйте историю.
+2. Распакуйте весь архив. Нужен Python 3.12 или 3.13; на Mac M-series — arm64/universal2. Старую `.venv` не переносите.
+3. В Terminal выполните:
 
-## Working rules
-Use Git/Codex on this private repository, preserve the existing Invest and Crypto capabilities, run tests after code changes, and do not enable live orders or expose API credentials.
+```bash
+cd ~/Desktop/moex-intelligence-v0.8.2-rc3
+chmod u+x *.command
+bash setup.command
+bash start.command
+```
+
+`setup.command` ставит зафиксированные зависимости с проверкой хешей, `start.command` открывает локальный Streamlit. Остановка — `bash stop.command`. Диагностика Bybit — `bash check_bybit.command`. Код не включает сертификат macOS, notarized .app или готовую .venv. Launcher проверен в Linux; Finder/Gatekeeper, Safari и установка на физический Mac требуют проверки пользователя.
+
+## Данные и обновление
+
+Прежнее расположение данных сохранено. Только Crypto SQLite мигрирует 4→5 с резервной копией `crypto-v08.sqlite3.before-rc3`. Добавлены таблицы снимков equity, UI-настроек и исследовательского журнала. Портфель MOEX не мигрирует. Для отката остановите процесс, сохраните новые данные отдельно и восстановите копию базы вместе со старой версией. rc2 не открывает schema 5.
+
+## Что проверить первым
+
+Trade → BTCUSDT → 15m → Paper Trading. Количество либо сумма 25 USDT → предпросмотр → явное подтверждение. Всё — локальные виртуальные средства. Сумма Notional допускает комиссию сверху, Total ограничивает списание. Ключ для публичного рынка не нужен.
+
+В открытой позиции смотрите «На счёте / продаваемо / остаток». «Продать доступное» продаёт ровно разрешённое количество; дробный остаток и себестоимость сохраняются. Списание остатка — отдельное подтверждаемое учётное действие с нулевым поступлением денег, не биржевая продажа.
+
+Перетаскивание Stop/Target меняет черновик. «Изменить защиту · предпросмотр» показывает старые и новые уровни, риск и покрытие. Только подтверждение сохраняет защиту. Монитор работает при запущенном процессе и свежих данных; сон/выключение Mac прекращают наблюдение. Частичное покрытие явно отмечено.
+
+Под графиком доступны полный журнал Performance, периоды и equity. В меню слоёв — Glow, BUY/EXIT, интенсивность 0–100 с шагом 5, сброс. Настройки сохраняются локально и не меняют портфель.
+
+## Проверки и ограничения
+
+343 pytest-проверки; 32 браузерных сценариев Crypto; отдельная регрессия Invest и launcher. Подробные фактические результаты — [TEST_REPORT_FINAL.md](TEST_REPORT_FINAL.md). Скриншоты `docs/rc3/browser` получены из настоящего Chromium на явно помеченных **искусственных QA-свечах**. Это проверка UI, не доказательство получения рынка.
+
+В текущей среде реальный Bybit REST дал HTTP 200 с HTML Site Unavailable вместо JSON; WS handshake отвергнут. Production UI показывает Connection Lost и блокирует торговые действия. Работавшее подключение на Mac не заменено имитацией; повторная сетевая проверка требуется на Mac.
+
+Forecast отображается как UNAVAILABLE. Есть типизированный интерфейс и неизменяемый исследовательский журнал, но нет подключённой модели, проверенного Forecast Overlay, бэктеста или заявлений о прибыльности. Demo, Live, autonomous и вывод средств не включены.
+
+## Документы
+
+- [TRADING_GUIDE.md](TRADING_GUIDE.md) — Paper, остатки, защита и журнал.
+- [COST_ENGINE_FINAL.md](COST_ENGINE_FINAL.md) — правила денежных расчётов.
+- [PERFORMANCE_REPORT.md](PERFORMANCE_REPORT.md) — определения метрик и неполная история.
+- [ARCHITECTURE.md](ARCHITECTURE.md), [SECURITY_STATUS.md](SECURITY_STATUS.md).
+- [UI_BLUEPRINT_REPORT.md](UI_BLUEPRINT_REPORT.md) и `docs/ui-blueprints/`.
+- [Day Trader Skill review](docs/research/DAY_TRADER_SKILL_ADAPTATION.md) — шесть модулей, лицензия, commit, методология и ограничения.
+- [FORECAST_REPORT.md](FORECAST_REPORT.md), [ROADMAP.md](ROADMAP.md), [DEVELOPMENT_CHECKPOINT.md](DEVELOPMENT_CHECKPOINT.md).
+
+Для pytest установите `requirements-dev.txt` в окружение проекта и выполните `python -m pytest -q`. Сетевые smoke scripts запускаются отдельно; мок-тесты не подтверждают доступность Bybit.

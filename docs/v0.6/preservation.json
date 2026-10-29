@@ -1,0 +1,23 @@
+{
+  "baseline": "v0.5.0",
+  "checks": {
+    "moex.py": true,
+    "moex_intelligence/portfolio.py": true,
+    "moex_intelligence/advisor.py": true,
+    "moex_intelligence/backtest.py": true,
+    "moex_intelligence/decision.py": true,
+    "moex_intelligence/risk.py": true,
+    "moex_intelligence/mcp_server.py": true,
+    "time_machine_core/simulator.py": true,
+    "requirements.in": true,
+    "requirements.txt": true,
+    "requirements-dev.txt": true,
+    "setup.command": true,
+    "start.command": true,
+    "stop.command": true,
+    "workbench CSS": true
+  },
+  "css": "unchanged",
+  "ledger_schema": "unchanged; no new event kinds",
+  "git_branch": "feature/interactive-laboratory-v06"
+}

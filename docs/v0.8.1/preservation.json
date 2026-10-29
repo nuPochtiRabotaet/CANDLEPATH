@@ -1,0 +1,17 @@
+{
+  "moex_intelligence/portfolio.py": true,
+  "moex_intelligence/portfolio_service.py": true,
+  "moex_intelligence/portfolio_import.py": true,
+  "moex_intelligence/laboratory.py": true,
+  "moex_intelligence/sandbox.py": true,
+  "moex_intelligence/advisor.py": true,
+  "moex_intelligence/risk.py": true,
+  "moex_intelligence/decision.py": true,
+  "moex_intelligence/backtest.py": true,
+  "moex_intelligence/data.py": true,
+  "moex_intelligence/persistence.py": true,
+  "moex_intelligence/launcher.py": true,
+  "moex_intelligence/interactive_lab.py": true,
+  "moex_intelligence/design.py": true,
+  "moex_intelligence/experience.py": true
+}

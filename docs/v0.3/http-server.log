@@ -1,0 +1,22 @@
+INFO:     Started server process [5]
+INFO:     Waiting for application startup.
+StreamableHTTP session manager started
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:39655 (Press CTRL+C to quit)
+INFO:     127.0.0.1:42128 - "GET /health HTTP/1.1" 200 OK
+Invalid Host header: untrusted.example
+INFO:     127.0.0.1:42128 - "POST /mcp HTTP/1.1" 421 Misdirected Request
+Terminating session: None
+INFO:     127.0.0.1:42128 - "POST /mcp HTTP/1.1" 200 OK
+Terminating session: None
+INFO:     127.0.0.1:42128 - "POST /mcp HTTP/1.1" 202 Accepted
+Terminating session: None
+Processing request of type ListToolsRequest
+INFO:     127.0.0.1:42144 - "POST /mcp HTTP/1.1" 200 OK
+Terminating session: None
+Processing request of type CallToolRequest
+INFO:     127.0.0.1:42144 - "POST /mcp HTTP/1.1" 200 OK
+Terminating session: None
+Processing request of type CallToolRequest
+INFO:     127.0.0.1:42144 - "POST /mcp HTTP/1.1" 200 OK
+Terminating session: None

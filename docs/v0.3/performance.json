@@ -1,0 +1,13 @@
+{
+  "history": "SYNTHETIC demo",
+  "runs": 10000,
+  "horizon": 120,
+  "cells": 1210000,
+  "elapsed_seconds": 0.0821,
+  "process_max_rss_mib_linux": 184.13,
+  "path_shape": [
+    10000,
+    121
+  ],
+  "host_platform": "Linux x86_64; timing is not an Apple Silicon benchmark"
+}

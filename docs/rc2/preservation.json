@@ -1,0 +1,47 @@
+{
+  "baseline_archive_sha256": "b75143d7a132921959bebaba69693d9e3197977ea7cd05cca8dabcdc7fa7d231",
+  "baseline_files": 444,
+  "byte_identical": 420,
+  "missing": [],
+  "changed": [
+    "CHANGELOG.md",
+    "DATA_COLLECTION.md",
+    "README.md",
+    "ROADMAP_v0.9.md",
+    "SECURITY_STATUS.md",
+    "TEST_REPORT.md",
+    "TRADING_GUIDE.md",
+    "UPDATED_ARCHITECTURE.md",
+    "UX_REVIEW.md",
+    "moex_intelligence/__init__.py",
+    "moex_intelligence/components/trade.css",
+    "moex_intelligence/components/trade.html",
+    "moex_intelligence/components/trade.js",
+    "moex_intelligence/crypto/analysis.py",
+    "moex_intelligence/crypto/lifecycle.py",
+    "moex_intelligence/crypto/orders.py",
+    "moex_intelligence/crypto/paper.py",
+    "moex_intelligence/crypto/risk.py",
+    "moex_intelligence/crypto/storage.py",
+    "moex_intelligence/crypto/ui.py",
+    "pyproject.toml",
+    "scripts/package_release.py",
+    "tests/test_order_preview_v082.py",
+    "MANIFEST.sha256"
+  ],
+  "original_test_files": 26,
+  "changed_original_test_files": [
+    "tests/test_order_preview_v082.py"
+  ],
+  "non_crypto_module_changes": [
+    "moex_intelligence/__init__.py",
+    "moex_intelligence/components/trade.css",
+    "moex_intelligence/components/trade.html",
+    "moex_intelligence/components/trade.js"
+  ],
+  "new_crypto_modules": [
+    "moex_intelligence/crypto/costs.py",
+    "moex_intelligence/crypto/quality.py"
+  ],
+  "note": "Only existing test change is schema version literal 3 -> 4. Invest modules are byte-identical; no user data or live DB included."
+}

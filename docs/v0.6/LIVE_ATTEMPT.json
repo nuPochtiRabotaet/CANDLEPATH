@@ -1,0 +1,1 @@
+{"requested_symbols":["SBER","SBMX","SU26232RMFS7"],"success":false,"error":"all three requests timed out after 10 seconds in this execution environment","synthetic_fallback":false,"conclusion":"live v0.6 data path not confirmed; controlled response tests cover normalization and error handling"}

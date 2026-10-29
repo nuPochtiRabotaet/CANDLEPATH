@@ -1,0 +1,39 @@
+[
+  {
+    "new": "upload/MOEX_Time_Machine_v0.1_REUPLOAD.zip",
+    "used": "sources/moex_time_machine_v0_1.zip",
+    "new_zip_sha256": "fe826dfee36df7a1c14f2275b2be8699d9c48d0374be342b73d12d409f59566e",
+    "used_zip_sha256": "fe826dfee36df7a1c14f2275b2be8699d9c48d0374be342b73d12d409f59566e",
+    "changed_files": [],
+    "new_members": [
+      "README.md",
+      "tests/test_simulator.py",
+      "tests/test_moex_data.py",
+      "moex_data.py",
+      "simulator.py",
+      "app.py",
+      ".streamlit/config.toml",
+      "requirements.txt"
+    ]
+  },
+  {
+    "new": "upload/MOEX_Reader_Time_Machine_Bridge_v0.2_REUPLOAD.zip",
+    "used": "sources/moex_reader_time_machine_bridge_v0_2.zip",
+    "new_zip_sha256": "93dadd4a44d89c3d28cf35e34adf843e6e50568fe632633680225146b8c6df38",
+    "used_zip_sha256": "93dadd4a44d89c3d28cf35e34adf843e6e50568fe632633680225146b8c6df38",
+    "changed_files": [],
+    "new_members": [
+      ".gitignore",
+      "README.md",
+      "requirements-time-machine.txt",
+      "tests/test_moex_data.py",
+      "tests/test_simulator.py",
+      "tests/test_time_machine_mcp.py",
+      "time_machine_core/__init__.py",
+      "time_machine_core/moex_data.py",
+      "time_machine_core/simulator.py",
+      "time_machine_dashboard/app.py",
+      "time_machine_mcp.py"
+    ]
+  }
+]

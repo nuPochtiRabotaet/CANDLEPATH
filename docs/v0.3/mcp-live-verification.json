@@ -1,0 +1,76 @@
+{
+  "checked_at_utc": "2026-10-24T19:19:31.351990+00:00",
+  "transport": "stdio",
+  "result": {
+    "tool": "MOEX Reader + Time Machine",
+    "instrument": {
+      "symbol": "SBER",
+      "name": "Сбербанк",
+      "board": "TQBR",
+      "data_source": "https://iss.moex.com/iss/history/engines/stock/markets/shares/boards/TQBR/securities/SBER.json?iss.meta=off&from=2024-10-23&till=2026-10-23&start=510",
+      "last_observation_date": "2026-10-23",
+      "history_observations": 510,
+      "demo_data": false,
+      "history_sha256": "f81f1193654ed5725551dbc270b87608d64209dce44457e17903711b361589fb",
+      "retrieved_at_utc": "2026-10-24T19:19:31.318019+00:00",
+      "cache": {
+        "hit": false,
+        "age_seconds": 0,
+        "ttl_seconds": 300
+      },
+      "coverage": {
+        "requested_start": "2024-10-23",
+        "requested_end": "2026-10-23",
+        "actual_start": "2024-10-23",
+        "actual_end": "2026-10-23"
+      },
+      "data_warnings": []
+    },
+    "parameters": {
+      "horizon_trading_days": 20,
+      "simulated_paths": 1000,
+      "lookback_calendar_days": 730,
+      "bootstrap_block_days": 5,
+      "target_pct": 8.0,
+      "stop_pct": 5.0,
+      "commission_pct_per_side": 0.05,
+      "slippage_pct_per_side": 0.05,
+      "seed": 42
+    },
+    "scenario_frequencies": {
+      "target_first": 0.145,
+      "stop_first": 0.257,
+      "neither_reached": 0.598,
+      "net_loss": 0.497
+    },
+    "net_return_distribution": {
+      "mean_pct": 0.3768,
+      "median_pct": 0.056,
+      "p05_pct": -6.6111,
+      "p95_pct": 9.6742,
+      "average_worst_5pct_pct": -7.9242
+    },
+    "levels": {
+      "last_close": 292.32,
+      "target": 315.7056,
+      "stop": 277.704
+    },
+    "risk": {
+      "var95_loss": 6.6111,
+      "es95_loss": 7.9242,
+      "historical_volatility": 23.05,
+      "historical_max_drawdown": -20.2816,
+      "median_strategy_max_drawdown": -4.3774,
+      "p05_strategy_max_drawdown": -8.3106
+    },
+    "method": "Block bootstrap historical daily log returns; first DAILY CLOSE crossing only.",
+    "limitations": [
+      "Частоты исходов — внутри модели, НЕ вероятность будущей прибыли.",
+      "Не моделирует внутридневные касания стопа или цели и исполнение заявок.",
+      "Исторические данные могут быть не скорректированы на дивиденды и корпоративные действия.",
+      "Без налогов, стакана заявок и оценённой ошибки вне выборки.",
+      "Информационный исследовательский инструмент, не инвестиционная рекомендация.",
+      "VaR/ES are signed losses in percent; negative means a gain in this model. ES averages ceil(5% × runs) worst outcomes."
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+PASS bash -n: setup.command start.command stop.command

@@ -1,0 +1,343 @@
+{
+  "checked_at_utc": "2026-10-24T19:13:19.259537+00:00",
+  "start": "2025-09-28",
+  "end": "2026-10-23",
+  "instruments": [
+    {
+      "symbol": "SBER",
+      "rows": 273,
+      "metadata": {
+        "source": "https://iss.moex.com/iss/history/engines/stock/markets/shares/boards/TQBR/securities/SBER.json?iss.meta=off&from=2025-09-28&till=2026-10-23&start=273",
+        "retrieved_at_utc": "2026-10-24T19:13:44.180739+00:00",
+        "notice": "Public ISS data may be delayed (normally 15 minutes). Retrieval time is not trade time. Prices are not dividend/split-adjusted. No guaranteed forecasts.",
+        "symbol": "SBER",
+        "name": "Сбербанк",
+        "market": "shares",
+        "board": "TQBR",
+        "currency": "RUB",
+        "board_unit": "M",
+        "asset_type": "equity",
+        "description": {
+          "SECID": "SBER",
+          "ISSUENAME": "Акции обыкновенные",
+          "NAME": "Сбербанк России ПАО ао",
+          "SHORTNAME": "Сбербанк",
+          "ISIN": "RU0009029540",
+          "REGNUMBER": "10301481B",
+          "ISSUESIZE": "21586948000",
+          "FACEVALUE": "3",
+          "FACEUNIT": "SUR",
+          "ISSUEDATE": "2007-07-20",
+          "LATNAME": "Sberbank",
+          "HASPROSPECTUS": "1",
+          "DECISIONDATE": "2007-07-16",
+          "HASDEFAULT": "0",
+          "HASTECHNICALDEFAULT": "0",
+          "EMITENTMISMATCHCUR": "0",
+          "LISTLEVEL": "1",
+          "ISQUALIFIEDINVESTORS": "0",
+          "MORNINGSESSION": "1",
+          "EVENINGSESSION": "1",
+          "WEEKENDSESSION": "1",
+          "REGISTRY_DATE": "2007-07-11",
+          "TYPENAME": "Акция обыкновенная",
+          "GROUP": "stock_shares",
+          "TYPE": "common_share",
+          "GROUPNAME": "Акции",
+          "EMITTER_ID": "484",
+          "EMITTER_VALUE_BUILDING": "1"
+        },
+        "demo_data": false,
+        "cache": {
+          "hit": false,
+          "age_seconds": 0,
+          "ttl_seconds": 300
+        },
+        "price_adjustment": "unadjusted",
+        "history_sha256": "13f07771f6ed1fd9932636fa422dbdc0f29e51b3f216c67313c5f4960760385d",
+        "warnings": [
+          "Unadjusted prices: dividend gaps, splits and trading suspensions can distort results."
+        ],
+        "price_unit": "currency_per_unit",
+        "coverage": {
+          "requested_start": "2025-09-28",
+          "requested_end": "2026-10-23",
+          "actual_start": "2025-09-29",
+          "actual_end": "2026-10-23"
+        }
+      },
+      "last_close": 292.32,
+      "quote": {
+        "last": 292.32,
+        "currency": "SUR",
+        "lot": 1,
+        "retrieved_at_utc": "2026-10-24T19:13:48.745112+00:00",
+        "source": "https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/SBER.json?iss.meta=off&iss.only=securities%2Cmarketdata"
+      },
+      "simulation": {
+        "start_price": 292.32,
+        "history_points": 273,
+        "p_target": 0.0771,
+        "p_stop": 0.2145,
+        "p_open": 0.7084,
+        "p_loss": 0.4729,
+        "mean_return": 0.0014838010425796153,
+        "median_return": 0.003355879822533492,
+        "p05_return": -0.06870007776648174,
+        "p95_return": 0.08121080277111982,
+        "cvar05_return": -0.08223413488367486,
+        "target_price": 315.7056,
+        "stop_price": 277.704,
+        "fee_per_side_pct": 0.1,
+        "var95_loss": 0.06870007776648174,
+        "es95_loss": 0.08223413488367486,
+        "historical_volatility": 0.19169547180547405,
+        "historical_max_drawdown": -0.20281621307920217,
+        "median_strategy_max_drawdown": -0.0388461741063556,
+        "p05_strategy_max_drawdown": -0.0794919292209386,
+        "drift_shift_pct": 0.0,
+        "volatility_scale": 1.0
+      },
+      "holdout_backtest": {
+        "initial_cash": 100000.0,
+        "final_equity": 105270.6065689,
+        "return_pct": 5.270606568899994,
+        "max_drawdown_pct": -2.9522594901895016,
+        "annualized_volatility_pct": 7.982143752121328,
+        "trades": 2,
+        "fees": 102.49603110000001,
+        "lot_size": 1,
+        "lot_policy": "Fixed lot size throughout test; historical lot-size changes are not modeled.",
+        "first_date": "2026-07-02",
+        "last_date": "2026-10-23",
+        "bars": 82,
+        "execution": "Previous close signal -> next OPEN; cash/no leverage; whole lots; final CLOSE liquidation.",
+        "limitations": "Unadjusted price-only return; no dividends, taxes, liquidity, funding, borrow or intraday fills."
+      },
+      "bridge_analysis": {
+        "tool": "MOEX Reader + Time Machine",
+        "instrument": {
+          "symbol": "SBER",
+          "name": "Сбербанк",
+          "board": "TQBR",
+          "data_source": "https://iss.moex.com/iss/history/engines/stock/markets/shares/boards/TQBR/securities/SBER.json?iss.meta=off&from=2024-10-23&till=2026-10-23&start=510",
+          "last_observation_date": "2026-10-23",
+          "history_observations": 510,
+          "demo_data": false,
+          "history_sha256": "f81f1193654ed5725551dbc270b87608d64209dce44457e17903711b361589fb",
+          "retrieved_at_utc": "2026-10-24T19:14:22.297516+00:00",
+          "cache": {
+            "hit": false,
+            "age_seconds": 0,
+            "ttl_seconds": 300
+          },
+          "coverage": {
+            "requested_start": "2024-10-23",
+            "requested_end": "2026-10-23",
+            "actual_start": "2024-10-23",
+            "actual_end": "2026-10-23"
+          },
+          "data_warnings": []
+        },
+        "parameters": {
+          "horizon_trading_days": 20,
+          "simulated_paths": 1000,
+          "lookback_calendar_days": 730,
+          "bootstrap_block_days": 5,
+          "target_pct": 8.0,
+          "stop_pct": 5.0,
+          "commission_pct_per_side": 0.05,
+          "slippage_pct_per_side": 0.05,
+          "seed": 42
+        },
+        "scenario_frequencies": {
+          "target_first": 0.145,
+          "stop_first": 0.257,
+          "neither_reached": 0.598,
+          "net_loss": 0.497
+        },
+        "net_return_distribution": {
+          "mean_pct": 0.3768,
+          "median_pct": 0.056,
+          "p05_pct": -6.6111,
+          "p95_pct": 9.6742,
+          "average_worst_5pct_pct": -7.9242
+        },
+        "levels": {
+          "last_close": 292.32,
+          "target": 315.7056,
+          "stop": 277.704
+        },
+        "risk": {
+          "var95_loss": 6.6111,
+          "es95_loss": 7.9242,
+          "historical_volatility": 23.05,
+          "historical_max_drawdown": -20.2816,
+          "median_strategy_max_drawdown": -4.3774,
+          "p05_strategy_max_drawdown": -8.3106
+        },
+        "method": "Block bootstrap historical daily log returns; first DAILY CLOSE crossing only.",
+        "limitations": [
+          "Частоты исходов — внутри модели, НЕ вероятность будущей прибыли.",
+          "Не моделирует внутридневные касания стопа или цели и исполнение заявок.",
+          "Исторические данные могут быть не скорректированы на дивиденды и корпоративные действия.",
+          "Без налогов, стакана заявок и оценённой ошибки вне выборки.",
+          "Информационный исследовательский инструмент, не инвестиционная рекомендация.",
+          "VaR/ES are signed losses in percent; negative means a gain in this model. ES averages ceil(5% × runs) worst outcomes."
+        ]
+      }
+    },
+    {
+      "symbol": "SBMX",
+      "rows": 90,
+      "metadata": {
+        "source": "https://iss.moex.com/iss/history/engines/stock/markets/shares/boards/TQBR/securities/SBMX.json?iss.meta=off&from=2025-09-28&till=2026-10-23&start=90",
+        "retrieved_at_utc": "2026-10-24T19:14:36.527580+00:00",
+        "notice": "Public ISS data may be delayed (normally 15 minutes). Retrieval time is not trade time. Prices are not dividend/split-adjusted. No guaranteed forecasts.",
+        "symbol": "SBMX",
+        "name": "SBMX ETF",
+        "market": "shares",
+        "board": "TQBR",
+        "currency": "RUB",
+        "board_unit": "M",
+        "asset_type": "fund",
+        "description": {
+          "SECID": "SBMX",
+          "ISSUENAME": "инвестиционные паи Биржевого паевого инвестиционного фонда рыночных финансовых инструментов \"Первая - Фонд Топ Российских акций\"",
+          "NAME": "БПИФ Первая Топ Рос. акций",
+          "SHORTNAME": "SBMX ETF",
+          "REGNUMBER": "3555",
+          "ISIN": "RU000A0ZZH92",
+          "LATNAME": "SBMX ETF Top Russia equities",
+          "ISSUEDATE": "2018-09-17",
+          "HASPROSPECTUS": "0",
+          "DECISIONDATE": "2018-08-23",
+          "HASDEFAULT": "0",
+          "HASTECHNICALDEFAULT": "0",
+          "EMITENTMISMATCHCUR": "0",
+          "LISTLEVEL": "1",
+          "ISQUALIFIEDINVESTORS": "0",
+          "EVENINGSESSION": "1",
+          "WEEKENDSESSION": "1",
+          "REGISTRY_DATE": "2018-08-15",
+          "TYPENAME": "Пай биржевого ПИФа",
+          "GROUP": "stock_ppif",
+          "TYPE": "exchange_ppif",
+          "GROUPNAME": "Паи ПИФов",
+          "EMITTER_ID": "1229"
+        },
+        "demo_data": false,
+        "cache": {
+          "hit": false,
+          "age_seconds": 0,
+          "ttl_seconds": 300
+        },
+        "price_adjustment": "unadjusted",
+        "history_sha256": "d64913aa9f856ba41d561b8011cd6ce709bc53473b147a763fbfb0f341f02898",
+        "warnings": [
+          "Unadjusted prices: dividend gaps, splits and trading suspensions can distort results."
+        ],
+        "price_unit": "currency_per_unit",
+        "coverage": {
+          "requested_start": "2025-09-28",
+          "requested_end": "2026-10-23",
+          "actual_start": "2026-06-22",
+          "actual_end": "2026-10-23"
+        },
+        "coverage_warning": "History on the selected primary board begins later than requested. Other boards were not stitched together."
+      },
+      "last_close": 17.742,
+      "quote": {
+        "last": 17.742,
+        "currency": "SUR",
+        "lot": 1,
+        "retrieved_at_utc": "2026-10-24T19:14:41.158587+00:00",
+        "source": "https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/SBMX.json?iss.meta=off&iss.only=securities%2Cmarketdata"
+      }
+    },
+    {
+      "symbol": "SU26238RMFS4",
+      "rows": 273,
+      "metadata": {
+        "source": "https://iss.moex.com/iss/history/engines/stock/markets/bonds/boards/TQOB/securities/SU26238RMFS4.json?iss.meta=off&from=2025-09-28&till=2026-10-23&start=273",
+        "retrieved_at_utc": "2026-10-24T19:15:08.760266+00:00",
+        "notice": "Public ISS data may be delayed (normally 15 minutes). Retrieval time is not trade time. Prices are not dividend/split-adjusted. No guaranteed forecasts.",
+        "symbol": "SU26238RMFS4",
+        "name": "ОФЗ 26238",
+        "market": "bonds",
+        "board": "TQOB",
+        "currency": "RUB",
+        "board_unit": "%",
+        "asset_type": "bond",
+        "description": {
+          "SECID": "SU26238RMFS4",
+          "ISSUENAME": "облигации федерального займа с постоянным купонным доходом",
+          "NAME": "ОФЗ-ПД 26238 15/05/2041",
+          "SHORTNAME": "ОФЗ 26238",
+          "REGNUMBER": "26238RMFS",
+          "ISIN": "RU000A1038V6",
+          "ISSUEDATE": "2021-06-16",
+          "MATDATE": "2041-05-15",
+          "INITIALFACEVALUE": "1000",
+          "FACEUNIT": "SUR",
+          "LATNAME": "OFZ-PD 26238",
+          "STARTDATEMOEX": "2021-06-23",
+          "HASPROSPECTUS": "0",
+          "DECISIONDATE": "2021-06-15",
+          "ISCONCESSIONAGREEMENT": "0",
+          "HASDEFAULT": "0",
+          "HASTECHNICALDEFAULT": "0",
+          "EMITENTMISMATCHCUR": "0",
+          "LISTLEVEL": "1",
+          "DAYSTOREDEMPTION": "5317",
+          "ISSUESIZE": "1000000000",
+          "FACEVALUE": "1000",
+          "ISQUALIFIEDINVESTORS": "0",
+          "COUPONFREQUENCY": "2",
+          "COUPONDATE": "2026-12-02",
+          "COUPONPERCENT": "7.1",
+          "COUPONVALUE": "35.4",
+          "MORNINGSESSION": "1",
+          "EVENINGSESSION": "1",
+          "WEEKENDSESSION": "1",
+          "REGISTRY_DATE": "2021-06-11",
+          "BOND_TYPE": "Облигация с фиксированным (известным) купоном",
+          "BOND_SUBTYPE": "До погашения",
+          "FACEVALUE_TYPE": "Фиксированный",
+          "COUPON_DETAILS": "Фиксированный с известными купонами",
+          "TYPENAME": "Государственная облигация",
+          "GROUP": "stock_bonds",
+          "TYPE": "ofz_bond",
+          "GROUPNAME": "Облигации",
+          "EMITTER_ID": "1228"
+        },
+        "demo_data": false,
+        "cache": {
+          "hit": false,
+          "age_seconds": 0,
+          "ttl_seconds": 300
+        },
+        "price_adjustment": "unadjusted",
+        "history_sha256": "13b26546cf8111a364b8e75ad1f9ea83c96340cdb2480c6edd5936d050a0b6bf",
+        "warnings": [
+          "Unadjusted prices: dividend gaps, splits and trading suspensions can distort results."
+        ],
+        "price_unit": "percent_of_face_value",
+        "coverage": {
+          "requested_start": "2025-09-28",
+          "requested_end": "2026-10-23",
+          "actual_start": "2025-09-29",
+          "actual_end": "2026-10-23"
+        }
+      },
+      "last_close": 51.732,
+      "quote": {
+        "last": 51.732,
+        "currency": "SUR",
+        "lot": 1,
+        "retrieved_at_utc": "2026-10-24T19:15:13.475672+00:00",
+        "source": "https://iss.moex.com/iss/engines/stock/markets/bonds/boards/TQOB/securities/SU26238RMFS4.json?iss.meta=off&iss.only=securities%2Cmarketdata"
+      }
+    }
+  ]
+}

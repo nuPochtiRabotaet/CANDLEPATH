@@ -1,0 +1,121 @@
+:host{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#dce3ec;font-size:13px}
+.terminal{background:#11161e;border:1px solid #27313f;border-radius:10px;overflow:hidden;box-sizing:border-box;width:100%;color:#dce3ec}
+.terminal *{box-sizing:border-box}
+.terminal button,.terminal input{font:inherit}
+.terminal button{background:#1d2633;border:1px solid #344153;border-radius:5px;color:#c8d2df;cursor:pointer;padding:7px 10px;transition:background .12s}
+.terminal button:hover{background:#2a3749}
+.terminal button.active{background:#2d3b4b;border-color:#62758e;color:#fff}
+.terminal button:disabled{opacity:.4;cursor:not-allowed}
+.terminal input[type=number]{width:100%;min-width:0;background:#111923;border:1px solid #344153;border-radius:5px;color:#e7edf6;padding:7px;font-variant-numeric:tabular-nums}
+.terminal input[type=range]{accent-color:#5fc6af;width:100%;height:12px;margin:9px 0;cursor:ew-resize}
+.terminal input[type=checkbox]{accent-color:#5fc6af;vertical-align:middle}
+.terminal input:focus,.terminal button:focus-visible{outline:2px solid #72b9d6;outline-offset:1px}
+.ticker{display:flex;align-items:center;gap:24px;padding:15px 18px;border-bottom:1px solid #27313f;flex-wrap:wrap}
+.ticker strong{font-size:19px}
+.spot{color:#7e8da4;font-size:10px;margin-left:12px;letter-spacing:.08em}
+.last{display:flex;align-items:center;gap:12px;font-variant-numeric:tabular-nums}
+.last b{font-size:22px}
+.ticker #connection{margin-left:auto;font-size:11px;color:#edbe73}
+.ticker #tradingMode{font-size:10px;background:#23342e;color:#8ed2b5;border:1px solid #354b41;padding:5px 8px;border-radius:4px;letter-spacing:.06em}
+.workspace{display:grid;grid-template-columns:minmax(0,3fr) minmax(255px,1fr)}
+.chartArea{min-width:0;border-right:1px solid #27313f}
+.chartToolbar{display:flex;justify-content:space-between;gap:6px;align-items:center;padding:10px 12px;border-bottom:1px solid #202a37}
+.presets{display:flex;gap:4px}
+.chartToolbar button{font-size:11px;padding:6px 8px}
+.chartWrap{position:relative}
+.chartWrap #chart{height:540px;width:100%}
+.crosshair{position:absolute;top:10px;left:12px;pointer-events:none;z-index:2;color:#9bacbf;font-size:11px;font-variant-numeric:tabular-nums}
+.empty{position:absolute;inset:30px 70px 30px 10px;display:grid;place-items:center;color:#8392a7;pointer-events:none;text-align:center}
+.empty[hidden]{display:none}
+.signalTooltip{position:absolute;left:14px;top:35px;max-width:360px;background:#192332f5;border:1px solid #48586e;border-radius:6px;padding:12px;z-index:4;font-size:11px;line-height:1.6;pointer-events:none;white-space:pre-line}
+.layers{display:flex;gap:6px 12px;flex-wrap:wrap;padding:10px 12px;color:#9daec1;font-size:11px;border-top:1px solid #27313f}
+.layers label{white-space:nowrap}
+.layers details{position:relative;margin-left:auto}
+.layers details[open]{position:absolute;z-index:5;background:#1a2432;padding:10px;right:28%;border:1px solid #52657c}
+.layers details label{display:block}
+.layers input[type=color]{width:35px;height:20px;vertical-align:middle;border:0}
+.chartFoot{display:flex;justify-content:space-between;gap:10px;padding:3px 12px 10px;color:#718199;font-size:10px}
+.chartFoot a{color:#9aa9bd}
+.assistant{padding:16px;min-width:0;background:#151c26}
+.sectionTitle{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.12em;color:#8192a8;font-weight:600}
+.sectionTitle span{font-weight:400;letter-spacing:0}
+.regime{display:flex;justify-content:space-between;align-items:center;margin:13px 0 7px;gap:10px}
+.regime span{font-size:20px;font-weight:600}
+.regime small{color:#e0c075;font-size:10px}
+.subtle{font-size:10px;color:#8394aa;line-height:1.5;display:block}
+.explain{margin-top:10px;font-size:11px;color:#b4c5d7}
+.explain div{white-space:pre-line;line-height:1.7;margin-top:8px;color:#91a3ba}
+.divider{height:1px;background:#2c3645;margin:15px 0}
+.field{display:block;color:#a0b0c4;font-size:11px;margin-top:12px}
+.field input{margin-top:5px}
+.stepper{display:flex;gap:5px;align-items:center}
+.stepper input{margin:5px 0}
+.stepper button{height:31px}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.riskLabel{display:block;margin-top:13px;color:#9fb0c3;font-size:11px}
+.riskLabel strong{float:right;color:#dfc17d}
+.secondary{width:100%;font-size:11px!important}
+.calculations{margin:13px 0;font-size:11px;line-height:1.95;color:#8fa1b7}
+.calculations div{display:flex;justify-content:space-between;gap:6px}
+.calculations span,.calculations b{color:#dce4ef;font-variant-numeric:tabular-nums}
+.bull{color:#4bcea0!important}
+.bear{color:#f17e9b!important}
+.validation{font-size:10px;line-height:1.5;color:#c6ad78;margin-bottom:9px;min-height:15px}
+.buy,.sell{width:100%;margin:3px 0;padding:9px!important;font-size:12px!important}
+.buy{background:#1b654e!important;border-color:#338469!important;color:#daf9eb!important}
+.sell{color:#e795aa!important;border-color:#663f50!important}
+.assistant #notice{font-size:11px;color:#e0c58c;line-height:1.5;margin:9px 0}
+.assistant>.subtle{margin-top:8px}
+.account{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding:15px 18px;border-block:1px solid #27313f;background:#141c27}
+.account div{color:#8294aa;font-size:10px}
+.account b{display:block;color:#d5e2ef;font-size:16px;font-weight:500;line-height:1.7;font-variant-numeric:tabular-nums}
+.journal{padding:12px 16px}
+.journal summary{color:#a5b6ca;font-size:11px;cursor:pointer}
+.journal summary span{color:#62758d;margin-left:10px}
+.journal nav{display:flex;gap:5px;margin:12px 0}
+.journal nav button{font-size:11px}
+.journal #journalBody{max-height:240px;overflow:auto;color:#92a5bb;font-size:11px;min-height:35px}
+.journal table{border-collapse:collapse;width:100%;text-align:left;white-space:nowrap}
+.journal td,.journal th{padding:8px 12px;border-bottom:1px solid #25303e;font-weight:400}
+.journal th{color:#647b96}
+.terminalNote{padding:9px 16px;font-size:10px;color:#6b7f99;background:#0e151e}
+.warning{padding:9px 16px;background:#3a2d1d;color:#e1bc86;font-size:12px}
+.warning[hidden]{display:none}
+@media(max-width:950px){.workspace{grid-template-columns:minmax(0,2fr) minmax(235px,1fr)}
+.assistant{padding:12px}
+.ticker{gap:12px}
+.spot{display:none}
+.chartWrap #chart{height:560px}
+.chartFoot{display:block}
+.layers details[open]{right:33%}
+}
+@media(max-width:680px){.workspace{display:block}
+.chartWrap #chart{height:400px}
+.chartArea{border-right:0}
+.chartToolbar{flex-wrap:wrap}
+.assistant{border-top:1px solid #2c3645}
+.journal nav{flex-wrap:wrap}
+.ticker #connection{margin-left:0}
+.layers details[open]{right:20px}
+.last b{font-size:18px}
+}
+
+
+/* v0.8.2 chart-first, contained trading panel; graph is never recreated. */
+.workspace{grid-template-columns:minmax(0,1fr) 290px}.assistant{max-height:650px;overflow:auto;padding:14px}.chartWrap #chart{height:530px}.ticker{padding:12px 16px}.regime small{max-width:145px;line-height:1.5}.subtle,.validation,.field,.calculations{font-size:12px}.sectionTitle{font-size:11px}.notifications{font-size:12px;margin:8px 0}.inputModes{display:flex;gap:5px;margin-top:12px}.inputModes button{flex:1;font-size:11px;padding:6px}.field{margin-top:8px}.account{padding:10px 16px}.assistant .divider{margin:10px 0}.assistant .calculations{margin:8px 0;line-height:1.7}
+.terminal dialog{position:fixed;background:#111a25;color:#e5edf7;border:1px solid #3b4a60;border-radius:14px;width:min(550px,calc(100vw - 40px));max-height:90vh;padding:22px;box-shadow:0 24px 80px #0009;overflow:auto}.terminal dialog::backdrop{background:#030910b8;backdrop-filter:blur(2px)}.modalHead h2{margin:0 0 10px;font-size:23px}.modalHead p{color:#9cacc0;font-size:13px}.paperBadge{background:#193d32;border:1px solid #27664e;color:#83e5bc;padding:4px 7px;border-radius:5px;font-size:11px}.modalInstrument{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-block:1px solid #2b394b;margin:15px 0}.modalInstrument strong{font-size:20px}.modalInstrument span{color:#63dca9}.confirmDetails{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;font-size:12px;line-height:1.45}.confirmDetails span{color:#9daec3}.confirmDetails b{text-align:right;font-weight:500;font-variant-numeric:tabular-nums}.confirmDetails .total{padding-top:10px;border-top:1px solid #3b4a60;font-size:16px;color:white}.previewWarning{background:#352331;border:1px solid #62394d;padding:12px;border-radius:7px;color:#e4b4c3;font-size:12px;line-height:1.5;margin:16px 0 10px}.consent{display:flex;gap:9px;align-items:flex-start;font-size:13px;line-height:1.5;margin:15px 0}.terminal dialog footer{display:flex;gap:12px}.terminal dialog footer button{flex:1;margin:0;padding:11px!important}#confirmError{color:#ff93ac;font-size:12px;line-height:1.5;margin-top:8px}
+@media(min-width:681px) and (max-width:1100px){.workspace{grid-template-columns:minmax(0,1fr) 270px}.chartWrap #chart{height:530px}.assistant{max-height:670px}.ticker{gap:12px}.layers{gap:5px;font-size:11px}}
+@media(max-width:680px){.workspace{display:block}.assistant{max-height:none}.chartWrap #chart{height:380px}}
+
+.qualitySummary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0}.qualitySummary div{color:#91a6bc;font-size:11px}.qualitySummary b{display:block;color:#e4ce92;font-size:13px;margin-top:5px}#qualityReason{line-height:1.5;margin:8px 0}#budgetMode{width:100%;background:#16212d;color:#dce3ec;border:1px solid #344153;padding:7px;margin:5px 0;font-size:11px}.modalDetails{margin-top:16px;font-size:12px;color:#adbed1}.modalDetails summary{cursor:pointer;padding:9px 0}.modalDetails .confirmDetails{margin-top:10px}#confirmHeadline{font-size:15px;line-height:1.65}.terminal dialog footer{position:sticky;bottom:-22px;background:#111a25;padding:10px 0}.terminal dialog .consent{position:sticky;bottom:45px;background:#111a25;padding:9px 0}
+
+.terminal [hidden]{display:none!important}.assistant #lifecycleState{display:none}.qualitySummary{padding-bottom:5px}
+
+/* TR-002 scoped to Trade; Invest unchanged. */
+.terminal{--chart:#0D1519;--panel:#10191E;--grid:#33444C;--bull:#31F3A2;--bear:#FF5474;--text:#D8E7E6;--muted:#839B9C;background:var(--chart);color:var(--text)}
+.assistant,.account{background:var(--panel)}
+.terminal .bull{color:var(--bull)!important}.terminal .bear{color:var(--bear)!important}
+.terminal select,.terminal input[type=text]{max-width:100%;width:100%;background:var(--panel);border:1px solid var(--grid);color:var(--text);padding:6px;border-radius:4px}
+.assistantCollapsed .workspace{grid-template-columns:minmax(0,1fr)}.assistantCollapsed .assistant{display:none}
+.assistantCollapsed .layers details[open]{right:20px}
+.chartToolbar{flex-wrap:wrap}.chartToolbar #toggleAssistant{margin-left:auto}

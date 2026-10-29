@@ -1,0 +1,14 @@
+{"time": "2026-10-25 00:43:24,567", "level": "INFO", "logger": "moex_intelligence.data", "event": "data_loaded kind=describe"}
+{"time": "2026-10-25 00:43:44,184", "level": "INFO", "logger": "moex_intelligence.data", "event": "data_loaded kind=history"}
+{"time": "2026-10-25 00:43:48,745", "level": "INFO", "logger": "moex_intelligence.data", "event": "data_loaded kind=quote"}
+{"time": "2026-10-25 00:44:22,305", "level": "INFO", "logger": "moex_intelligence.data", "event": "data_loaded kind=history"}
+PASS SBER: 273 observations, equity, TQBR
+{"time": "2026-10-25 00:44:27,003", "level": "INFO", "logger": "moex_intelligence.data", "event": "data_loaded kind=describe"}
+{"time": "2026-10-25 00:44:36,529", "level": "INFO", "logger": "moex_intelligence.data", "event": "data_loaded kind=history"}
+{"time": "2026-10-25 00:44:41,158", "level": "INFO", "logger": "moex_intelligence.data", "event": "data_loaded kind=quote"}
+PASS SBMX: 90 observations, fund, TQBR
+{"time": "2026-10-25 00:44:46,027", "level": "INFO", "logger": "moex_intelligence.data", "event": "data_loaded kind=describe"}
+{"time": "2026-10-25 00:45:08,767", "level": "INFO", "logger": "moex_intelligence.data", "event": "data_loaded kind=history"}
+{"time": "2026-10-25 00:45:13,475", "level": "INFO", "logger": "moex_intelligence.data", "event": "data_loaded kind=quote"}
+PASS SU26238RMFS4: 273 observations, bond, TQOB
+PASS evidence: docs/live-verification.json

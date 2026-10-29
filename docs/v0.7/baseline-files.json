@@ -1,0 +1,439 @@
+[
+  {
+    "file": "moex.py",
+    "functions": [
+      "identifier",
+      "rows",
+      "envelope",
+      "ISS",
+      "metrics"
+    ],
+    "sha256": "2379e40f33c87f8f6efc32f45a69815d3d1ea7cf752903b0068924c00ee74d31"
+  },
+  {
+    "file": "smoke_test.py",
+    "functions": [
+      "main"
+    ],
+    "sha256": "8afe386556a3ce60e916aed63b83075bab8e6123af5919b75914fd7ed4c09d85"
+  },
+  {
+    "file": "server.py",
+    "functions": [],
+    "sha256": "c3482e32ffcb8d6ee34149cfec1a36a56f89720f684c21a520bb7497f3a56bed"
+  },
+  {
+    "file": "simulator.py",
+    "functions": [],
+    "sha256": "b7d954e65a6ef530cf01f6b88099c23ef5264172bf9d531e48602d42cbd16b7d"
+  },
+  {
+    "file": "app.py",
+    "functions": [],
+    "sha256": "18613cd512886e76206611886eac7d717842afb24eecef5cf6723640950f4972"
+  },
+  {
+    "file": "moex_data.py",
+    "functions": [],
+    "sha256": "4987e20e5d092ac43db6f62c4edc3f8daa9425042eaf41a08b33c2e4fa568d71"
+  },
+  {
+    "file": "time_machine_mcp.py",
+    "functions": [
+      "_check_options",
+      "run_analysis",
+      "register_time_machine_tools"
+    ],
+    "sha256": "03111ed9e0d950194bb38eca8d143d2ded48961828c5b2e97b4d807b36372728"
+  },
+  {
+    "file": "examples/portfolio_analysis.py",
+    "functions": [],
+    "sha256": "e67a774419a6ff77ffc097a0d5b21237f505b1f01d8de8daecd7783914024df2"
+  },
+  {
+    "file": "examples/custom_strategy.py",
+    "functions": [
+      "signal"
+    ],
+    "sha256": "8258c92529c953f9f8134e56ae1d8011b7429a1dbc4b3e854ef9910def176840"
+  },
+  {
+    "file": "time_machine_core/__init__.py",
+    "functions": [],
+    "sha256": "a7c06fb34c23be24b8a76386e0fb9674479192c87b659c0e21c74a73da6fdbc8"
+  },
+  {
+    "file": "time_machine_core/simulator.py",
+    "functions": [
+      "bounded",
+      "validate_options",
+      "clean_prices",
+      "SimulationResult",
+      "simulate",
+      "compare_scenarios"
+    ],
+    "sha256": "a698fbffb68bcfee9f340e5a435822fb439a45c70cb55867b7428911a53dcf72"
+  },
+  {
+    "file": "time_machine_core/moex_data.py",
+    "functions": [
+      "_get_json",
+      "detect_market_board",
+      "load_moex_daily",
+      "demo_daily"
+    ],
+    "sha256": "daa07e5e147ac18cc372cd288e0e33d319c483dfd6c6339d93f5a7ebdab21063"
+  },
+  {
+    "file": "scripts/package_release.py",
+    "functions": [
+      "main"
+    ],
+    "sha256": "7d5d3b47832d7a99c66ac680981e055d9eeb6d8e9896c92c8283b94ab2f331f1"
+  },
+  {
+    "file": "scripts/verify_reader.py",
+    "functions": [
+      "main"
+    ],
+    "sha256": "8a0f093cf83965d27d047e958a99747b27b7950f448176fbf18bdf6021da3248"
+  },
+  {
+    "file": "scripts/verify_browser.py",
+    "functions": [
+      "main"
+    ],
+    "sha256": "929ba57f5a2560e98e852903457a9e3656c729adbb8082e4d9ef0129afbe2857"
+  },
+  {
+    "file": "scripts/verify_advisor_live.py",
+    "functions": [
+      "main"
+    ],
+    "sha256": "d6006f58fb203f3ac42326bf4de0023362d28047ee6385c74fee204f43d1d20b"
+  },
+  {
+    "file": "scripts/verify_http.py",
+    "functions": [
+      "exercise",
+      "main"
+    ],
+    "sha256": "75e28add972632f7095ed3e90d36b9b7815b70be626f5bb89eb736b8305b43f1"
+  },
+  {
+    "file": "scripts/verify_live.py",
+    "functions": [
+      "main"
+    ],
+    "sha256": "493348220f690de8b671ad8b88e6c8439846b753d16a16abab934821352cd50a"
+  },
+  {
+    "file": "moex_intelligence/__init__.py",
+    "functions": [],
+    "sha256": "7080f58cb9c2fef8f8f0680c37a61bd4503726c43de73366087991604f131616"
+  },
+  {
+    "file": "moex_intelligence/portfolio_import.py",
+    "functions": [
+      "number",
+      "quantity",
+      "day",
+      "norm",
+      "infer_mapping",
+      "_xlsx_tables",
+      "read_tables",
+      "table_rows",
+      "economic_key",
+      "preview",
+      "selected_events",
+      "preview_json"
+    ],
+    "sha256": "f68dd0a66b7551ced3ffce3ace98fecece8303ebf3cdf1f7cff83dd7b13ac01f"
+  },
+  {
+    "file": "moex_intelligence/portfolio.py",
+    "functions": [
+      "validate_event",
+      "ledger_state",
+      "analyze_portfolio",
+      "portfolio_curve",
+      "stress_test",
+      "ConflictError",
+      "PortfolioStore"
+    ],
+    "sha256": "d6b836deaa218c5dceac90e1643e74a69071660fe4083a9b45b65a3335800692"
+  },
+  {
+    "file": "moex_intelligence/workbench.py",
+    "functions": [
+      "store",
+      "navigate",
+      "close_settings",
+      "toggle_settings",
+      "header",
+      "helper",
+      "settings_page",
+      "overview",
+      "explorer",
+      "show_verdict",
+      "advisor_page",
+      "history_page",
+      "scenarios_page",
+      "main"
+    ],
+    "sha256": "bf623341c9242641d85dc8200f433d779fa490776152629521810c245ebf54a3"
+  },
+  {
+    "file": "moex_intelligence/portfolio_ui.py",
+    "functions": [
+      "user_error",
+      "portfolio_store",
+      "market_marks",
+      "current_portfolio",
+      "changed",
+      "open_research",
+      "rows_table",
+      "show_summary",
+      "instrument_picker",
+      "event_fields",
+      "add_event",
+      "correct_event",
+      "quick_transfer",
+      "import_page",
+      "analysis_page",
+      "portfolio_page"
+    ],
+    "sha256": "a62d0f2e4ab3cf04bc846477e1394b3984eadc38547e033224d17d46f5290217"
+  },
+  {
+    "file": "moex_intelligence/decision.py",
+    "functions": [
+      "decide"
+    ],
+    "sha256": "6d4b15e0c5d23f7a75155f678d5bab842005c32d6f2816a34d25cab4c520d4ef"
+  },
+  {
+    "file": "moex_intelligence/research.py",
+    "functions": [
+      "render_report"
+    ],
+    "sha256": "c16aca295d15d0ef6027ec37d6b77e8e9cabde68781958177eab7947af306b29"
+  },
+  {
+    "file": "moex_intelligence/education.py",
+    "functions": [
+      "network_message"
+    ],
+    "sha256": "a46bae92751a5262bdaf2371adacb3c7573af3f3dadbe3451e965efab3cdb417"
+  },
+  {
+    "file": "moex_intelligence/risk.py",
+    "functions": [
+      "tier",
+      "portfolio_impact",
+      "assess"
+    ],
+    "sha256": "b4091cc8a5ee929f930ad3514b10203bbd08837b8173ea146115456e61fdceb7"
+  },
+  {
+    "file": "moex_intelligence/laboratory.py",
+    "functions": [
+      "asset_from_quote",
+      "manual_asset",
+      "order_cost",
+      "concentration",
+      "liquidity_check",
+      "preview_trade",
+      "position_stress",
+      "stress_selected",
+      "scenario_envelope",
+      "model_position",
+      "capital_goal",
+      "portfolio_health"
+    ],
+    "sha256": "197dff767827d1a7e4cccf7c0c5830ef88fbe2f81cdc9a1359c00f7dca36d8c3"
+  },
+  {
+    "file": "moex_intelligence/mcp_server.py",
+    "functions": [
+      "research_frame",
+      "get_instrument",
+      "strategy_backtest",
+      "portfolio_analyze",
+      "portfolio_stress",
+      "compare_market_scenarios",
+      "research_report",
+      "evaluate_investment",
+      "compare_investments",
+      "main"
+    ],
+    "sha256": "3496174c9ab9a57fa94c3bf9aaed729c82df480c0d5de9d1813a2f94063bd2d7"
+  },
+  {
+    "file": "moex_intelligence/lab_ui.py",
+    "functions": [
+      "research_store",
+      "cached_asset",
+      "cached_history",
+      "cached_envelope",
+      "_sync_slider",
+      "_sync_number",
+      "_step",
+      "_reset",
+      "_topup",
+      "_overview_table",
+      "_stress_chart",
+      "_model_view",
+      "trade_panel",
+      "existing_position",
+      "_manual_quote",
+      "goal_panel",
+      "laboratory_page",
+      "show_health",
+      "show_saved_scenarios"
+    ],
+    "sha256": "f5c3419021c41521d7037107dcb7cabe32bf2ffa876500dba1daff85b9b760c6"
+  },
+  {
+    "file": "moex_intelligence/validation.py",
+    "functions": [
+      "finite",
+      "integer"
+    ],
+    "sha256": "4139f8bcce563f9cd35b181b6a6103ef37199754b945c4bd380ab70fb070e158"
+  },
+  {
+    "file": "moex_intelligence/dashboard.py",
+    "functions": [
+      "chart",
+      "line_figure",
+      "source_caption",
+      "need_data",
+      "overview",
+      "explorer",
+      "time_machine",
+      "strategy_lab",
+      "portfolio_page",
+      "ai_research",
+      "legacy_main",
+      "main"
+    ],
+    "sha256": "443ec6be4a1d399c3a0ba5702bbefa7bfda8c51076a00054ae9287ffc29ee465"
+  },
+  {
+    "file": "moex_intelligence/upgrades.py",
+    "functions": [
+      "ensure_v06_backup"
+    ],
+    "sha256": "eb534dc9de4766d5f4718f3b88c83a954958637433e0253db382aa5672b33a4f"
+  },
+  {
+    "file": "moex_intelligence/mcp_factory.py",
+    "functions": [
+      "build_reader"
+    ],
+    "sha256": "3643d008e1622b74e9d42821b0fe3af8dd157b15d6403903b93213f709cf093e"
+  },
+  {
+    "file": "moex_intelligence/portfolio_service.py",
+    "functions": [
+      "quote_mark",
+      "asset_market_data",
+      "fetch_marks",
+      "resolve_symbols",
+      "value_portfolio",
+      "opening_event",
+      "advisor_context",
+      "preview_change"
+    ],
+    "sha256": "bc959037ad2210797834bf919c1928499249c46aaf0504ec0cf0d7f142f0ed8d"
+  },
+  {
+    "file": "moex_intelligence/launcher.py",
+    "functions": [
+      "control",
+      "process_owned",
+      "read_state",
+      "available_port",
+      "healthy",
+      "start",
+      "stop",
+      "worker",
+      "main"
+    ],
+    "sha256": "c16289af40289f5cc8c4c5031b9f4e4cb3b01ae01718c55452a2d66778511c2f"
+  },
+  {
+    "file": "moex_intelligence/config.py",
+    "functions": [
+      "Settings",
+      "JsonFormatter",
+      "configure_logging"
+    ],
+    "sha256": "014ba313048498b36447e64e7ff8e3339b13b363701b9bd6464080055c32305c"
+  },
+  {
+    "file": "moex_intelligence/backtest.py",
+    "functions": [
+      "BacktestResult",
+      "validate_bars",
+      "rsi",
+      "signals",
+      "backtest",
+      "compare_backtest"
+    ],
+    "sha256": "aab726cefc8e73cf8e4eaba712d149ce6bb5b9047d79d34d2d9f30c0a5cd7306"
+  },
+  {
+    "file": "moex_intelligence/persistence.py",
+    "functions": [
+      "ResearchStore"
+    ],
+    "sha256": "0979710c6f776972792698600349026463781105382b472fa1814e2e4c8ec42e"
+  },
+  {
+    "file": "moex_intelligence/comparison.py",
+    "functions": [
+      "compare_frames",
+      "compare_instruments"
+    ],
+    "sha256": "dd2cbf44ab08dbca6d95b81e3f79657431d546f970e29a5b46ca6dc64a986e6f"
+  },
+  {
+    "file": "moex_intelligence/lab_data.py",
+    "functions": [
+      "QuoteSnapshots",
+      "load_asset"
+    ],
+    "sha256": "245fc34bc5db29b5b07a169d1dfa4dc48d45b5964e72809f61311db2bdda2a69"
+  },
+  {
+    "file": "moex_intelligence/advisor.py",
+    "functions": [
+      "validate_profile",
+      "evaluate",
+      "investigate",
+      "render_investment_report"
+    ],
+    "sha256": "b973a3aca85e3713d5486f56eab570c5eaacf839f2c618e5f1b5468dcdc40efa"
+  },
+  {
+    "file": "moex_intelligence/data.py",
+    "functions": [
+      "market_today",
+      "date_range",
+      "describe_response",
+      "normalize_history",
+      "DataEngine",
+      "get_engine",
+      "require_equity"
+    ],
+    "sha256": "f4bff04cec6c5a3e741cf8ee2528db65acf3aa1fcb005b6fc872482ea79cb955"
+  },
+  {
+    "file": "time_machine_dashboard/app.py",
+    "functions": [],
+    "sha256": "6a2baca04bf17cc657011fd29534e82b19d4e69924bda97e1899e840bfacf95d"
+  }
+]

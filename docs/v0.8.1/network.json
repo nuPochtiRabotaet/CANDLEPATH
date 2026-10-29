@@ -1,0 +1,10 @@
+{
+  "checked_at": 1793170574.635461,
+  "rest": {
+    "http": 200,
+    "body": "<html>\n    <head><title>Site Unavailable</title></head>\n    <body>\n      <center>\n        <h1>Site Unavailable</h1>\n        <p>Unable to access this site.</p>\n      </center>\n    </body>\n</html>\n"
+  },
+  "ws": {
+    "error": "InvalidStatus: server rejected WebSocket connection: HTTP 200"
+  }
+}

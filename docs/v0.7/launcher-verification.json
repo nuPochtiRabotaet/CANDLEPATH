@@ -1,0 +1,7 @@
+{
+  "platform": "Linux",
+  "start_health": true,
+  "reuse_own_instance": true,
+  "stop_own_instance": true,
+  "physical_mac_checked": false
+}

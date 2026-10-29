@@ -1,0 +1,13 @@
+[project]
+name = "moex-intelligence"
+version = "0.8.2rc3"
+description = "Local read-only MOEX research platform integrating Reader and Time Machine"
+requires-python = ">=3.12,<3.14"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "MOEX_v08_regression_tests.py"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+addopts = "--import-mode=importlib"
+markers = ["live: explicit MOEX network tests"]

@@ -1,0 +1,107 @@
+{
+  "repository": "Jakeschincariol/day-trader-skill",
+  "commit": "3d0f4ef6986f4984b7c6bd46f7ff4f87744c3abd",
+  "method": "static source review; no upstream code executed",
+  "files": [
+    {
+      "path": "trader-exit/exit.py",
+      "sha256": "d1b5bf6ff81f4bbf08803ad1511764e5e6a891b1d5c5d41171077b2fd6e89b58",
+      "imports": [
+        "argparse",
+        "datetime",
+        "decimal",
+        "gzip",
+        "json",
+        "os",
+        "re",
+        "sys",
+        "time",
+        "urllib.error",
+        "urllib.request"
+      ],
+      "executed": false
+    },
+    {
+      "path": "trader-scanner/scan.py",
+      "sha256": "72cd757a413e10a8c95910e823239c7fd65e8a5ca592e53ce441c827b92904b2",
+      "imports": [
+        "argparse",
+        "datetime",
+        "gzip",
+        "json",
+        "os",
+        "re",
+        "sys",
+        "time",
+        "urllib.error",
+        "urllib.request"
+      ],
+      "executed": false
+    },
+    {
+      "path": "trader-timemachine/timemachine.py",
+      "sha256": "0169f3a0076f3cf7d52d899c1f5d12e6a9f7a3e8cdb82624a4718897424b4da9",
+      "imports": [
+        "argparse",
+        "datetime",
+        "gzip",
+        "json",
+        "math",
+        "os",
+        "random",
+        "re",
+        "statistics",
+        "sys",
+        "time",
+        "urllib.error",
+        "urllib.parse",
+        "urllib.request"
+      ],
+      "executed": false
+    },
+    {
+      "path": "trader-risk/check.py",
+      "sha256": "88b9cc6549261b78ae7c216eba5b7d1debd7d44ae0fb4ec3fbd3da3b93a79726",
+      "imports": [
+        "argparse",
+        "datetime",
+        "hashlib",
+        "json",
+        "os",
+        "re",
+        "sys"
+      ],
+      "executed": false
+    },
+    {
+      "path": "trader-budget/size.py",
+      "sha256": "456bd0012c6c216ce7a79c8130086fe3dc05c8895041e41ec7f12929eb5bb13e",
+      "imports": [
+        "argparse",
+        "datetime",
+        "json",
+        "math",
+        "os",
+        "sys"
+      ],
+      "executed": false
+    },
+    {
+      "path": "trader-entry/entry.py",
+      "sha256": "1ea4920872ac0fed15a843700a70e5d42815dfae899065cf0553172971d12afd",
+      "imports": [
+        "argparse",
+        "datetime",
+        "gzip",
+        "json",
+        "os",
+        "re",
+        "sys",
+        "time",
+        "urllib.error",
+        "urllib.request"
+      ],
+      "executed": false
+    }
+  ]
+}

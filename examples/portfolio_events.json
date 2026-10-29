@@ -1,0 +1,4 @@
+[
+  {"date":"2026-01-01","kind":"deposit","amount":1000},
+  {"date":"2026-01-01","kind":"buy","symbol":"SBER","quantity":5,"price":100,"fee":1}
+]

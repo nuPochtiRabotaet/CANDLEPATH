@@ -1,0 +1,9 @@
+{
+  "checked_at_utc": "2026-10-25T15:34:53.618711+00:00",
+  "platform": "Linux Python 3.12",
+  "occupied_port_fallback": true,
+  "repeated_start": true,
+  "wrong_token_rejected": true,
+  "stopped_child": true,
+  "physical_mac_tested": false
+}

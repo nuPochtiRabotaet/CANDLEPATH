@@ -1,0 +1,14 @@
+{
+  "checked_at": 1793208815.5719929,
+  "type": "REAL NETWORK; no mocks",
+  "rest": {
+    "http_status": 200,
+    "json": false,
+    "site_unavailable": true
+  },
+  "websocket": {
+    "connected": false,
+    "error": "InvalidStatus",
+    "message": "server rejected WebSocket connection: HTTP 200"
+  }
+}

@@ -1,0 +1,7 @@
+Full suite: 163 passed in 13.81s, no skips.
+Python 3.12.14 / Linux x86_64 / Streamlit 1.66.1 / Plotly 6.9.0.
+HTTP MCP: PASS health, initialize/list/call, invalid ticker, hostile Host.
+Launcher: PASS start/health/reuse/owned-process stop.
+Preservation: PASS core engines, ledger, MCP, locks, Mac launchers, CSS unchanged.
+Live MOEX: NOT CONFIRMED; SBER/SBMX/SU26232RMFS7 timed out after 10s.
+Real browser / physical Mac / new clean installation: not performed in this iteration.

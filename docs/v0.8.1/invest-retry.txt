@@ -1,0 +1,27 @@
+{
+  "browser": "153.0.8010.0",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "processor": "x86_64",
+  "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+  "cpu_count": 9,
+  "rendering": "headless Chromium, software SwiftShader; not physical Mac hardware",
+  "fixture": "controlled synthetic data only",
+  "checks": [
+    "overview: capital, source, incomplete history and actionable structure",
+    "selection and continuous navigation preserve symbol/quantity",
+    "buy 1 -> 3 lots, partial sale and blocked oversell; commission and cash agree",
+    "three distinct scenario findings, concentration/loss, working tariff action",
+    "rapid input, zero/invalid lots, rejected-input stability, full reset, pinned A",
+    "late model response never overwrites latest input; history cached once; stress separate",
+    "compatible detailed Advisor context without changing permanent profile",
+    "decimal fee boundary 0.29 × 50 × 1% -> 0.15 fee, same in JS and Python",
+    "bond percent+nominal+accrued; original saved quote date under offline failure",
+    "all sandbox interactions leave actual journal unchanged",
+    "external journal revision invalidates sandbox, explicit snapshot refresh recovers",
+    "explicit CSV import + repeat has no duplicate, empty save disabled"
+  ],
+  "js_errors": [],
+  "journal_unchanged_through_sandbox": true,
+  "history_loads": 1
+}
+quantity median/p95 17.150000000023283 24 stress median/p95 12.099999999976717 22.300000000046566

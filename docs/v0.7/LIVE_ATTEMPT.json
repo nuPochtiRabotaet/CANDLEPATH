@@ -1,0 +1,23 @@
+{
+  "checked_at_utc": "2026-10-26T23:00:26.001827+00:00",
+  "instruments": [
+    {
+      "symbol": "SBER",
+      "received": false,
+      "error": "MOEX не ответила за 10 секунд.",
+      "asset": null
+    },
+    {
+      "symbol": "SBMX",
+      "received": false,
+      "error": "MOEX не ответила за 10 секунд.",
+      "asset": null
+    },
+    {
+      "symbol": "SU26238RMFS4",
+      "received": false,
+      "error": "MOEX не ответила за 10 секунд.",
+      "asset": null
+    }
+  ]
+}

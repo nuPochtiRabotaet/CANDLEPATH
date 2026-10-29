@@ -1,0 +1,8 @@
+PASS initialize and tools/list: search_security, get_quote, get_daily_history, analyze_history, get_market_snapshot
+PASS search_security
+PASS get_quote
+{"ticker": "SBER", "last_price": 292.32, "retrieved_at_utc": "2026-10-24T19:19:21.970457+00:00"}
+PASS get_daily_history
+PASS analyze_history
+PASS get_market_snapshot
+PASS invalid ticker produces MCP error
