@@ -31,3 +31,16 @@ Local verification using the shipped rc3 sources overlaid with the v0.9 branch c
 Added causal Random Walk median + EWMA volatility baseline for latest valid Bybit closed candles only, four future candle horizons, model-implied uncalibrated 80% intervals, and visible forecast line/fan inside existing Lightweight Charts with an independent toggle. Inactive when market data are stale, invalid or insufficient. NO directional predictive skill, trained model, validated confidence, profitability or BUY/SELL decisions are claimed. Existing signal markers and Paper execution remain independent. The forecast is not yet auto-published to the immutable outcome journal. See docs/FORECAST_BASELINE_V09.md for methodology and acceptance gaps.
 
 Local verification on rc3 source overlaid with v0.9 branch changes: 9 new forecast tests, 24 focused tests and 302 available regression tests passed; JS syntax check + Python compileall passed. Full test suite remains blocked by missing Streamlit and MCP dependencies; real Bybit and macOS Safari browser checks remain pending. This is a DEVELOPMENT PR, not a completed v0.9 release.
+
+## v0.9 Forecast Integrity Audit — 2026-10-30 (review PR, not released)
+
+Ten-part code/causality/data/readiness/persistence/browser test audit in docs/FORECAST_AUDIT_V09.md. Three confirmed regressions were addressed:
+1. Separate forecast candle-stream readiness from trading quote/bid-ask readiness, fail closed if no fresh kline stream.
+2. Publication of the same forecast across Streamlit reruns is idempotent despite different creation timestamps; conflicting forecast body still fails, immutable original remains untouched.
+3. Empty-data/chart transition with a retained quote previously caused a JS timeToCoordinate(undefined) crash and preserved stale projection; both faults fixed and checked in real local Chromium on synthetic candles.
+
+Live experimental forecasts are now first journaled immutably in SQLite and reconciled to closed-candle outcomes when the last closed candle changes. Failure to safely persist suppresses the forecast instead of showing an unauditable prediction.
+
+Verification (local rc3 source overlaid with v0.9 feature changes): 26 focused tests passed; 318 dependency-compatible tests passed with 25 deselected. An earlier broader run gave 332 passed, 11 failed due to missing Streamlit/MCP imports; full collection had four import errors. Real Chromium synthetic-graph smoke script passed (render, toggle, stale status, empty-feed recovery); JS syntax and Python compileall passed. macOS Safari, actual Bybit REST/WS, full requirements suite, historical calibration and proven directional prediction are outstanding.
+
+Changes remain stacked in development PRs only; main untouched, LIVE disabled.
