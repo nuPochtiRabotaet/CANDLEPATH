@@ -48,7 +48,10 @@ class FakeBybit:
             raise AssertionError("Unexpected endpoint")
         assert params["category"] == "spot"
         assert params["limit"] <= 1000
-        items = [r for r in self.rows if int(r[0]) <= params["end"]]
+        # Bad exchange timestamps must reach the parser under test rather
+        # than crashing inside the test transport's pagination filter.
+        items = [r for r in self.rows if not str(r[0]).isdigit()
+                 or int(r[0]) <= params["end"]]
         return {
             "retCode":0,"time":str(self.now_ms),
             "result":{"category":"spot","symbol":params["symbol"],
