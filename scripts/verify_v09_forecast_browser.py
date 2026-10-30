@@ -83,7 +83,7 @@ def verify():
             page.locator('#forecastOverlay').check()
             assert page.locator('.terminal').evaluate(
                 'e=>e.__runtime.forecastLine.options().visible')
-            page.evaluate("""() => {window._data.intelligence.forecast={status:'UNAVAILABLE'};window._invoke()}""")
+            page.evaluate("""() => {window._savedForecast=window._data.intelligence.forecast;window._savedCandles=window._data.candles;window._data.intelligence.forecast={status:'UNAVAILABLE'};window._invoke()}""")
             assert page.locator('.terminal').evaluate(
                 'e=>e.__runtime.forecastLine.data().length')==0
             assert page.locator('.terminal').evaluate(
@@ -95,8 +95,18 @@ def verify():
                 'e=>e.__runtime.forecastLine.data().length')==0
             assert page.locator('.terminal').evaluate(
                 'e=>e.__runtime.candles.data().length')==0
+            # Recover with the same version, as may happen with a reused Streamlit
+            # snapshot. The volume/EMA engine must be reinitialized after clearing.
+            page.evaluate("""() => {window._data.candles=window._savedCandles;
+                 window._data.intelligence.forecast=window._savedForecast;
+                 window._invoke()}""")
+            page.wait_for_timeout(250)
+            assert page.locator('.terminal').evaluate(
+                'e=>e.__runtime.forecastLine.data().length')==5
+            assert page.locator('.terminal').evaluate(
+                'e=>e.__runtime.volume.data().length')==120
             assert not errors,errors
-            return 'PASS: initial chart, forecast toggle, stale status, empty feed and JS errors'
+            return 'PASS: render, toggle, unavailable, empty feed, same-version recovery, JS errors'
         finally:
             browser.close()
 
