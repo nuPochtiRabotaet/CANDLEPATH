@@ -85,7 +85,7 @@ def verify():
                 const r=e.__runtime,closed=window._data.candles.at(-1),
                 asOf=closed.time+900,steps=[0,1,2,4,8],
                 times=steps.map(h=>asOf+h*900),
-                line=r.forecastLine.data(),grid=r.forecastGrid.data(),
+                line=r.forecastLine.data(),grid=JSON.parse(r.forecastGridKey||'[]'),
                 x=times.map(t=>r.chart.timeScale().timeToCoordinate(t));
                 return {times,positions:line.map(p=>p.time),grid:grid.map(p=>p.time),
                     values:line.map(p=>p.value),x,fan:r.forecastProfile};
@@ -114,7 +114,7 @@ def verify():
                 assert page.locator('.terminal').evaluate(
                     'e=>e.__runtime.forecastLine.data().length')==0,snippet
                 assert page.locator('.terminal').evaluate(
-                    'e=>e.__runtime.forecastGrid.data().length')==0,snippet
+                    'e=>e.__runtime.forecastGridKey')=='',snippet
                 assert page.locator('.terminal').evaluate(
                     'e=>e.__runtime.forecastProfile') is None,snippet
                 page.evaluate("() => window._invoke()")
