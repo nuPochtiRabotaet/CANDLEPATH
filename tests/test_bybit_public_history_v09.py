@@ -201,3 +201,22 @@ def test_check_4_real_history_verification_never_initializes_user_store(monkeypa
     response=run(evaluate_public_spot_history("SOLUSDT","15",bars=1200,
                                               connector=api,pause_seconds=0))
     assert response["verification"]=="PUBLIC_REST_HISTORY_VERIFIED"
+
+
+def test_check_3_missing_most_recent_closed_candle_is_rejected():
+    api=FakeBybit()
+    api.rows.pop(0)  # the immediate pre-cutoff candle is absent
+    with pytest.raises(MarketError,match="absent or stale"):
+        run(collect_public_spot_history("BTCUSDT","15",bars=1200,
+                                        connector=api,pause_seconds=0))
+
+
+def test_check_5_deterministic_digest_and_zero_db_side_effects():
+    first=run(collect_public_spot_history("BTCUSDT","15",bars=1200,
+                                          connector=FakeBybit(),pause_seconds=0))
+    second=run(collect_public_spot_history("BTCUSDT","15",bars=1200,
+                                           connector=FakeBybit(now_ms=first.server_time_ms),
+                                           pause_seconds=0))
+    assert first.sha256 == second.sha256
+    assert first.candles == second.candles
+    assert len(first.candles)==1200
