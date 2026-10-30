@@ -89,6 +89,6 @@ def candle_stream_ready(snapshot) -> bool:
     conversely a temporarily invalid spread must not hide good market candles.
     """
     readiness = snapshot.get('readiness') or {}
-    return (readiness.get('market_stream_active') is True
+    return (readiness.get('forecast_feed_ready') is True
             and readiness.get('candle_data_fresh') is True
             and isinstance(snapshot.get('candles'), list))
