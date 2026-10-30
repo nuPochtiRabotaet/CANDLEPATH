@@ -74,6 +74,7 @@ else: runtime.shutdown();sys.exit(1)
     finally:
         runtime.shutdown()
 
+
 def test_failed_monitor_startup_releases_process_ownership(tmp_path, monkeypatch):
     dbpath = tmp_path / 'failed.sqlite3'
     def broken(*_args):

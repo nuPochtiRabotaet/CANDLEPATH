@@ -23,6 +23,22 @@ class OverlayPrimitive {
     }
    }
   }
+  // Probability fan is aligned with candle OPEN timestamps. ForecastPoint.target_time
+  // denotes the future candle CLOSE boundary and is shifted left one interval.
+  const fc=data?.intelligence?.forecast;
+  if(r.forecastVisible && fc?.status==='EXPERIMENTAL' && fc.points?.length){
+   const last=[...(data.candles||[])].reverse().find(c=>c.closed);
+   const step=data.interval==='D'?86400:Number(data.interval)*60;
+   if(last&&Number.isFinite(step)&&step>0){
+    const profile=[{time:last.time,lower:last.close,upper:last.close},...fc.points.map(p=>({time:p.target_time-step,lower:+p.lower,upper:+p.upper}))];
+    const plot=profile.map(p=>({x:tx(p.time),low:py(p.lower),high:py(p.upper)}));
+    if(plot.every(p=>p.x!=null&&p.low!=null&&p.high!=null)){
+     ctx.beginPath();plot.forEach((p,i)=>i?ctx.lineTo(p.x,p.high):ctx.moveTo(p.x,p.high));
+     [...plot].reverse().forEach(p=>ctx.lineTo(p.x,p.low));ctx.closePath();
+     ctx.fillStyle='rgba(103,170,255,.16)';ctx.fill();
+    }
+   }
+  }
   ctx.restore();
  }
 }
@@ -35,12 +51,13 @@ export default function(component){
  const money=x=>num(x)+' USDT';const local=t=>new Date(t*1000).toLocaleString();
  let r=root.__runtime;
  if(!r){
-  r=root.__runtime={layers:{ribbon:true,glow:true,markers:true,ema:true,st:false,volume:true,entry:true,sl:true,tp:true},opacity:.85,tab:'positions',context:'',inputs:{},seq:0,priceLines:{},renderCount:0};
+  r=root.__runtime={layers:{ribbon:true,glow:true,markers:true,ema:true,st:false,volume:true,entry:true,sl:true,tp:true},forecastVisible:true,opacity:.85,tab:'positions',context:'',inputs:{},seq:0,priceLines:{},renderCount:0};
   r.chart=LC.createChart($('chart'),{autoSize:true,layout:{background:{type:'solid',color:'#0D1519'},textColor:'#839B9C',fontSize:11,attributionLogo:true},grid:{vertLines:{color:'#33444C'},horzLines:{color:'#33444C'}},crosshair:{mode:LC.CrosshairMode.Normal},rightPriceScale:{borderColor:'#2b3747',scaleMargins:{top:.12,bottom:.20}},timeScale:{borderColor:'#2b3747',timeVisible:true,secondsVisible:false,rightOffset:8},localization:{locale:'ru-RU',timeFormatter:t=>new Date(t*1000).toLocaleString()}});
   r.candles=r.chart.addSeries(LC.CandlestickSeries,{upColor:'#26B985',downColor:'#D85168',borderVisible:false,wickUpColor:'#26B985',wickDownColor:'#D85168',priceLineVisible:true});
   r.volume=r.chart.addSeries(LC.HistogramSeries,{priceFormat:{type:'volume'},priceScaleId:'volume',lastValueVisible:false,priceLineVisible:false});r.volume.priceScale().applyOptions({scaleMargins:{top:.84,bottom:0}});
   const opts={lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false};
   r.fast=r.chart.addSeries(LC.LineSeries,{...opts,color:'#45d3a7'});r.slow=r.chart.addSeries(LC.LineSeries,{...opts,color:'#e2c36f'});r.st=r.chart.addSeries(LC.LineSeries,{...opts,color:'#ac9eea',lineStyle:LC.LineStyle.Dashed,visible:false});
+  r.forecastLine=r.chart.addSeries(LC.LineSeries,{...opts,color:'#79B5FF',lineStyle:LC.LineStyle.Dashed,lineWidth:2,visible:true});
   r.markers=LC.createSeriesMarkers(r.candles,[]);r.primitive=new OverlayPrimitive(r);r.candles.attachPrimitive(r.primitive);
   r.observer=new MutationObserver(()=>{if(!root.isConnected){clearTimeout(r.timer);clearTimeout(r.prefTimer);r.observer.disconnect();r.chart.remove();root.__runtime=null;}});r.observer.observe(document.body,{childList:true,subtree:true});
   r.chart.subscribeCrosshairMove(p=>{const bar=p.seriesData?.get(r.candles);if(bar)text('crosshair',`${local(p.time)}  O ${num(bar.open)}  H ${num(bar.high)}  L ${num(bar.low)}  C ${num(bar.close)}`);const sig=r.data?.signals.filter(s=>s.timestamp===p.time);$('signalTooltip').hidden=!sig?.length;if(sig?.length)$('signalTooltip').textContent=sig.map(s=>`${s.type==='BUY'?'BUY':'SELL / EXIT'} · ${s.strategy}\nГраница закрытия ${local(s.timestamp)} · ${num(s.reference_price)} USDT\nФактически обнаружен ${local(s.detected_at)}\nИсторическая отметка условия, не исполненная сделка\n${s.explanation.join('\n')}\n${s.regime} · ${s.status}\n${JSON.stringify(s.parameters)}\n${s.cost_assumption}`).join('\n\n');});
@@ -53,7 +70,7 @@ export default function(component){
  if(d.overlay_settings&&!r.pendingPrefs&&r.appliedPrefs!==JSON.stringify(d.overlay_settings)){applyPrefs(d.overlay_settings);r.appliedPrefs=JSON.stringify(d.overlay_settings);}
  r.data=d;r.renderCount++;root.dataset.renders=r.renderCount;
  const changed=r.context!==d.context;
- if(changed){for(const key of ['candles','volume','fast','slow','st'])r[key].setData([]);r.markers.setMarkers([]);r.version=-1;r.context=d.context;r.inputs={...d.inputs};r.seq=d.inputs.seq||0;r.initializedPrice=!!d.quote.price;r.lastRows=[];r.chart.timeScale().resetTimeScale();}
+ if(changed){for(const key of ['candles','volume','fast','slow','st','forecastLine'])r[key].setData([]);r.markers.setMarkers([]);r.version=-1;r.context=d.context;r.inputs={...d.inputs};r.seq=d.inputs.seq||0;r.initializedPrice=!!d.quote.price;r.lastRows=[];r.forecastKey='';r.chart.timeScale().resetTimeScale();}
  else if(!r.initializedPrice&&d.quote.price){r.inputs={...d.inputs};r.initializedPrice=true;}
  else if(d.inputs.seq>r.seq){r.inputs={...d.inputs};r.seq=d.inputs.seq;}
  root.dataset.context=d.context;const s=r.inputs;
@@ -64,7 +81,8 @@ export default function(component){
  }
  text('market',d.symbol.replace('USDT',' / USDT'));text('price',d.quote.price?num(d.quote.price):'—');text('change',d.quote.change!=null?num(d.quote.change)+'% · 24h':'—');$('change').className=d.quote.change>=0?'bull':'bear';text('connection',d.status+(d.quote.ts?' · '+num(d.age,0)+'с':''));text('tradingMode',d.mode==='Paper Trading'?'LOCAL PAPER':d.mode.toUpperCase());root.dataset.fresh=d.fresh?'true':'false';
  $('connectionError').hidden=!d.error&&!(!d.fresh&&d.candles.length);text('connectionError',d.error||'Stale Data · котировки устарели; действия с виртуальными позициями заблокированы.');
- text('forecastStatus','Forecast: '+(d.intelligence?.forecast.status||'UNAVAILABLE')+' · модель не активирована');
+ const forecast=d.intelligence?.forecast;
+ text('forecastStatus',forecast?.status==='EXPERIMENTAL'?'Forecast · эксперимент: Random Walk + EWMA, модельный 80% диапазон (НЕ проверенная вероятность).':('Forecast: '+(forecast?.status||'UNAVAILABLE')+' · '+(forecast?.reason||'нет доступного прогноза')));
  text('regime',d.analysis.regime);$('regime').className=d.analysis.regime==='Bullish'?'bull':d.analysis.regime==='Bearish'?'bear':'';showSignal(d.signals.at(-1));
  const life=d.lifecycle?.active||{state:'NO_SIGNAL',reason:'Подходящих условий нет'};
  text('lifecycleState',life.state+(life.type?' · '+life.type:'')+' — '+life.reason);
@@ -94,6 +112,16 @@ export default function(component){
   if(!previous.length||previous[0].time!==bars[0].time||bars.length<previous.length||previous.slice(0,-1).some((bar,i)=>JSON.stringify(bar)!==JSON.stringify(bars[i]))){r.candles.setData(bars);if(!previous.length)r.chart.timeScale().setVisibleLogicalRange({from:Math.max(0,bars.length-120),to:bars.length+6});}
   else for(let i=Math.max(0,previous.length-1);i<bars.length;i++)if(JSON.stringify(bars[i])!==JSON.stringify(previous[i]))r.candles.update(bars[i]);
   r.lastRows=bars;
+  // Forecast is never painted as real candles or as a validated signal.
+  const fc=d.intelligence?.forecast;
+  const anchor=[...d.candles].reverse().find(c=>c.closed);
+  const future=(fc?.status==='EXPERIMENTAL'&&anchor&&fc.points?.length)?
+   [{time:anchor.time,value:anchor.close},...fc.points.map(p=>({time:p.target_time-duration,value:+p.median}))]:[];
+  const validForecast=future.length>1&&future.every((p,i)=>Number.isFinite(p.time)&&Number.isFinite(p.value)&&p.value>0&&(i===0||p.time>future[i-1].time));
+  const nextForecastKey=validForecast?JSON.stringify(future):'';
+  if(r.forecastKey!==nextForecastKey){r.forecastLine.setData(validForecast?future:[]);r.forecastKey=nextForecastKey;}
+  r.forecastLine.applyOptions({visible:r.forecastVisible&&validForecast});
+  r.primitive.update();
   if(r.version!==d.version||changed){
    r.volume.setData(d.candles.map(c=>({time:c.time,value:c.volume,color:c.close>=c.open?'#235647':'#653847'})));
    for(const [key,field] of [['fast','fast'],['slow','slow'],['st','supertrend']])r[key].setData(d.analysis.overlay.filter(p=>Number.isFinite(p[field])).map(p=>({time:p.time,value:p[field]})));
@@ -154,6 +182,8 @@ export default function(component){
  const selected=$('selectedSignal').value,choices=(d.lifecycle?.records||[]).filter(x=>x.type==='BUY');
  $('selectedSignal').replaceChildren(new Option('Ручное решение · без сигнала',''),...choices.map(x=>new Option(x.strategy+' · '+x.state+' · '+local(x.first_seen||x.timestamp),x.id)));
  if(choices.some(x=>x.id===selected))$('selectedSignal').value=selected;
+ $('forecastOverlay').checked=r.forecastVisible;
+ $('forecastOverlay').addEventListener('change',()=>{r.forecastVisible=$('forecastOverlay').checked;r.forecastLine.applyOptions({visible:r.forecastVisible&&r.forecastKey!==''});r.primitive.update();},ev);
  syncInputs();calculate();layers();showJournal();
  for(const [id,key] of [['equity','equity'],['cash','cash'],['unrealized','unrealized'],['realized','realized'],['openRisk','risk']])text(id,money(d.account[key]));text('valuationStatus',d.account.missing_quotes.length?'Неполная оценка: нет свежих цен '+d.account.missing_quotes.join(', ')+'. Для отсутствующей цены используется цена входа; новые сделки заблокированы.':'Equity по Bid; net-поступление от допустимой продажи с текущими издержками (остаток не включён): '+money(d.account.liquidation_equity)+'. Исторические комиссии не пересчитываются.');text('drawdown',num(d.account.drawdown*100)+'%');text('counts',Object.keys(d.state.positions).length+' поз. · '+d.orders.length+' заявок · '+d.signals.length+' сигналов');
  for(const [id,key] of [['quantity','quantity'],['stop','stop'],['target','target'],['risk','risk_pct'],['quantitySlider','quantity']])$(id).addEventListener('input',()=>{s[key]=$(id).value;if(key==='quantity')s.input_mode='quantity';touch();},ev);
