@@ -4,7 +4,7 @@ import time
 from dataclasses import replace
 import pytest
 
-from moex_intelligence.crypto.forecast_baseline import HistoricalVolatilityBaseline
+from moex_intelligence.crypto.forecast_baseline import HistoricalVolatilityBaseline, candle_stream_ready
 from moex_intelligence.crypto.intelligence import validate
 from moex_intelligence.crypto.market import Candle
 
@@ -99,14 +99,14 @@ def test_invalid_cutoff_never_emits_a_forecast(monkeypatch):
 def test_candle_stream_readiness_independent_of_trade_quote():
     from moex_intelligence.crypto.forecast_baseline import candle_stream_ready
     snapshot={'fresh': False, 'candles': [], 'readiness': {
-        'market_stream_active': True,'candle_data_fresh': True,
+        'forecast_feed_ready': True,'market_stream_active': False,'candle_data_fresh': True,
         'trade_execution_ready': False,'bid_ask_valid': False}}
     assert candle_stream_ready(snapshot)
     snapshot['fresh']=True
     snapshot['readiness']['candle_data_fresh']=False
     assert not candle_stream_ready(snapshot)
     snapshot['readiness']['candle_data_fresh']=True
-    snapshot['readiness']['market_stream_active']=False
+    snapshot['readiness']['forecast_feed_ready']=False
     assert not candle_stream_ready(snapshot)
     assert not candle_stream_ready({'fresh': True,'candles': [],'readiness': {}})
 
@@ -129,3 +129,60 @@ def test_baseline_publication_is_idempotent_on_successive_reruns(tmp_path,monkey
     with pytest.raises(ValueError,match='immutable'):
         history.publish(replace(later,points=(replace(later.points[0],median='9999'),)+later.points[1:]),now=now+30)
     assert history.records()[0]['forecast']==original
+
+
+def test_snapshot_candle_readiness_without_any_executable_quote():
+    import threading
+    from moex_intelligence.crypto.market import Feed
+    step=900
+    now=time.time()
+    open_time=int(now//step)*step
+    feed=object.__new__(Feed)
+    feed.symbol='BTCUSDT'
+    feed.interval='15'
+    feed.lock=threading.RLock()
+    feed.rows=[Candle(open_time,100,101,99,100,5,False)]
+    feed.rules=None
+    feed.quote={}
+    feed.status='Synchronizing'
+    feed.last_ws=now
+    feed.last_candle_event=now
+    feed.transport_connected=True
+    feed.stop=threading.Event()
+    feed.error=''
+    feed.events=[]
+    feed.version=1
+    snap=feed.snapshot()
+    assert not snap['fresh'] and not snap['readiness']['market_stream_active']
+    assert snap['readiness']['forecast_feed_ready']
+    assert candle_stream_ready(snap)
+    feed.last_candle_event=now-200
+    snap=feed.snapshot()
+    assert not snap['readiness']['forecast_feed_ready']
+    feed.last_candle_event=time.time()
+    feed.transport_connected=False
+    assert not feed.snapshot()['readiness']['forecast_feed_ready']
+
+
+def test_snapshot_fresh_trade_quote_does_not_override_stale_candles():
+    import threading
+    from moex_intelligence.crypto.market import Feed
+    now=time.time()
+    feed=object.__new__(Feed)
+    feed.symbol='SOLUSDT'
+    feed.interval='1'
+    feed.lock=threading.RLock()
+    feed.rows=[Candle(int(now//60)*60,100,101,99,100,5,False)]
+    feed.rules=None
+    feed.quote={'price':100,'bid':99.9,'ask':100.1,'ts':now}
+    feed.status='Live'
+    feed.last_ws=now
+    feed.last_candle_event=now-100
+    feed.transport_connected=True
+    feed.stop=threading.Event()
+    feed.error=''
+    feed.events=[]
+    feed.version=1
+    snap=feed.snapshot()
+    assert not snap['readiness']['forecast_feed_ready']
+    assert not candle_stream_ready(snap)
