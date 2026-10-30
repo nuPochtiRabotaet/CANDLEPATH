@@ -73,3 +73,13 @@ else: runtime.shutdown();sys.exit(1)
         assert worker.thread.is_alive()
     finally:
         runtime.shutdown()
+
+def test_failed_monitor_startup_releases_process_ownership(tmp_path, monkeypatch):
+    dbpath = tmp_path / 'failed.sqlite3'
+    def broken(*_args):
+        raise OSError('simulated constructor failure')
+    monkeypatch.setattr(runtime, 'PaperMonitor', broken)
+    with pytest.raises(OSError, match='constructor failure'):
+        runtime.monitor(dbpath)
+    assert _claim_in_subprocess(Path(str(dbpath) + '.monitor.lock')) == 0
+    runtime.shutdown()
