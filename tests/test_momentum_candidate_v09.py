@@ -186,9 +186,9 @@ def test_check_5_cli_readonly_report_and_market_label(tmp_path):
     assert result["comparison"]["final_holdout_evaluated"] is False
     assert result["market"]["file_sha256"]==original_hash
     assert hashlib.sha256(source.read_bytes()).hexdigest()==original_hash
+    report_hash=hashlib.sha256(target.read_bytes()).hexdigest()
     assert subprocess.run(command,capture_output=True,timeout=35).returncode==2
-    assert hashlib.sha256(target.read_bytes()).hexdigest()==hashlib.sha256(
-        target.read_bytes()).hexdigest()
+    assert hashlib.sha256(target.read_bytes()).hexdigest()==report_hash
 
 
 def test_check_5_never_touches_user_portfolio_store(monkeypatch):
