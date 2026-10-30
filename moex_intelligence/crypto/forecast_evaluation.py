@@ -7,6 +7,8 @@ uses only closed candles at or before that origin. Later candles score outcomes.
 from __future__ import annotations
 
 import math
+import time
+from decimal import Decimal
 from dataclasses import asdict, dataclass
 from typing import Sequence
 
@@ -19,11 +21,12 @@ class HorizonScore:
     horizon_candles: int
     observations: int
     empirical_coverage: float
-    mean_absolute_error: float
-    mean_absolute_percentage_error: float
-    mean_band_width_pct: float
-    random_walk_mae: float
+    mean_absolute_error: float | None
+    mean_absolute_percentage_error: float | None
+    mean_band_width_pct: float | None
+    random_walk_mae: float | None
     nominal_coverage: float = HistoricalVolatilityBaseline.nominal_coverage
+    unbounded_percentage_errors: int = 0
 
 
 @dataclass(frozen=True)
@@ -64,11 +67,28 @@ def _closed_rows(candles: Sequence, timeframe: str):
         moment, price = raw.get('time'), raw.get('close')
         if type(moment) is not int or moment < 0 or moment % step:
             raise ValueError('Unaligned candle time')
-        if type(price) not in (int, float) or not math.isfinite(price) or price <= 0:
+        if type(price) not in (int, float):
             raise ValueError('Invalid candle close')
+        try:
+            price = float(price)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError('Invalid candle close') from exc
+        if not math.isfinite(price) or price <= 0:
+            raise ValueError('Invalid candle close')
+        if moment + step > time.time() + 2:
+            raise ValueError('Future candle marked as closed')
+        try:
+            open_price, high, low, volume = [float(raw[k]) for k in ('open','high','low','volume')]
+        except (KeyError, TypeError, ValueError, OverflowError) as exc:
+            raise ValueError('Missing or invalid OHLCV fields') from exc
+        if (not all(math.isfinite(x) for x in (open_price, high, low, volume))
+                or open_price <= 0 or low <= 0 or volume < 0
+                or high < max(open_price, price, low)
+                or low > min(open_price, price)):
+            raise ValueError('Inconsistent OHLCV candle')
         if rows and moment - rows[-1][0] != step:
             raise ValueError('Reordered, repeated or missing candles')
-        rows.append((moment, float(price)))
+        rows.append((moment, price))
     return rows
 
 
@@ -106,7 +126,8 @@ def evaluate_historical_baseline(candles, symbol, timeframe, *,
     holdout_start = max(window, math.floor(len(rows) * (1 - holdout_fraction)))
     first_origin = holdout_start - 1
     last_origin = len(rows) - 1 - max_horizon
-    sums = {h: {'n': 0, 'hits': 0, 'abs': 0., 'ape': 0., 'width': 0.}
+    sums = {h: {'n': 0, 'hits': 0, 'abs': Decimal(0), 'ape': Decimal(0),
+                'width': Decimal(0), 'large_ape': 0}
             for h in HistoricalVolatilityBaseline.horizons}
     origins = skipped = 0
 
@@ -129,16 +150,28 @@ def evaluate_historical_baseline(candles, symbol, timeframe, *,
                 b = sums[h]
                 b['n'] += 1
                 b['hits'] += int(lo <= actual <= hi)
-                b['abs'] += abs(median - actual)
-                b['ape'] += 100 * abs(median - actual) / actual
-                b['width'] += 100 * (hi - lo) / median
+                # Decimal keeps catastrophic future outcomes in coverage stats
+                # without serializing misleading Infinity/NaN into JSON.
+                error = abs(Decimal(str(median)) - Decimal(str(actual)))
+                pct = Decimal(100) * error / Decimal(str(actual))
+                b['abs'] += error
+                b['ape'] += pct
+                b['width'] += Decimal(100) * (Decimal(str(hi)) - Decimal(str(lo))) / Decimal(str(median))
+                if pct > Decimal('1.7976931348623157e308'):
+                    b['large_ape'] += 1
+
+    def finite_number(decimal_value):
+        number = float(decimal_value)
+        return number if math.isfinite(number) else None
 
     scores = tuple(HorizonScore(
         horizon_candles=h, observations=b['n'], empirical_coverage=b['hits']/b['n'],
-        mean_absolute_error=b['abs']/b['n'], mean_absolute_percentage_error=b['ape']/b['n'],
-        mean_band_width_pct=b['width']/b['n'],
+        mean_absolute_error=finite_number(b['abs']/b['n']),
+        mean_absolute_percentage_error=finite_number(b['ape']/b['n']),
+        mean_band_width_pct=finite_number(b['width']/b['n']),
         # Current model uses a flat Random Walk median; it CANNOT beat itself.
-        random_walk_mae=b['abs']/b['n'])
+        random_walk_mae=finite_number(b['abs']/b['n']),
+        unbounded_percentage_errors=b['large_ape'])
         for h, b in sums.items() if b['n'])
 
     status = 'EVALUATED' if origins >= min_required_origins else 'INSUFFICIENT'
@@ -151,4 +184,5 @@ def evaluate_historical_baseline(candles, symbol, timeframe, *,
         horizons=scores,
         note='Historical replay, not actual past publications or proof of directional accuracy. '
              'Nominal 80% bands are uncalibrated; the median is identical to Random Walk. '
+             'Unrepresentable numeric errors are reported as null, not Infinity. '
              'No trading fees or execution assumptions were evaluated.')

@@ -4,6 +4,8 @@ name: CandlePath v0.9 verification
   push:
     branches:
       - audit/v09-ten-pass-hardening
+      - feat/v09-offline-forecast-evaluation
+      - fix/v09-replay-regression-round2
   pull_request:
     paths:
       - 'moex_intelligence/**'
@@ -25,13 +27,14 @@ jobs:
     timeout-minutes: 20
     env:
       PYTHONDONTWRITEBYTECODE: '1'
-      MOEX_DATA_DIR: '${{ runner.temp }}/candlepath-v09-test-db'
+      MOEX_DATA_DIR: /tmp/candlepath-v09-test-db
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
           cache: pip
+          cache-dependency-path: requirements.in
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
