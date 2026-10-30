@@ -137,7 +137,7 @@ def evaluate_historical_baseline(candles, symbol, timeframe, *,
         if (not isinstance(evaluation_window, tuple)
                 or len(evaluation_window) != 2
                 or any(type(index) is not int for index in evaluation_window)):
-            raise ValueError('Invalid evaluation window')
+            raise ValueError('Evaluation window requires two integer indices')
         holdout_start, window_end = evaluation_window
         if not window <= holdout_start < window_end <= len(rows):
             raise ValueError('Evaluation window is outside causal candle range')
