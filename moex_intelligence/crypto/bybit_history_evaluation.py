@@ -127,6 +127,8 @@ async def collect_public_spot_history(symbol: str, interval: str, *,
         page_count += 1
         if not page:
             break
+        if page_count == 1 and page[0].time * 1000 + step_ms != cutoff_ms:
+            raise MarketError("Most recent closed Bybit candle is absent or stale")
         if any(c.time in seen for c in page):
             raise MarketError("Repeated candle across Bybit history pages")
         seen.update(c.time for c in page)
