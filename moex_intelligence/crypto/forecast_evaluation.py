@@ -7,6 +7,7 @@ uses only closed candles at or before that origin. Later candles score outcomes.
 from __future__ import annotations
 
 import math
+import time
 from decimal import Decimal
 from dataclasses import asdict, dataclass
 from typing import Sequence
@@ -74,6 +75,17 @@ def _closed_rows(candles: Sequence, timeframe: str):
             raise ValueError('Invalid candle close') from exc
         if not math.isfinite(price) or price <= 0:
             raise ValueError('Invalid candle close')
+        if moment + step > time.time() + 2:
+            raise ValueError('Future candle marked as closed')
+        try:
+            open_price, high, low, volume = [float(raw[k]) for k in ('open','high','low','volume')]
+        except (KeyError, TypeError, ValueError, OverflowError) as exc:
+            raise ValueError('Missing or invalid OHLCV fields') from exc
+        if (not all(math.isfinite(x) for x in (open_price, high, low, volume))
+                or open_price <= 0 or low <= 0 or volume < 0
+                or high < max(open_price, price, low)
+                or low > min(open_price, price)):
+            raise ValueError('Inconsistent OHLCV candle')
         if rows and moment - rows[-1][0] != step:
             raise ValueError('Reordered, repeated or missing candles')
         rows.append((moment, price))
