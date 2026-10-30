@@ -1,8 +1,8 @@
 """Typed research boundary. No exchange execution capability or trained-model claim."""
 from dataclasses import dataclass,asdict
 from typing import Literal,Protocol
-from decimal import Decimal
-import json,time
+from decimal import Decimal, DecimalException
+import json,time,math
 from .market import seconds
 
 @dataclass(frozen=True)
@@ -142,34 +142,66 @@ class ForecastHistory:
                 for published,body,ident in rows]
 
     def scorecard(self, symbol=None, timeframe=None):
-        """Descriptive out-of-sample outcome audit; NOT a trading edge estimate.
+        """Descriptive audit of immutable real-time forecast outcomes.
 
-        Unsettled horizons are excluded from the denominator. Nominal coverage
-        is never relabelled as a validated confidence level.
+        Fail closed on corrupt journal values. Treat a percentage that cannot
+        be represented as a finite Python float as UNKNOWN, never Infinity.
+        This is a diagnostic, not evidence of profitable trading.
         """
         buckets={}
         forecast_count=0
+        max_float=Decimal("1.7976931348623157e308")
         for record in self.records():
-            f=record['forecast']
-            if symbol and f['symbol']!=symbol:continue
-            if timeframe and f['timeframe']!=timeframe:continue
+            f=record["forecast"]
+            if symbol and f["symbol"]!=symbol:continue
+            if timeframe and f["timeframe"]!=timeframe:continue
             forecast_count+=1
-            published={p['target_time']:p for p in f['points']}
-            step=seconds(f['timeframe'])
-            for o in record['outcomes']:
-                p=published.get(o['target_time'])
+            published={p["target_time"]:p for p in f["points"]}
+            step=seconds(f["timeframe"])
+            for o in record["outcomes"]:
+                p=published.get(o["target_time"])
                 if p is None:continue
-                horizon=(o['target_time']-f['data_as_of'])//step
+                horizon=(o["target_time"]-f["data_as_of"])//step
                 if horizon<=0:continue
-                actual=Decimal(o['actual'])
-                median=Decimal(p['median'])
-                if actual<=0 or not actual.is_finite() or not median.is_finite():continue
-                b=buckets.setdefault(horizon,{'n':0,'covered':0,'absolute_pct_error_sum':Decimal(0)})
-                b['n']+=1
-                b['covered']+=int(o['covered'])
-                b['absolute_pct_error_sum']+=abs(median-actual)/actual*100
-        return {'forecasts':forecast_count,'horizons':{
-            h:{'observations':b['n'],'empirical_coverage':b['covered']/b['n'],
-               'mean_absolute_pct_error':float(b['absolute_pct_error_sum']/b['n']),
-               'sufficient_sample':b['n']>=30}
+                try:
+                    actual=Decimal(str(o["actual"]))
+                    median=Decimal(str(p["median"]))
+                    if (not actual.is_finite() or not median.is_finite()
+                            or actual<=0 or median<=0
+                            or type(o["covered"]) is not bool):
+                        raise ValueError("Invalid persisted outcome value")
+                    pct=abs(median-actual)/actual*Decimal(100)
+                    if not pct.is_finite() or pct<0:
+                        raise ValueError("Invalid persisted outcome percentage")
+                except (KeyError,TypeError,ValueError,DecimalException) as exc:
+                    raise ValueError("Corrupt immutable forecast outcome journal") from exc
+                b=buckets.setdefault(horizon,{"n":0,"covered":0,
+                    "absolute_pct_error_sum":Decimal(0),"unrepresentable":0})
+                b["n"]+=1
+                b["covered"]+=int(o["covered"])
+                b["absolute_pct_error_sum"]+=pct
+                if pct>max_float:
+                    b["unrepresentable"]+=1
+
+        def safe_pct(value):
+            try:
+                converted=float(value)
+            except (ValueError,OverflowError):
+                return None
+            return converted if math.isfinite(converted) else None
+
+        return {"forecasts":forecast_count,"horizons":{
+            h:{"observations":b["n"],
+               "empirical_coverage":b["covered"]/b["n"],
+               "mean_absolute_pct_error":safe_pct(
+                   b["absolute_pct_error_sum"]/b["n"]),
+               "unrepresentable_percentage_errors":b["unrepresentable"],
+               "sufficient_sample":b["n"]>=30}
             for h,b in sorted(buckets.items())}}
+
+
+def format_forecast_scorecard_pct(value):
+    """UI-safe value formatter: never render Infinity or crash on null."""
+    if type(value) not in (float,int) or not math.isfinite(value):
+        return "недоступно (слишком большая ошибка)"
+    return f"{value:.2f}%"
