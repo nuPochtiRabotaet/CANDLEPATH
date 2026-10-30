@@ -5,6 +5,8 @@ Run: python scripts/verify_v09_forecast_browser.py
 Not a Bybit, Streamlit, macOS/Safari or financial-profitability test.
 """
 import json
+import os
+import shutil
 import time
 from pathlib import Path
 from playwright.sync_api import sync_playwright
@@ -60,8 +62,10 @@ def verify():
         'parentElement:document,setStateValue(){},setTriggerValue(){}});window._invoke();')
     errors=[]
     with sync_playwright() as pw:
-        browser=pw.chromium.launch(executable_path='/usr/bin/chromium',headless=True,
-            args=['--no-sandbox','--disable-dev-shm-usage'])
+        binary=os.environ.get('CHROMIUM_PATH') or shutil.which('chromium') or shutil.which('chromium-browser')
+        options={'headless':True,'args':['--no-sandbox','--disable-dev-shm-usage']}
+        if binary: options['executable_path']=binary
+        browser=pw.chromium.launch(**options)
         try:
             page=browser.new_page(viewport=dict(width=1400,height=900))
             page.on('pageerror',lambda error:errors.append(str(error)))
