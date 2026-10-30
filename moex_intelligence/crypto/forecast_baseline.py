@@ -22,8 +22,14 @@ class HistoricalVolatilityBaseline:
 
     @staticmethod
     def _unavailable(symbol, timeframe, as_of, reason):
+        try:
+            cutoff=float(as_of)
+            if not math.isfinite(cutoff):
+                cutoff=0.0
+        except (TypeError,ValueError,OverflowError):
+            cutoff=0.0
         return Forecast('unavailable', symbol, timeframe, time.time(),
-                        max(0, as_of), 'rw-ewma80-experimental-v1',
+                        max(0.0, cutoff), 'rw-ewma80-experimental-v1',
                         'UNAVAILABLE', reason=reason)
 
     def forecast(self, closed_candles, symbol: str, timeframe: str, as_of: float) -> Forecast:
@@ -35,20 +41,27 @@ class HistoricalVolatilityBaseline:
         now = time.time()
         if symbol not in SYMBOLS or timeframe not in INTERVALS.values():
             return self._unavailable(symbol, timeframe, as_of, 'Unsupported market')
-        if not math.isfinite(as_of) or as_of <= 0 or as_of > now + 2:
+        if type(as_of) not in (int,float) or not math.isfinite(as_of) or as_of <= 0 or as_of > now + 2:
             return self._unavailable(symbol, timeframe, as_of, 'Invalid observation cutoff')
         step = seconds(timeframe)
+        if not isinstance(closed_candles,(list,tuple)):
+            return self._unavailable(symbol,timeframe,as_of,'Invalid candle collection')
         closed = []
         for raw in closed_candles:
-            row = raw if isinstance(raw, dict) else vars(raw)
-            if not row.get('closed'):
+            try:
+                row = raw if isinstance(raw,dict) else vars(raw)
+            except TypeError:
+                return self._unavailable(symbol,timeframe,as_of,'Invalid candle record')
+            if row.get('closed') is False:
                 continue
+            if row.get('closed') is not True:
+                return self._unavailable(symbol,timeframe,as_of,'Invalid candle close flag')
             candle_time, price = row.get('time'), row.get('close')
             if type(candle_time) is not int or candle_time < 0 or candle_time % step:
                 return self._unavailable(symbol, timeframe, as_of, 'Invalid candle timestamp')
             if candle_time + step > as_of:
                 return self._unavailable(symbol, timeframe, as_of, 'Closed candle is newer than observation cutoff')
-            if not isinstance(price, (int, float)) or not math.isfinite(price) or price <= 0:
+            if type(price) not in (int, float) or not math.isfinite(price) or price <= 0:
                 return self._unavailable(symbol, timeframe, as_of, 'Invalid close price')
             closed.append((candle_time, float(price)))
         if len(closed) < self.min_bars:
@@ -60,7 +73,8 @@ class HistoricalVolatilityBaseline:
         last_close_time = last_time + step
         if not 0 <= now - last_close_time < step:
             return self._unavailable(symbol, timeframe, as_of, 'Last closed candle is stale')
-        returns = [math.log(b[1] / a[1]) for a, b in zip(closed, closed[1:])]
+        # Subtract log-prices rather than dividing extreme floats (under/overflow).
+        returns = [math.log(b[1])-math.log(a[1]) for a, b in zip(closed, closed[1:])]
         if not all(math.isfinite(v) and abs(v) < .7 for v in returns):
             return self._unavailable(symbol, timeframe, as_of, 'Extreme/invalid log return; forecast suppressed')
         # EWMA of squared log-returns, normalized so short samples do not bias toward zero.
