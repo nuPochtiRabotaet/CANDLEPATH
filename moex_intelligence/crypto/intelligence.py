@@ -81,7 +81,16 @@ class ForecastHistory:
             db.execute('BEGIN IMMEDIATE')
             old=db.execute('SELECT body FROM forecasts WHERE id=?',(forecast.id,)).fetchone()
             if old:
-                if old[0]!=body:raise ValueError('Published forecast is immutable')
+                # Streamlit may recalculate an identical forecast during the
+                # same candle with a later created_at. Keep the *first* record
+                # immutable, while allowing a safe idempotent re-publication.
+                previous=json.loads(old[0]);candidate=json.loads(body)
+                if not forecast.data_as_of<=forecast.created_at<=now+2:
+                    raise ValueError('Invalid causal timestamps')
+                previous.pop('created_at',None)
+                candidate.pop('created_at',None)
+                if previous!=candidate:
+                    raise ValueError('Published forecast is immutable')
                 return json.loads(old[0])
             validate(forecast,now);db.execute('INSERT INTO forecasts VALUES(?,?,?)',(forecast.id,now,body))
         return json.loads(body)
