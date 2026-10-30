@@ -1,7 +1,7 @@
 """Streamlit adapter. Public workers, analytical state and paper ledger are separate."""
 import asyncio,math,time,uuid,os,sqlite3
 from dataclasses import asdict
-from .intelligence import RegimeSnapshot,DecisionContext,Forecast,ForecastHistory
+from .intelligence import RegimeSnapshot,DecisionContext,Forecast,ForecastHistory,format_forecast_scorecard_pct
 from .forecast_baseline import HistoricalVolatilityBaseline,candle_stream_ready
 from .market import seconds
 from functools import lru_cache
@@ -81,7 +81,9 @@ def page():
                 for horizon,row in report['horizons'].items():
                     st.write(f"+{horizon} свечей: {row['observations']} исходов · "
                              f"покрытие диапазона {row['empirical_coverage']*100:.1f}% · "
-                             f"средняя абсолютная ошибка {row['mean_absolute_pct_error']:.2f}%"
+                             f"средняя абсолютная ошибка {format_forecast_scorecard_pct(row['mean_absolute_pct_error'])}"
+                             +(f" · непредставимых ошибок: {row.get('unrepresentable_percentage_errors',0)}"
+                               if row.get('unrepresentable_percentage_errors',0) else '')
                              +(' · мало наблюдений' if not row['sufficient_sample'] else ' · не является подтверждением торгового преимущества'))
     if mode=='Paper Trading':
         with st.expander('Paper · комиссии и Quality Policy'):
