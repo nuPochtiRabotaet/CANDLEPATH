@@ -54,6 +54,30 @@ jobs:
         run: python -m pytest -q --disable-warnings --junitxml=pytest-candlepath-v09.xml
       - name: Browser integration smoke on synthetic candles
         run: python scripts/verify_v09_forecast_browser.py
+      - name: Public Bybit SPOT historical probe (diagnostic; no secrets or trades)
+        id: bybit_public
+        continue-on-error: true
+        timeout-minutes: 2
+        run: |
+          python scripts/evaluate_bybit_public_v09.py --symbol BTCUSDT --timeframe 15 --bars 1600 --output bybit-public-v09.json
+      - name: Explicitly report external-market verification status
+        if: always()
+        env:
+          BYBIT_PROBE_OUTCOME: ${{ steps.bybit_public.outcome }}
+        run: |
+          echo "Bybit public REST historical probe: $BYBIT_PROBE_OUTCOME" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$BYBIT_PROBE_OUTCOME" != "success" ]; then
+            echo "Real Bybit historical evaluation remains UNVERIFIED (network/region/API failure)." >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning::Real Bybit historical evaluation remains unverified. Never substitute synthetic history."
+          fi
+      - name: Upload public-market diagnostic if verified
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: candlepath-v09-public-market-report
+          path: bybit-public-v09.json
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Upload diagnostics (even on failure)
         if: always()
         uses: actions/upload-artifact@v4
