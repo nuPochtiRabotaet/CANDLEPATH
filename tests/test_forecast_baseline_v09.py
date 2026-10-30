@@ -94,3 +94,38 @@ def test_invalid_cutoff_never_emits_a_forecast(monkeypatch):
     e=HistoricalVolatilityBaseline()
     assert e.forecast(rows,'SOLUSDT','15',now+10).status=='UNAVAILABLE'
     assert e.forecast(rows,'SOLUSDT','15',now-100).status=='UNAVAILABLE'
+
+
+def test_candle_stream_readiness_independent_of_trade_quote():
+    from moex_intelligence.crypto.forecast_baseline import candle_stream_ready
+    snapshot={'fresh': False, 'candles': [], 'readiness': {
+        'market_stream_active': True,'candle_data_fresh': True,
+        'trade_execution_ready': False,'bid_ask_valid': False}}
+    assert candle_stream_ready(snapshot)
+    snapshot['fresh']=True
+    snapshot['readiness']['candle_data_fresh']=False
+    assert not candle_stream_ready(snapshot)
+    snapshot['readiness']['candle_data_fresh']=True
+    snapshot['readiness']['market_stream_active']=False
+    assert not candle_stream_ready(snapshot)
+    assert not candle_stream_ready({'fresh': True,'candles': [],'readiness': {}})
+
+
+def test_baseline_publication_is_idempotent_on_successive_reruns(tmp_path,monkeypatch):
+    from moex_intelligence.crypto.storage import Store
+    from moex_intelligence.crypto.intelligence import ForecastHistory
+    rows=candles()
+    now=clock(monkeypatch,rows)
+    engine=HistoricalVolatilityBaseline()
+    history=ForecastHistory(Store(tmp_path/'forecast.sqlite'))
+    first=engine.forecast(rows,'BTCUSDT','15',now)
+    original=history.publish(first,now=now)
+    monkeypatch.setattr('moex_intelligence.crypto.forecast_baseline.time.time',lambda: now+30)
+    later=engine.forecast(rows,'BTCUSDT','15',now+30)
+    assert later.id==first.id
+    assert later.created_at>first.created_at
+    assert history.publish(later,now=now+30)==original
+    assert len(history.records())==1
+    with pytest.raises(ValueError,match='immutable'):
+        history.publish(replace(later,points=(replace(later.points[0],median='9999'),)+later.points[1:]),now=now+30)
+    assert history.records()[0]['forecast']==original
