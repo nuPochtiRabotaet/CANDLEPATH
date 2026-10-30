@@ -20,10 +20,15 @@ def ewma_price_envelope(closes, horizons, *, z=1.2815515655446004):
     """
     if not isinstance(closes, (tuple, list)) or len(closes) < 2:
         raise ValueError('Too few observed prices')
-    if any(type(p) not in (int, float) or not math.isfinite(p) or p <= 0
-           for p in closes):
+    if any(type(p) not in (int, float) for p in closes):
         raise ValueError('Invalid observed price')
-    returns = [math.log(b) - math.log(a) for a, b in zip(closes, closes[1:])]
+    try:
+        prices = [float(p) for p in closes]
+    except (ValueError, TypeError, OverflowError) as exc:
+        raise ValueError('Invalid observed price') from exc
+    if any(not math.isfinite(p) or p <= 0 for p in prices):
+        raise ValueError('Invalid observed price')
+    returns = [math.log(b) - math.log(a) for a, b in zip(prices, prices[1:])]
     if not all(math.isfinite(r) and abs(r) < .7 for r in returns):
         raise ValueError('Extreme/invalid log return; forecast suppressed')
     decay = .94
@@ -35,10 +40,10 @@ def ewma_price_envelope(closes, horizons, *, z=1.2815515655446004):
         if type(horizon) is not int or horizon <= 0:
             raise ValueError('Invalid forecast horizon')
         spread = z * sigma * math.sqrt(horizon)
-        lower, upper = closes[-1] * math.exp(-spread), closes[-1] * math.exp(spread)
+        lower, upper = prices[-1] * math.exp(-spread), prices[-1] * math.exp(spread)
         if not all(math.isfinite(v) and v > 0 for v in (lower, upper)):
             raise ValueError('Numerically unstable interval')
-        envelope.append((lower, closes[-1], upper))
+        envelope.append((lower, prices[-1], upper))
     return tuple(envelope)
 
 
@@ -71,7 +76,11 @@ class HistoricalVolatilityBaseline:
         now = time.time()
         if symbol not in SYMBOLS or timeframe not in INTERVALS.values():
             return self._unavailable(symbol, timeframe, as_of, 'Unsupported market')
-        if type(as_of) not in (int,float) or not math.isfinite(as_of) or as_of <= 0 or as_of > now + 2:
+        try:
+            cutoff = float(as_of) if type(as_of) in (int, float) else None
+        except (ValueError, TypeError, OverflowError):
+            cutoff = None
+        if cutoff is None or not math.isfinite(cutoff) or cutoff <= 0 or cutoff > now + 2:
             return self._unavailable(symbol, timeframe, as_of, 'Invalid observation cutoff')
         step = seconds(timeframe)
         if not isinstance(closed_candles,(list,tuple)):
@@ -91,9 +100,15 @@ class HistoricalVolatilityBaseline:
                 return self._unavailable(symbol, timeframe, as_of, 'Invalid candle timestamp')
             if candle_time + step > as_of:
                 return self._unavailable(symbol, timeframe, as_of, 'Closed candle is newer than observation cutoff')
-            if type(price) not in (int, float) or not math.isfinite(price) or price <= 0:
+            if type(price) not in (int, float):
                 return self._unavailable(symbol, timeframe, as_of, 'Invalid close price')
-            closed.append((candle_time, float(price)))
+            try:
+                price = float(price)
+            except (ValueError, TypeError, OverflowError):
+                return self._unavailable(symbol, timeframe, as_of, 'Invalid close price')
+            if not math.isfinite(price) or price <= 0:
+                return self._unavailable(symbol, timeframe, as_of, 'Invalid close price')
+            closed.append((candle_time, price))
         if len(closed) < self.min_bars:
             return self._unavailable(symbol, timeframe, as_of, 'Too few closed candles')
         closed = closed[-self.sample_bars:]
