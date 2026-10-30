@@ -63,6 +63,26 @@ def page():
     terminal(store,symbol,INTERVALS[tf],mode or 'Market Data')
     from .performance_ui import render as performance_view
     performance_view(store)
+    with st.expander('Forecast · история проверенных исходов'):
+        st.caption('Только реальные опубликованные экспериментальные прогнозы и последующие закрытые свечи. Показатели НЕ подтверждают доходность стратегии.')
+        if st.button('Рассчитать точность завершённых прогнозов',key='forecast_scorecard_refresh'):
+            try:
+                report=ForecastHistory(store).scorecard(symbol,INTERVALS[tf])
+                st.session_state.forecast_scorecard_cache=(symbol,INTERVALS[tf],report)
+            except (sqlite3.Error,ValueError,ArithmeticError) as exc:
+                st.error('Ошибка проверки журнала прогнозов: '+str(exc))
+        cached=st.session_state.get('forecast_scorecard_cache')
+        if cached and cached[:2]==(symbol,INTERVALS[tf]):
+            report=cached[2]
+            st.write('Опубликовано прогнозов:',report['forecasts'])
+            if not report['horizons']:
+                st.info('Пока нет прогнозов с подтверждёнными последующими свечами.')
+            else:
+                for horizon,row in report['horizons'].items():
+                    st.write(f"+{horizon} свечей: {row['observations']} исходов · "
+                             f"покрытие диапазона {row['empirical_coverage']*100:.1f}% · "
+                             f"средняя абсолютная ошибка {row['mean_absolute_pct_error']:.2f}%"
+                             +(' · мало наблюдений' if not row['sufficient_sample'] else ' · не является подтверждением торгового преимущества'))
     if mode=='Paper Trading':
         with st.expander('Paper · комиссии и Quality Policy'):
             current=CostModel.from_state(Paper(store).state());pol=Paper(store).state().get('quality_policy',{})
