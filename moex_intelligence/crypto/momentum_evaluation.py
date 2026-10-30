@@ -105,7 +105,12 @@ def _wilson_95(successes: int, trials: int):
     denominator = 1 + z*z/trials
     center = (p + z*z/(2*trials)) / denominator
     radius = z*math.sqrt(p*(1-p)/trials + z*z/(4*trials*trials)) / denominator
-    return max(0., center-radius), min(1., center+radius)
+    # Wilson bounds are exactly 0 for zero hits and 1 for all hits.
+    # Floating-point cancellation can otherwise return 0.9999999999999999
+    # for a perfect 48/48 sample, incorrectly excluding the observed rate.
+    lower = 0.0 if successes == 0 else max(0.0, min(p, center-radius))
+    upper = 1.0 if successes == trials else min(1.0, max(p, center+radius))
+    return lower, upper
 
 def compare_momentum_to_rw(candles,symbol,timeframe,*,folds=3,
                            final_fraction=.20,embargo_bars=8,stride=8,
