@@ -80,3 +80,15 @@ class HistoricalVolatilityBaseline:
         return Forecast(fingerprint, symbol, timeframe, now, last_close_time,
                         self.version, 'EXPERIMENTAL', tuple(points), self.nominal_coverage,
                         reason='Random Walk median; EWMA volatility. Nominal 80% interval, NOT calibrated or validated.')
+
+
+def candle_stream_ready(snapshot) -> bool:
+    """Forecast data readiness is independent of order execution/quote readiness.
+
+    A fresh tradeable bid/ask cannot substitute for a live, recent candle stream;
+    conversely a temporarily invalid spread must not hide good market candles.
+    """
+    readiness = snapshot.get('readiness') or {}
+    return (readiness.get('market_stream_active') is True
+            and readiness.get('candle_data_fresh') is True
+            and isinstance(snapshot.get('candles'), list))
