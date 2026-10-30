@@ -31,6 +31,11 @@ class PairedHorizon:
     nonflat_actuals: int
     candidate_nonflat_predictions: int
     candidate_direction_hit_rate: float | None
+    direction_hits: int = 0
+    direction_calls: int = 0
+    direction_wilson_95_lower: float | None = None
+    direction_wilson_95_upper: float | None = None
+    direction_sample_sufficient: bool = False
 
 
 @dataclass(frozen=True)
@@ -85,6 +90,22 @@ def _score(lower, median, upper, actual, anchor):
     interval=(high_d-low_d)+Decimal(10)*penalty
     return abs(mid_d-actual_d), Decimal(100)*interval/anchor_d, int(low_d<=actual_d<=high_d)
 
+
+
+
+def _wilson_95(successes: int, trials: int):
+    """Descriptive Wilson 95% interval; not an iid-market validity guarantee."""
+    if (type(successes) is not int or type(trials) is not int
+            or not 0 <= successes <= trials):
+        raise ValueError("Invalid directional observation counts")
+    if trials == 0:
+        return (None, None)
+    z = 1.959963984540054
+    p = successes / trials
+    denominator = 1 + z*z/trials
+    center = (p + z*z/(2*trials)) / denominator
+    radius = z*math.sqrt(p*(1-p)/trials + z*z/(4*trials*trials)) / denominator
+    return max(0., center-radius), min(1., center+radius)
 
 def compare_momentum_to_rw(candles,symbol,timeframe,*,folds=3,
                            final_fraction=.20,embargo_bars=8,stride=8,
@@ -155,6 +176,7 @@ def compare_momentum_to_rw(candles,symbol,timeframe,*,folds=3,
             challenger=b["candidate_abs"]/n
             gain=(Decimal(100)*(baseline-challenger)/baseline
                   if baseline>0 else None)
+            wilson_low,wilson_high=_wilson_95(b["direction_hits"],b["moving_actuals"])
             points.append(PairedHorizon(
                 horizon_candles=h,observations=b["n"],
                 rw_mae=_finite(baseline),candidate_mae=_finite(challenger),
@@ -167,7 +189,12 @@ def compare_momentum_to_rw(candles,symbol,timeframe,*,folds=3,
                 candidate_nonflat_predictions=b["nonflat_predictions"],
                 candidate_direction_hit_rate=(
                     b["direction_hits"]/b["moving_actuals"]
-                    if b["moving_actuals"] else None)))
+                    if b["moving_actuals"] else None),
+                direction_hits=b["direction_hits"],
+                direction_calls=b["nonflat_predictions"],
+                direction_wilson_95_lower=wilson_low,
+                direction_wilson_95_upper=wilson_high,
+                direction_sample_sufficient=b["moving_actuals"]>=30))
         if origins>=min_required_origins:
             complete+=1
         reports.append(PairedFold(
@@ -189,4 +216,6 @@ def compare_momentum_to_rw(candles,symbol,timeframe,*,folds=3,
              "not verified predictive alpha or trading profit. Current candidate "
              "uses fixed shrinkage parameters with no model fitting. Final "
              "holdout remains SEALED and unscored. Direction hit rate includes "
-             "all nonflat realized moves; flat candidate calls count as misses.")
+             "all nonflat realized moves; flat candidate calls count as misses. "
+             "Wilson 95% bounds are descriptive and do not imply independent "
+             "market observations, statistical trading edge, or validated accuracy.")
