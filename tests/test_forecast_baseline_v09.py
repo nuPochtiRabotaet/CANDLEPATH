@@ -98,7 +98,7 @@ def test_invalid_cutoff_never_emits_a_forecast(monkeypatch):
 
 def test_candle_stream_readiness_independent_of_trade_quote():
     from moex_intelligence.crypto.forecast_baseline import candle_stream_ready
-    snapshot={'fresh': False, 'candles': [], 'readiness': {
+    snapshot={'fresh': False, 'candles': [{'closed': False}], 'readiness': {
         'forecast_feed_ready': True,'market_stream_active': False,'candle_data_fresh': True,
         'trade_execution_ready': False,'bid_ask_valid': False}}
     assert candle_stream_ready(snapshot)
