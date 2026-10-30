@@ -51,8 +51,14 @@ def page():
     symbol=cols[1].selectbox('Инструмент',SYMBOLS,key='crypto_symbol')
     tf=cols[2].selectbox('Таймфрейм',list(INTERVALS),index=2,key='crypto_tf')
     mode=cols[3].segmented_control('Режим',['Market Data','Paper Trading','Read Only'],default='Market Data',key='crypto_mode')
-    store=Store(Settings.from_env().data_dir/'crypto-v08.sqlite3')
-    monitor(str(store.path))
+    dbpath=Settings.from_env().data_dir/'crypto-v08.sqlite3'
+    try:
+        monitor(dbpath)
+    except RuntimeError as exc:
+        st.error(str(exc))
+        st.warning('Локальная Paper-база занята другим процессом; операции заблокированы.')
+        return
+    store=Store(dbpath)
     terminal(store,symbol,INTERVALS[tf],mode or 'Market Data')
     from .performance_ui import render as performance_view
     performance_view(store)
@@ -81,7 +87,7 @@ def page():
                 except MarketError as e:st.error(str(e));st.session_state.pop('private_view',None)
             if 'private_view' in st.session_state:st.json(st.session_state.private_view)
     with st.expander('Правила и ограничения симуляции'):
-        st.write('LOCAL PAPER — локальные виртуальные исполнения, не Bybit Demo. Издержки задаются в настройках Paper: это предположения, не фактические тарифы аккаунта. Market использует Taker; Maker только параметр будущего исполнения. Bid/Ask учитывает спред один раз. После открытия Trade запускается локальный монитор: он продолжает работу при закрытии вкладки, пока работает процесс приложения. После перезапуска откройте Trade для запуска монитора. При разрывах цена исполнения может быть хуже стопа. Реальные сделки технически отключены.')
+        st.write('LOCAL PAPER — локальные виртуальные исполнения, не Bybit Demo. Издержки задаются в настройках Paper: это предположения, не фактические тарифы аккаунта. Market использует Taker; Maker только параметр будущего исполнения. Bid/Ask учитывает спред один раз. При запуске через start.command локальный монитор стартует до открытия вкладки и работает только пока запущен процесс приложения. Прямой streamlit run запускает монитор лишь после открытия Trade. После сна Mac или сбоя данные могут устареть. При разрывах цена исполнения может быть хуже стопа. Реальные сделки технически отключены.')
         st.write('Риск: 0,75% на сделку, 1,5% совокупно; до 3 позиций, 25% на инструмент, 75% капитала. Дневной/недельный убыток 3%/6%; при просадке 8% размер новых позиций уменьшается вдвое, 12% блокирует входы, 15% — критический порог. Это проектные ограничения, а не оптимизированная стратегия.')
 
 @st.fragment(run_every=1)
