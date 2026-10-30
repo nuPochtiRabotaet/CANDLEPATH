@@ -12,7 +12,7 @@ const project=ctx.__project;
 
 function sample(interval='15'){
  const seconds=interval==='D'?86400:Number(interval)*60;
- const start=1800000000-Math.floor(1800000000/seconds)*seconds + Math.floor(1800000000/seconds)*seconds;
+ const start=Math.floor(1800000000/seconds)*seconds;
  const anchor=start-seconds;
  const candles=[{time:anchor-seconds,close:101,closed:true},{time:anchor,close:100,closed:true}];
  return {symbol:'BTCUSDT',interval,candles,
