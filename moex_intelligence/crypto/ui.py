@@ -2,6 +2,8 @@
 import asyncio,math,time,uuid,os
 from dataclasses import asdict
 from .intelligence import RegimeSnapshot,DecisionContext,UnavailableForecastEngine
+from .forecast_baseline import HistoricalVolatilityBaseline
+from .market import seconds
 from functools import lru_cache
 from pathlib import Path
 import streamlit as st
@@ -127,8 +129,11 @@ def terminal(store,symbol,interval,mode):
     if symbol in state['positions']:
         try:edit_preview=protection_plan(state,quotes,symbol,inputs['stop'],inputs['target'],rule,rules)
         except (ValueError,KeyError,TypeError,ArithmeticError) as exc:edit_error=str(exc)
-    research_as_of=max((c['time'] for c in snap['candles'] if c['closed']),default=0)
-    forecast=UnavailableForecastEngine().forecast((),symbol,interval,research_as_of)
+    research_as_of=max((c['time']+seconds(interval) for c in snap['candles'] if c['closed']),default=0)
+    if snap['fresh']:
+        forecast=HistoricalVolatilityBaseline().forecast(tuple(snap['candles']),symbol,interval,time.time())
+    else:
+        forecast=UnavailableForecastEngine().forecast((),symbol,interval,research_as_of)
     decision=DecisionContext(symbol,interval,time.time(),RegimeSnapshot(symbol,interval,research_as_of,result['regime']),life['active'].get('id'),life['active']['state'],quality['quality'],quality['attention'],bool(preview and preview['allowed']),tuple((preview or {}).get('errors',[])),forecast)
     d={**snap,'intelligence':asdict(decision),'overlay_settings':load_preferences(store),'overlay_defaults':OVERLAY_DEFAULTS,'inventory':allocations,'protection_preview':edit_preview,'protection_error':edit_error,'quality_assessment':quality,'cost_model':CostModel.from_state(state).snapshot(),'lifecycle':life,'protection':protection,'context':context,'mode':mode,'analysis':result,'signals':signals,'account':m,'state':state,'orders':store.orders(),'journal':store.events(),'inputs':inputs,'preview':preview,'input_error':error,'notice':st.session_state.get('crypto_notice',''),'pending':st.session_state.get('crypto_pending')}
     def read_event(name):
