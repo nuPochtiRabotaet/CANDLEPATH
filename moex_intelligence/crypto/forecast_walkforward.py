@@ -22,7 +22,7 @@ from .market import Bybit, seconds
 @dataclass(frozen=True)
 class FoldReport:
     number: int
-    purported_train_end_exclusive: int
+    purged_training_end_exclusive: int
     purge_bars: int
     validation_start_index: int
     validation_end_exclusive: int
@@ -133,7 +133,7 @@ def evaluate_purged_walkforward(
             prefix, symbol, timeframe, evaluation_window=(start, end),
             stride=stride, min_required_origins=min_required_origins)
         results.append(FoldReport(
-            number=i + 1, purported_train_end_exclusive=train_end,
+            number=i + 1, purged_training_end_exclusive=train_end,
             purge_bars=embargo_bars, validation_start_index=start,
             validation_end_exclusive=end,
             validation_start_utc_seconds=checked[start][0],
