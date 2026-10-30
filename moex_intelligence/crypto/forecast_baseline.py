@@ -91,4 +91,5 @@ def candle_stream_ready(snapshot) -> bool:
     readiness = snapshot.get('readiness') or {}
     return (readiness.get('forecast_feed_ready') is True
             and readiness.get('candle_data_fresh') is True
-            and isinstance(snapshot.get('candles'), list))
+            and isinstance(snapshot.get('candles'), list)
+            and bool(snapshot['candles']))
