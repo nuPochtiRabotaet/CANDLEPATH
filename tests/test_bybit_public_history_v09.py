@@ -20,7 +20,8 @@ STEP = 900
 
 
 def api_time():
-    return (int(time.time() // STEP) * STEP + 120) * 1000
+    # Actual current-time anchored fake server avoids clock-skew test flakiness.
+    return int(time.time() * 1000)
 
 
 class FakeBybit:
