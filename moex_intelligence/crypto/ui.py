@@ -1,8 +1,8 @@
 """Streamlit adapter. Public workers, analytical state and paper ledger are separate."""
-import asyncio,math,time,uuid,os
+import asyncio,math,time,uuid,os,sqlite3
 from dataclasses import asdict
-from .intelligence import RegimeSnapshot,DecisionContext,UnavailableForecastEngine
-from .forecast_baseline import HistoricalVolatilityBaseline
+from .intelligence import RegimeSnapshot,DecisionContext,Forecast,ForecastHistory
+from .forecast_baseline import HistoricalVolatilityBaseline,candle_stream_ready
 from .market import seconds
 from functools import lru_cache
 from pathlib import Path
@@ -129,10 +129,26 @@ def terminal(store,symbol,interval,mode):
         try:edit_preview=protection_plan(state,quotes,symbol,inputs['stop'],inputs['target'],rule,rules)
         except (ValueError,KeyError,TypeError,ArithmeticError) as exc:edit_error=str(exc)
     research_as_of=max((c['time']+seconds(interval) for c in snap['candles'] if c['closed']),default=0)
-    if snap['fresh']:
+    if candle_stream_ready(snap):
         forecast=HistoricalVolatilityBaseline().forecast(tuple(snap['candles']),symbol,interval,time.time())
     else:
-        forecast=UnavailableForecastEngine().forecast((),symbol,interval,research_as_of)
+        forecast=Forecast('unavailable',symbol,interval,time.time(),research_as_of,
+                          HistoricalVolatilityBaseline.version,'UNAVAILABLE',
+                          reason='Нет актуального потока закрытых свечей; прогноз скрыт')
+    # A forecast is visible only after an immutable first publication succeeds.
+    # Repeated UI reruns must never create conflicting forecasts for the same candle.
+    if forecast.status=='EXPERIMENTAL':
+        try:
+            history=ForecastHistory(store)
+            history.publish(forecast)
+            reconcile_key='forecast_reconciled_'+symbol+'_'+interval
+            if st.session_state.get(reconcile_key)!=research_as_of:
+                history.reconcile()
+                st.session_state[reconcile_key]=research_as_of
+        except (ValueError,sqlite3.Error):
+            forecast=Forecast('unavailable',symbol,interval,time.time(),research_as_of,
+                              HistoricalVolatilityBaseline.version,'UNAVAILABLE',
+                              reason='Не удалось безопасно сохранить прогноз в журнале')
     decision=DecisionContext(symbol,interval,time.time(),RegimeSnapshot(symbol,interval,research_as_of,result['regime']),life['active'].get('id'),life['active']['state'],quality['quality'],quality['attention'],bool(preview and preview['allowed']),tuple((preview or {}).get('errors',[])),forecast)
     d={**snap,'intelligence':asdict(decision),'overlay_settings':load_preferences(store),'overlay_defaults':OVERLAY_DEFAULTS,'inventory':allocations,'protection_preview':edit_preview,'protection_error':edit_error,'quality_assessment':quality,'cost_model':CostModel.from_state(state).snapshot(),'lifecycle':life,'protection':protection,'context':context,'mode':mode,'analysis':result,'signals':signals,'account':m,'state':state,'orders':store.orders(),'journal':store.events(),'inputs':inputs,'preview':preview,'input_error':error,'notice':st.session_state.get('crypto_notice',''),'pending':st.session_state.get('crypto_pending')}
     def read_event(name):
