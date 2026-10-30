@@ -54,3 +54,13 @@ New files: moex_intelligence/crypto/forecast_evaluation.py, scripts/evaluate_for
 Local verification on staged rc3 + incremental v0.9 source: 43 targeted tests passed; 348 broad tests passed with 11 missing Streamlit/MCP dependency import failures and 4 collection errors. This is NOT a complete clean GitHub-branch test run, and GitHub Actions was already blocked before jobs could start. Temporary database CLI checked on 1000 synthetic candles (37 origins); no persisted forecast records were created. Actual Bybit data, Safari and calibrated model advantage remain UNVERIFIED.
 
 Next: independent validation with genuine saved candles and separate untouched time periods; fix CI pre-job failures; full macOS acceptance; compare simple baseline/advanced candidate before any forecast-driven BUY/SELL. This is not a v0.9 release.
+
+## v0.9 replay numerical hardening and full CI recovery — 2026-10-30
+
+Ten repeatable review passes and evidence: docs/FORECAST_REPLAY_ROUND2_V09.md. New deterministic tests in tests/test_forecast_replay_round2_v09.py.
+
+Confirmed faults fixed: replay forecast MAPE infinity/JSON failure on extreme future price (Decimal accumulation, nullable unrepresentable metrics, explicit overflow count); OverflowError on enormous integer timestamps/prices (controlled UNAVAILABLE / ValueError); malformed high/low/volume and future-dated closed candles accepted by historical replay (now fail closed). The validated mathematical baseline, historical-only split and read-only SQLite contract remain unchanged.
+
+GitHub Actions pre-job blocker diagnosed: job-level `runner.temp` unavailable during workflow expression evaluation. Replaced with runner-agnostic /tmp path and explicit requirements.in cache-dependency-path. Real GitHub Actions execution #41072216320 on the stacked branch succeeded: Python source compilation, JS syntax, **408 full Python tests passed (19.95s)**, synthetic Chromium forecast chart smoke, diagnostics artifact upload. This supersedes earlier notes saying that all CI jobs failed before starting; they are now historical findings.
+
+Remaining independent acceptance: physical macOS/Safari, current Bybit REST+WS market candles, uninterrupted/sleep-resume Paper monitor, independent forecast calibration/walk-forward on genuine data, and orderly PR integration. v0.9 is not released; real trading remains disabled.
