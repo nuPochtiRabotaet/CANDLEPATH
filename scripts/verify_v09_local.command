@@ -1,7 +1,7 @@
 #!/bin/bash
 # CandlePath v0.9 verification on macOS / Linux. Local isolated test database.
 set -euo pipefail
-ROOT="$(cd "$(dirname "\${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 if [[ -x "$ROOT/.venv/bin/python" ]]; then
@@ -13,7 +13,7 @@ else
   exit 1
 fi
 
-TEST_DIR="$(mktemp -d "\${TMPDIR:-/tmp}/candlepath-v09-XXXXXX")"
+TEST_DIR="$(mktemp -d "${TMPDIR:-/tmp}/candlepath-v09-XXXXXX")"
 trap 'rm -rf "$TEST_DIR"' EXIT
 export MOEX_DATA_DIR="$TEST_DIR"
 export PYTHONDONTWRITEBYTECODE=1
