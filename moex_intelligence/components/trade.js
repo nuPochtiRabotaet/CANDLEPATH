@@ -174,6 +174,8 @@ export default function(component){
   // Otherwise an old forecast stays painted against an "empty" market warning.
   for(const series of [r.candles,r.volume,r.fast,r.slow,r.st,r.forecastLine,r.forecastGrid])series.setData([]);
   r.lastRows=[];r.forecastKey='';r.forecastGridKey='';r.forecastProfile=null;r.version=-1;r.markers.setMarkers([]);r.primitive.update();
+  if(d.intelligence?.forecast?.status==='EXPERIMENTAL')
+   text('forecastStatus','Forecast скрыт: нет свечей для привязки прогноза к графику.');
  }
  const rule=d.rules||{step:'0.00001',tick:'.01',minimum:'5'};const step=+rule.step,tick=+rule.tick;
  r.candles.applyOptions({priceFormat:{type:'price',precision:Math.max(0,-Math.floor(Math.log10(tick))),minMove:tick}});
