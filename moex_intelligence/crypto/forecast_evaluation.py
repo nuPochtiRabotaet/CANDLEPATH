@@ -7,6 +7,7 @@ uses only closed candles at or before that origin. Later candles score outcomes.
 from __future__ import annotations
 
 import math
+from decimal import Decimal
 from dataclasses import asdict, dataclass
 from typing import Sequence
 
@@ -20,10 +21,11 @@ class HorizonScore:
     observations: int
     empirical_coverage: float
     mean_absolute_error: float
-    mean_absolute_percentage_error: float
+    mean_absolute_percentage_error: float | None
     mean_band_width_pct: float
     random_walk_mae: float
     nominal_coverage: float = HistoricalVolatilityBaseline.nominal_coverage
+    unbounded_percentage_errors: int = 0
 
 
 @dataclass(frozen=True)
@@ -106,7 +108,8 @@ def evaluate_historical_baseline(candles, symbol, timeframe, *,
     holdout_start = max(window, math.floor(len(rows) * (1 - holdout_fraction)))
     first_origin = holdout_start - 1
     last_origin = len(rows) - 1 - max_horizon
-    sums = {h: {'n': 0, 'hits': 0, 'abs': 0., 'ape': 0., 'width': 0.}
+    sums = {h: {'n': 0, 'hits': 0, 'abs': Decimal(0), 'ape': Decimal(0),
+                'width': Decimal(0), 'large_ape': 0}
             for h in HistoricalVolatilityBaseline.horizons}
     origins = skipped = 0
 
@@ -129,16 +132,28 @@ def evaluate_historical_baseline(candles, symbol, timeframe, *,
                 b = sums[h]
                 b['n'] += 1
                 b['hits'] += int(lo <= actual <= hi)
-                b['abs'] += abs(median - actual)
-                b['ape'] += 100 * abs(median - actual) / actual
-                b['width'] += 100 * (hi - lo) / median
+                # Decimal keeps catastrophic future outcomes in coverage stats
+                # without serializing misleading Infinity/NaN into JSON.
+                error = abs(Decimal(str(median)) - Decimal(str(actual)))
+                pct = Decimal(100) * error / Decimal(str(actual))
+                b['abs'] += error
+                b['ape'] += pct
+                b['width'] += Decimal(100) * (Decimal(str(hi)) - Decimal(str(lo))) / Decimal(str(median))
+                if pct > Decimal('1.7976931348623157e308'):
+                    b['large_ape'] += 1
+
+    def finite_number(decimal_value):
+        number = float(decimal_value)
+        return number if math.isfinite(number) else None
 
     scores = tuple(HorizonScore(
         horizon_candles=h, observations=b['n'], empirical_coverage=b['hits']/b['n'],
-        mean_absolute_error=b['abs']/b['n'], mean_absolute_percentage_error=b['ape']/b['n'],
-        mean_band_width_pct=b['width']/b['n'],
+        mean_absolute_error=finite_number(b['abs']/b['n']),
+        mean_absolute_percentage_error=finite_number(b['ape']/b['n']),
+        mean_band_width_pct=finite_number(b['width']/b['n']),
         # Current model uses a flat Random Walk median; it CANNOT beat itself.
-        random_walk_mae=b['abs']/b['n'])
+        random_walk_mae=finite_number(b['abs']/b['n']),
+        unbounded_percentage_errors=b['large_ape'])
         for h, b in sums.items() if b['n'])
 
     status = 'EVALUATED' if origins >= min_required_origins else 'INSUFFICIENT'
@@ -151,4 +166,5 @@ def evaluate_historical_baseline(candles, symbol, timeframe, *,
         horizons=scores,
         note='Historical replay, not actual past publications or proof of directional accuracy. '
              'Nominal 80% bands are uncalibrated; the median is identical to Random Walk. '
+             'Unrepresentable numeric errors are reported as null, not Infinity. '
              'No trading fees or execution assumptions were evaluated.')
