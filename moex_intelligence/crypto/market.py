@@ -180,7 +180,8 @@ class Feed:
             candle_fresh=bool(self.rows) and self.rows[-1].time<=now<self.rows[-1].time+seconds(self.interval)+5 and 0<=now-getattr(self,'last_candle_event',0)<=65
             # Forecast freshness follows actual kline updates, never order execution readiness.
             # Ticker/quote may be unavailable even while the candle stream is healthy.
-            candle_stream_active=bool(getattr(self,'transport_connected',False)) and not self.stop.is_set() and 0<=now-getattr(self,'last_candle_event',0)<=65
+            stop_event=getattr(self,'stop',None)
+            candle_stream_active=bool(getattr(self,'transport_connected',False)) and not (stop_event and stop_event.is_set()) and 0<=now-getattr(self,'last_candle_event',0)<=65
             fresh=active and quote_ok({**self.quote,'fresh':True},now)
             readiness={'transport_connected':getattr(self,'transport_connected',False),'market_stream_active':active,
                        'last_price_fresh':last_fresh,'bid_ask_valid':bid_ask,'candle_data_fresh':candle_fresh,
