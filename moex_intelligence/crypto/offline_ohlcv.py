@@ -73,8 +73,13 @@ def read_local_ohlcv(path: str | Path, symbol: str, interval: str,
     except UnicodeDecodeError as exc:
         raise ValueError("CSV is not UTF-8 encoded") from exc
 
-    cutoff = time.time() if now is None else now
-    if type(cutoff) not in (float, int) or not math.isfinite(cutoff) or cutoff <= 0:
+    cutoff_value = time.time() if now is None else now
+    try:
+        cutoff = (float(cutoff_value)
+                  if type(cutoff_value) in (float, int) else float("nan"))
+    except (TypeError, ValueError, OverflowError):
+        cutoff = float("nan")
+    if not math.isfinite(cutoff) or cutoff <= 0:
         raise ValueError("Invalid UTC observation cutoff")
     step_ms = seconds(interval) * 1000
 
