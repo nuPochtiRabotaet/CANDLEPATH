@@ -15,7 +15,7 @@ class OverlayPrimitive {
    for(const p of points){if(p.direction!==dir){paint();segment=[];dir=p.direction;}if(dir&&tx(p.time)!=null&&py(p.upper)!=null)segment.push(p);}paint();
   }
   const data=r.data,price=data?.quote?.price;
-  if(price&&r.layers.entry){
+  if(price&&r.layers.entry&&data.candles?.length){
    const times=data.candles;const start=tx(times[Math.max(0,times.length-24)]?.time);const end=tx(times.at(-1)?.time);const y=py(price);
    if(start!=null&&end!=null&&y!=null){
     for(const [k,level,color] of [['sl',r.inputs.stop,'rgba(239,91,128,.12)'],['tp',r.inputs.target,'rgba(55,205,151,.10)']]){
@@ -127,6 +127,11 @@ export default function(component){
    for(const [key,field] of [['fast','fast'],['slow','slow'],['st','supertrend']])r[key].setData(d.analysis.overlay.filter(p=>Number.isFinite(p[field])).map(p=>({time:p.time,value:p[field]})));
    r.version=d.version;
   }
+ }else{
+  // Clear the last visible projection whenever the candle feed becomes empty.
+  // Otherwise an old forecast stays painted against an "empty" market warning.
+  for(const series of [r.candles,r.volume,r.fast,r.slow,r.st,r.forecastLine])series.setData([]);
+  r.lastRows=[];r.forecastKey='';r.markers.setMarkers([]);r.primitive.update();
  }
  const rule=d.rules||{step:'0.00001',tick:'.01',minimum:'5'};const step=+rule.step,tick=+rule.tick;
  r.candles.applyOptions({priceFormat:{type:'price',precision:Math.max(0,-Math.floor(Math.log10(tick))),minMove:tick}});
