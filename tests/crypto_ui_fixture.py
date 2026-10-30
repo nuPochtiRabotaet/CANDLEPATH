@@ -21,7 +21,7 @@ class TestFeed:
             shift=end-rows[-1]['time']
             rows=[dict(x,time=x['time']+shift,closed=True) for x in rows];rows[-1]['closed']=False
         price=rows[-1]['close'];fresh=not st.session_state.get('qa_stale',False)
-        return {'symbol':self.symbol,'interval':self.interval,'candles':rows,'rules':{'step':'.00001' if self.symbol=='BTCUSDT' else '.001','tick':'.01','minimum':'5','maximum':'10000','retrieved':time.time()},'quote':{'source':'QA SYNTHETIC · not Bybit live','price':price,'bid':price*.9999,'ask':price*1.0001,'change':1.75,'ts':time.time()-(60 if not fresh else 0)},'status':'Live' if fresh else 'Stale Data','fresh':fresh,'age':0 if fresh else 60,'error':'','events':[{'time':time.time(),'message':'QA synthetic adapter · not a Bybit connection'}],'version':2 if st.session_state.get('qa_potential',False) else 1}
+        return {'symbol':self.symbol,'interval':self.interval,'candles':rows,'rules':{'step':'.00001' if self.symbol=='BTCUSDT' else '.001','tick':'.01','minimum':'5','maximum':'10000','retrieved':time.time()},'quote':{'source':'QA SYNTHETIC · not Bybit live','price':price,'bid':price*.9999,'ask':price*1.0001,'change':1.75,'ts':time.time()-(60 if not fresh else 0)},'status':'Live' if fresh else 'Stale Data','fresh':fresh,'readiness':{'forecast_feed_ready':fresh,'candle_data_fresh':fresh,'market_stream_active':fresh},'age':0 if fresh else 60,'error':'','events':[{'time':time.time(),'message':'QA synthetic adapter · not a Bybit connection'}],'version':2 if st.session_state.get('qa_potential',False) else 1}
 class TestHub:
     def retain(self,*args):pass
     def get(self,symbol,interval,store):return TestFeed(symbol,interval)

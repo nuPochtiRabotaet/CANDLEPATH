@@ -5,6 +5,8 @@ Run: python scripts/verify_v09_forecast_browser.py
 Not a Bybit, Streamlit, macOS/Safari or financial-profitability test.
 """
 import json
+import os
+import shutil
 import time
 from pathlib import Path
 from playwright.sync_api import sync_playwright
@@ -60,8 +62,10 @@ def verify():
         'parentElement:document,setStateValue(){},setTriggerValue(){}});window._invoke();')
     errors=[]
     with sync_playwright() as pw:
-        browser=pw.chromium.launch(executable_path='/usr/bin/chromium',headless=True,
-            args=['--no-sandbox','--disable-dev-shm-usage'])
+        binary=os.environ.get('CHROMIUM_PATH') or shutil.which('chromium') or shutil.which('chromium-browser')
+        options={'headless':True,'args':['--no-sandbox','--disable-dev-shm-usage']}
+        if binary: options['executable_path']=binary
+        browser=pw.chromium.launch(**options)
         try:
             page=browser.new_page(viewport=dict(width=1400,height=900))
             page.on('pageerror',lambda error:errors.append(str(error)))
@@ -79,7 +83,7 @@ def verify():
             page.locator('#forecastOverlay').check()
             assert page.locator('.terminal').evaluate(
                 'e=>e.__runtime.forecastLine.options().visible')
-            page.evaluate("""() => {window._data.intelligence.forecast={status:'UNAVAILABLE'};window._invoke()}""")
+            page.evaluate("""() => {window._savedForecast=window._data.intelligence.forecast;window._savedCandles=window._data.candles;window._data.intelligence.forecast={status:'UNAVAILABLE'};window._invoke()}""")
             assert page.locator('.terminal').evaluate(
                 'e=>e.__runtime.forecastLine.data().length')==0
             assert page.locator('.terminal').evaluate(
@@ -91,8 +95,18 @@ def verify():
                 'e=>e.__runtime.forecastLine.data().length')==0
             assert page.locator('.terminal').evaluate(
                 'e=>e.__runtime.candles.data().length')==0
+            # Recover with the same version, as may happen with a reused Streamlit
+            # snapshot. The volume/EMA engine must be reinitialized after clearing.
+            page.evaluate("""() => {window._data.candles=window._savedCandles;
+                 window._data.intelligence.forecast=window._savedForecast;
+                 window._invoke()}""")
+            page.wait_for_timeout(250)
+            assert page.locator('.terminal').evaluate(
+                'e=>e.__runtime.forecastLine.data().length')==5
+            assert page.locator('.terminal').evaluate(
+                'e=>e.__runtime.volume.data().length')==120
             assert not errors,errors
-            return 'PASS: initial chart, forecast toggle, stale status, empty feed and JS errors'
+            return 'PASS: render, toggle, unavailable, empty feed, same-version recovery, JS errors'
         finally:
             browser.close()
 

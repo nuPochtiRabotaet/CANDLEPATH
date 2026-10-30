@@ -95,22 +95,81 @@ class ForecastHistory:
             validate(forecast,now);db.execute('INSERT INTO forecasts VALUES(?,?,?)',(forecast.id,now,body))
         return json.loads(body)
     def reconcile(self,*,now=None):
-        now=time.time() if now is None else now;count=0
+        """Record actuals once, only after their target closed candle is available.
+
+        One lookup for existing outcomes avoids repeating N*H SQLite queries for
+        already settled predictions each time a new market candle arrives.
+        """
+        now=time.time() if now is None else now
+        if not isinstance(now,(int,float)) or not (0<now<float('inf')):
+            raise ValueError('Invalid reconciliation time')
+        count=0
         with self.store.connect() as db:
             db.execute('BEGIN IMMEDIATE')
+            existing=set(db.execute('SELECT forecast_id,target_time FROM forecast_outcomes'))
             for ident,body in db.execute('SELECT id,body FROM forecasts').fetchall():
                 f=json.loads(body);step=seconds(f['timeframe'])
                 for p in f['points']:
-                    if p['target_time']>now:continue
-                    row=db.execute('SELECT body FROM candles WHERE symbol=? AND interval=? AND time=?',(f['symbol'],f['timeframe'],p['target_time']-step)).fetchone()
-                    if not row:continue
+                    horizon=p['target_time']
+                    if horizon>now or (ident,horizon) in existing:
+                        continue
+                    row=db.execute(
+                        'SELECT body FROM candles WHERE symbol=? AND interval=? AND time=?',
+                        (f['symbol'],f['timeframe'],horizon-step)).fetchone()
+                    if not row:
+                        continue
                     candle=json.loads(row[0])
-                    if not candle['closed']:continue
-                    outcome={'target_time':p['target_time'],'actual':str(candle['close']),'recorded_at':now,'source':'persisted closed candle journal',
-                        'covered':Decimal(p['lower'])<=Decimal(str(candle['close']))<=Decimal(p['upper'])}
-                    cur=db.execute('INSERT OR IGNORE INTO forecast_outcomes VALUES(?,?,?)',(ident,p['target_time'],json.dumps(outcome)));count+=cur.rowcount
+                    if not candle['closed']:
+                        continue
+                    actual=Decimal(str(candle['close']))
+                    covered=Decimal(p['lower'])<=actual<=Decimal(p['upper'])
+                    outcome={'target_time':horizon,'actual':str(actual),'recorded_at':now,
+                             'source':'persisted closed candle journal','covered':covered}
+                    cur=db.execute('INSERT OR IGNORE INTO forecast_outcomes VALUES(?,?,?)',
+                                   (ident,horizon,json.dumps(outcome)))
+                    count+=cur.rowcount
         return count
     def records(self):
+        """Read history without a separate SQL query for every forecast."""
         with self.store.connect() as db:
-            rows=db.execute('SELECT published_at,body,id FROM forecasts ORDER BY published_at').fetchall()
-            return [{'published_at':r[0],'forecast':json.loads(r[1]),'outcomes':[json.loads(o[0]) for o in db.execute('SELECT body FROM forecast_outcomes WHERE forecast_id=? ORDER BY target_time',(r[2],))]} for r in rows]
+            rows=db.execute('SELECT published_at,body,id FROM forecasts ORDER BY published_at,id').fetchall()
+            outcomes={}
+            for ident,body in db.execute(
+                    'SELECT forecast_id,body FROM forecast_outcomes ORDER BY forecast_id,target_time'):
+                outcomes.setdefault(ident,[]).append(json.loads(body))
+        return [{'published_at':published,'forecast':json.loads(body),
+                 'outcomes':outcomes.get(ident,[])}
+                for published,body,ident in rows]
+
+    def scorecard(self, symbol=None, timeframe=None):
+        """Descriptive out-of-sample outcome audit; NOT a trading edge estimate.
+
+        Unsettled horizons are excluded from the denominator. Nominal coverage
+        is never relabelled as a validated confidence level.
+        """
+        buckets={}
+        forecast_count=0
+        for record in self.records():
+            f=record['forecast']
+            if symbol and f['symbol']!=symbol:continue
+            if timeframe and f['timeframe']!=timeframe:continue
+            forecast_count+=1
+            published={p['target_time']:p for p in f['points']}
+            step=seconds(f['timeframe'])
+            for o in record['outcomes']:
+                p=published.get(o['target_time'])
+                if p is None:continue
+                horizon=(o['target_time']-f['data_as_of'])//step
+                if horizon<=0:continue
+                actual=Decimal(o['actual'])
+                median=Decimal(p['median'])
+                if actual<=0 or not actual.is_finite() or not median.is_finite():continue
+                b=buckets.setdefault(horizon,{'n':0,'covered':0,'absolute_pct_error_sum':Decimal(0)})
+                b['n']+=1
+                b['covered']+=int(o['covered'])
+                b['absolute_pct_error_sum']+=abs(median-actual)/actual*100
+        return {'forecasts':forecast_count,'horizons':{
+            h:{'observations':b['n'],'empirical_coverage':b['covered']/b['n'],
+               'mean_absolute_pct_error':float(b['absolute_pct_error_sum']/b['n']),
+               'sufficient_sample':b['n']>=30}
+            for h,b in sorted(buckets.items())}}

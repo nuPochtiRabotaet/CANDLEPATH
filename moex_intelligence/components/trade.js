@@ -131,7 +131,7 @@ export default function(component){
   // Clear the last visible projection whenever the candle feed becomes empty.
   // Otherwise an old forecast stays painted against an "empty" market warning.
   for(const series of [r.candles,r.volume,r.fast,r.slow,r.st,r.forecastLine])series.setData([]);
-  r.lastRows=[];r.forecastKey='';r.markers.setMarkers([]);r.primitive.update();
+  r.lastRows=[];r.forecastKey='';r.version=-1;r.markers.setMarkers([]);r.primitive.update();
  }
  const rule=d.rules||{step:'0.00001',tick:'.01',minimum:'5'};const step=+rule.step,tick=+rule.tick;
  r.candles.applyOptions({priceFormat:{type:'price',precision:Math.max(0,-Math.floor(Math.log10(tick))),minMove:tick}});

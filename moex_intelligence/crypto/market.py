@@ -177,10 +177,15 @@ class Feed:
                 return isinstance(value,(int,float)) and math.isfinite(value) and value>0
             last_fresh=valid_price('price') and -2<=now-self.quote.get('price_ts',self.quote.get('ts',0))<=15
             bid_ask=valid_price('bid') and valid_price('ask') and self.quote['bid']<=self.quote['ask']
-            candle_fresh=bool(self.rows) and self.rows[-1].time<=now<self.rows[-1].time+seconds(self.interval)+5 and now-getattr(self,'last_candle_event',0)<=65
+            candle_fresh=bool(self.rows) and self.rows[-1].time<=now<self.rows[-1].time+seconds(self.interval)+5 and 0<=now-getattr(self,'last_candle_event',0)<=65
+            # Forecast freshness follows actual kline updates, never order execution readiness.
+            # Ticker/quote may be unavailable even while the candle stream is healthy.
+            stop_event=getattr(self,'stop',None)
+            candle_stream_active=bool(getattr(self,'transport_connected',False)) and not (stop_event and stop_event.is_set()) and 0<=now-getattr(self,'last_candle_event',0)<=65
             fresh=active and quote_ok({**self.quote,'fresh':True},now)
             readiness={'transport_connected':getattr(self,'transport_connected',False),'market_stream_active':active,
-                       'last_price_fresh':last_fresh,'bid_ask_valid':bid_ask,'candle_data_fresh':candle_fresh,'trade_execution_ready':fresh}
+                       'last_price_fresh':last_fresh,'bid_ask_valid':bid_ask,'candle_data_fresh':candle_fresh,
+                       'forecast_feed_ready':candle_stream_active and candle_fresh,'trade_execution_ready':fresh}
             status=self.status if fresh or self.status!='Live' else 'Stale Data'
             clean_quote={k:v for k,v in self.quote.items() if isinstance(v,(float,int)) and math.isfinite(v)}
             readiness['rules_fresh']=bool(self.rules) and 0<=now-self.rules.get('retrieved',0)<=86400
