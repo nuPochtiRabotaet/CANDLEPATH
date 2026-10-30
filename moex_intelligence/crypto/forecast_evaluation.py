@@ -27,6 +27,10 @@ class HorizonScore:
     random_walk_mae: float | None
     nominal_coverage: float = HistoricalVolatilityBaseline.nominal_coverage
     unbounded_percentage_errors: int = 0
+    below_interval: int = 0
+    above_interval: int = 0
+    calibration_gap_percentage_points: float | None = None
+    mean_interval_score_pct: float | None = None
 
 
 @dataclass(frozen=True)
@@ -126,8 +130,10 @@ def evaluate_historical_baseline(candles, symbol, timeframe, *,
     holdout_start = max(window, math.floor(len(rows) * (1 - holdout_fraction)))
     first_origin = holdout_start - 1
     last_origin = len(rows) - 1 - max_horizon
-    sums = {h: {'n': 0, 'hits': 0, 'abs': Decimal(0), 'ape': Decimal(0),
-                'width': Decimal(0), 'large_ape': 0}
+    sums = {h: {'n': 0, 'hits': 0, 'below': 0, 'above': 0,
+                'abs': Decimal(0), 'ape': Decimal(0),
+                'width': Decimal(0), 'interval_score': Decimal(0),
+                'large_ape': 0}
             for h in HistoricalVolatilityBaseline.horizons}
     origins = skipped = 0
 
@@ -150,13 +156,24 @@ def evaluate_historical_baseline(candles, symbol, timeframe, *,
                 b = sums[h]
                 b['n'] += 1
                 b['hits'] += int(lo <= actual <= hi)
+                b['below'] += int(actual < lo)
+                b['above'] += int(actual > hi)
+                # Proper central prediction-interval (Winkler) score:
+                # width + 2/alpha * distance outside the interval.
+                # Normalize by median price for comparability across assets.
+                low_d, mid_d, high_d, actual_d = map(
+                    lambda value: Decimal(str(value)), (lo, median, hi, actual))
+                alpha_d = Decimal(1) - Decimal(str(HistoricalVolatilityBaseline.nominal_coverage))
+                miss = max(low_d - actual_d, Decimal(0)) + max(actual_d - high_d, Decimal(0))
+                interval_score = (high_d - low_d) + (Decimal(2) / alpha_d) * miss
+                b['interval_score'] += Decimal(100) * interval_score / mid_d
                 # Decimal keeps catastrophic future outcomes in coverage stats
                 # without serializing misleading Infinity/NaN into JSON.
-                error = abs(Decimal(str(median)) - Decimal(str(actual)))
-                pct = Decimal(100) * error / Decimal(str(actual))
+                error = abs(mid_d - actual_d)
+                pct = Decimal(100) * error / actual_d
                 b['abs'] += error
                 b['ape'] += pct
-                b['width'] += Decimal(100) * (Decimal(str(hi)) - Decimal(str(lo))) / Decimal(str(median))
+                b['width'] += Decimal(100) * (high_d - low_d) / mid_d
                 if pct > Decimal('1.7976931348623157e308'):
                     b['large_ape'] += 1
 
@@ -171,7 +188,10 @@ def evaluate_historical_baseline(candles, symbol, timeframe, *,
         mean_band_width_pct=finite_number(b['width']/b['n']),
         # Current model uses a flat Random Walk median; it CANNOT beat itself.
         random_walk_mae=finite_number(b['abs']/b['n']),
-        unbounded_percentage_errors=b['large_ape'])
+        unbounded_percentage_errors=b['large_ape'],
+        below_interval=b['below'], above_interval=b['above'],
+        calibration_gap_percentage_points=100*(b['hits']/b['n'] - HistoricalVolatilityBaseline.nominal_coverage),
+        mean_interval_score_pct=finite_number(b['interval_score']/b['n']))
         for h, b in sums.items() if b['n'])
 
     status = 'EVALUATED' if origins >= min_required_origins else 'INSUFFICIENT'
@@ -185,4 +205,6 @@ def evaluate_historical_baseline(candles, symbol, timeframe, *,
         note='Historical replay, not actual past publications or proof of directional accuracy. '
              'Nominal 80% bands are uncalibrated; the median is identical to Random Walk. '
              'Unrepresentable numeric errors are reported as null, not Infinity. '
+             'Interval score penalizes both excessive width and misses, but does not establish '
+             'predictive skill without an independently evaluated competitor. '
              'No trading fees or execution assumptions were evaluated.')
