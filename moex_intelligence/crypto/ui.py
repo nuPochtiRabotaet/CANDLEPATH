@@ -57,7 +57,7 @@ def page():
         monitor(dbpath)
     except RuntimeError as exc:
         st.error(str(exc))
-        st.warning('Локальная Paper-база занята другим процессом; операции заблокированы.')
+        st.warning("Локальная Paper-база занята другим процессом; операции заблокированы.")
         return
     store=Store(dbpath)
     terminal(store,symbol,INTERVALS[tf],mode or 'Market Data')
