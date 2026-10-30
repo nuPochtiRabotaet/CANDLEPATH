@@ -17,6 +17,17 @@ def test_wilson_is_finite_bounded_and_contains_observed_proportion(successes,tri
         assert all(math.isfinite(x) for x in (low,high))
 
 
+@pytest.mark.parametrize("trials",[1,2,30,48,49,100,1000])
+def test_wilson_exact_boundary_endpoints_under_float_rounding(trials):
+    zero_low, zero_high = _wilson_95(0, trials)
+    full_low, full_high = _wilson_95(trials, trials)
+    assert zero_low == 0.0
+    assert full_high == 1.0
+    assert 0.0 < zero_high <= 1.0
+    assert 0.0 <= full_low < 1.0
+    assert full_low == pytest.approx(1.0 - zero_high, abs=1e-14)
+
+
 @pytest.mark.parametrize("successes,trials",[(-1,10),(3,2),(1,-1),(True,2),(1,True)])
 def test_wilson_rejects_invalid_counts(successes,trials):
     with pytest.raises(ValueError):
