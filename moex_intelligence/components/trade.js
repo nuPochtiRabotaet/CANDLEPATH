@@ -1,5 +1,44 @@
 // Lightweight Charts 5.2.1 is vendored above. No exchange credentials enter this component.
 const LC=LightweightCharts;
+
+// ForecastPoint.target_time is an epoch-second candle CLOSE boundary, whereas
+// actual CandlestickSeries bars are plotted at their OPEN. Converting the
+// forecast target to an OPEN incorrectly shifts the outcome one candle early.
+// This single pure projection contract feeds BOTH the median and the fan.
+function forecastProjection(data){
+ const fc=data?.intelligence?.forecast;
+ const step=data?.interval==='D'?86400:Number(data?.interval)*60;
+ const candles=data?.candles;
+ if(fc?.status!=='EXPERIMENTAL'||!Array.isArray(fc.points)||fc.points.length<1||
+    fc.points.length>32||!Array.isArray(candles)||!candles.length||
+    fc.symbol!==data.symbol||String(fc.timeframe)!==String(data.interval)||
+    data.readiness?.forecast_feed_ready!==true||data.readiness?.candle_data_fresh!==true||
+    !Number.isSafeInteger(step)||step<=0)return null;
+ const anchor=[...candles].reverse().find(c=>c.closed===true);
+ if(!anchor||!Number.isSafeInteger(anchor.time))return null;
+ const observedTime=anchor.time+step,observedClose=Number(anchor.close);
+ if(!Number.isSafeInteger(observedTime)||Number(fc.data_as_of)!==observedTime||
+    !Number.isFinite(observedClose)||observedClose<=0)return null;
+ const numeric=value=>(typeof value==='number'||(typeof value==='string'&&value.trim()!==''))
+   ?Number(value):NaN;
+ const profile=[{time:observedTime,lower:observedClose,median:observedClose,upper:observedClose}];
+ let prev=observedTime;
+ for(const point of fc.points){
+  const time=point?.target_time,lower=numeric(point?.lower),
+        median=numeric(point?.median),upper=numeric(point?.upper);
+  if(!Number.isSafeInteger(time)||time<=prev||time%step!==0||
+     (time-observedTime)/step>64||!Number.isFinite(lower)||
+     !Number.isFinite(median)||!Number.isFinite(upper)||
+     lower<=0||lower>median||median>upper)return null;
+  profile.push({time,lower,median,upper});
+  prev=time;
+ }
+ // Whitespace time points keep +1/+2/+4/+8 at proportional positions on
+ // Lightweight Charts' ordinal time scale (no invented price observations).
+ const steps=(prev-observedTime)/step;
+ const grid=Array.from({length:steps},(_,i)=>({time:observedTime+(i+1)*step}));
+ return {profile,grid,line:profile.map(p=>({time:p.time,value:p.median}))};
+}
 class OverlayPrimitive {
  constructor(runtime){this.r=runtime;this.view={zOrder:()=> 'bottom',renderer:()=>({draw:target=>target.useMediaCoordinateSpace(scope=>this.draw(scope))})};}
  attached({chart,series,requestUpdate}){this.chart=chart;this.series=series;this.requestUpdate=requestUpdate;}
@@ -23,20 +62,14 @@ class OverlayPrimitive {
     }
    }
   }
-  // Probability fan is aligned with candle OPEN timestamps. ForecastPoint.target_time
-  // denotes the future candle CLOSE boundary and is shifted left one interval.
-  const fc=data?.intelligence?.forecast;
-  if(r.forecastVisible && fc?.status==='EXPERIMENTAL' && fc.points?.length){
-   const last=[...(data.candles||[])].reverse().find(c=>c.closed);
-   const step=data.interval==='D'?86400:Number(data.interval)*60;
-   if(last&&Number.isFinite(step)&&step>0){
-    const profile=[{time:last.time,lower:last.close,upper:last.close},...fc.points.map(p=>({time:p.target_time-step,lower:+p.lower,upper:+p.upper}))];
-    const plot=profile.map(p=>({x:tx(p.time),low:py(p.lower),high:py(p.upper)}));
-    if(plot.every(p=>p.x!=null&&p.low!=null&&p.high!=null)){
-     ctx.beginPath();plot.forEach((p,i)=>i?ctx.lineTo(p.x,p.high):ctx.moveTo(p.x,p.high));
-     [...plot].reverse().forEach(p=>ctx.lineTo(p.x,p.low));ctx.closePath();
-     ctx.fillStyle='rgba(103,170,255,.16)';ctx.fill();
-    }
+  // Median line and uncertainty fan share the SAME validated candle-close
+  // timestamps. A malformed/stale forecast cannot render either layer.
+  if(r.forecastVisible&&r.forecastProfile?.length){
+   const plot=r.forecastProfile.map(p=>({x:tx(p.time),low:py(p.lower),high:py(p.upper)}));
+   if(plot.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.low)&&Number.isFinite(p.high))){
+    ctx.beginPath();plot.forEach((p,i)=>i?ctx.lineTo(p.x,p.high):ctx.moveTo(p.x,p.high));
+    [...plot].reverse().forEach(p=>ctx.lineTo(p.x,p.low));ctx.closePath();
+    ctx.fillStyle='rgba(103,170,255,.16)';ctx.fill();
    }
   }
   ctx.restore();
@@ -58,6 +91,7 @@ export default function(component){
   const opts={lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false};
   r.fast=r.chart.addSeries(LC.LineSeries,{...opts,color:'#45d3a7'});r.slow=r.chart.addSeries(LC.LineSeries,{...opts,color:'#e2c36f'});r.st=r.chart.addSeries(LC.LineSeries,{...opts,color:'#ac9eea',lineStyle:LC.LineStyle.Dashed,visible:false});
   r.forecastLine=r.chart.addSeries(LC.LineSeries,{...opts,color:'#79B5FF',lineStyle:LC.LineStyle.Dashed,lineWidth:2,visible:true});
+  r.forecastGrid=r.chart.addSeries(LC.LineSeries,{...opts,visible:false});
   r.markers=LC.createSeriesMarkers(r.candles,[]);r.primitive=new OverlayPrimitive(r);r.candles.attachPrimitive(r.primitive);
   r.observer=new MutationObserver(()=>{if(!root.isConnected){clearTimeout(r.timer);clearTimeout(r.prefTimer);r.observer.disconnect();r.chart.remove();root.__runtime=null;}});r.observer.observe(document.body,{childList:true,subtree:true});
   r.chart.subscribeCrosshairMove(p=>{const bar=p.seriesData?.get(r.candles);if(bar)text('crosshair',`${local(p.time)}  O ${num(bar.open)}  H ${num(bar.high)}  L ${num(bar.low)}  C ${num(bar.close)}`);const sig=r.data?.signals.filter(s=>s.timestamp===p.time);$('signalTooltip').hidden=!sig?.length;if(sig?.length)$('signalTooltip').textContent=sig.map(s=>`${s.type==='BUY'?'BUY':'SELL / EXIT'} · ${s.strategy}\nГраница закрытия ${local(s.timestamp)} · ${num(s.reference_price)} USDT\nФактически обнаружен ${local(s.detected_at)}\nИсторическая отметка условия, не исполненная сделка\n${s.explanation.join('\n')}\n${s.regime} · ${s.status}\n${JSON.stringify(s.parameters)}\n${s.cost_assumption}`).join('\n\n');});
@@ -70,7 +104,7 @@ export default function(component){
  if(d.overlay_settings&&!r.pendingPrefs&&r.appliedPrefs!==JSON.stringify(d.overlay_settings)){applyPrefs(d.overlay_settings);r.appliedPrefs=JSON.stringify(d.overlay_settings);}
  r.data=d;r.renderCount++;root.dataset.renders=r.renderCount;
  const changed=r.context!==d.context;
- if(changed){for(const key of ['candles','volume','fast','slow','st','forecastLine'])r[key].setData([]);r.markers.setMarkers([]);r.version=-1;r.context=d.context;r.inputs={...d.inputs};r.seq=d.inputs.seq||0;r.initializedPrice=!!d.quote.price;r.lastRows=[];r.forecastKey='';r.chart.timeScale().resetTimeScale();}
+ if(changed){for(const key of ['candles','volume','fast','slow','st','forecastLine','forecastGrid'])r[key].setData([]);r.forecastProfile=null;r.forecastGridKey='';r.markers.setMarkers([]);r.version=-1;r.context=d.context;r.inputs={...d.inputs};r.seq=d.inputs.seq||0;r.initializedPrice=!!d.quote.price;r.lastRows=[];r.forecastKey='';r.chart.timeScale().resetTimeScale();}
  else if(!r.initializedPrice&&d.quote.price){r.inputs={...d.inputs};r.initializedPrice=true;}
  else if(d.inputs.seq>r.seq){r.inputs={...d.inputs};r.seq=d.inputs.seq;}
  root.dataset.context=d.context;const s=r.inputs;
@@ -109,18 +143,26 @@ export default function(component){
  const bars=d.candles.map(c=>({time:c.time,open:c.open,high:c.high,low:c.low,close:c.close}));
  if(bars.length){
   const previous=r.lastRows||[];
-  if(!previous.length||previous[0].time!==bars[0].time||bars.length<previous.length||previous.slice(0,-1).some((bar,i)=>JSON.stringify(bar)!==JSON.stringify(bars[i]))){r.candles.setData(bars);if(!previous.length)r.chart.timeScale().setVisibleLogicalRange({from:Math.max(0,bars.length-120),to:bars.length+6});}
+  if(!previous.length||previous[0].time!==bars[0].time||bars.length<previous.length||previous.slice(0,-1).some((bar,i)=>JSON.stringify(bar)!==JSON.stringify(bars[i]))){r.candles.setData(bars);if(!previous.length)r.chart.timeScale().setVisibleLogicalRange({from:Math.max(0,bars.length-120),to:bars.length+10});}
   else for(let i=Math.max(0,previous.length-1);i<bars.length;i++)if(JSON.stringify(bars[i])!==JSON.stringify(previous[i]))r.candles.update(bars[i]);
   r.lastRows=bars;
-  // Forecast is never painted as real candles or as a validated signal.
-  const fc=d.intelligence?.forecast;
-  const anchor=[...d.candles].reverse().find(c=>c.closed);
-  const future=(fc?.status==='EXPERIMENTAL'&&anchor&&fc.points?.length)?
-   [{time:anchor.time,value:anchor.close},...fc.points.map(p=>({time:p.target_time-duration,value:+p.median}))]:[];
-  const validForecast=future.length>1&&future.every((p,i)=>Number.isFinite(p.time)&&Number.isFinite(p.value)&&p.value>0&&(i===0||p.time>future[i-1].time));
-  const nextForecastKey=validForecast?JSON.stringify(future):'';
-  if(r.forecastKey!==nextForecastKey){r.forecastLine.setData(validForecast?future:[]);r.forecastKey=nextForecastKey;}
-  r.forecastLine.applyOptions({visible:r.forecastVisible&&validForecast});
+  // Never offset a predicted CLOSE time to the beginning of its candle.
+  // Validate provenance and quantile ordering before publishing any chart data.
+  const projection=forecastProjection(d);
+  r.forecastProfile=projection?.profile||null;
+  const nextGridKey=projection?JSON.stringify(projection.grid):'';
+  if(r.forecastGridKey!==nextGridKey){
+   r.forecastGrid.setData(projection?.grid||[]);
+   r.forecastGridKey=nextGridKey;
+  }
+  const nextForecastKey=projection?JSON.stringify(projection.line):'';
+  if(r.forecastKey!==nextForecastKey){
+   r.forecastLine.setData(projection?.line||[]);
+   r.forecastKey=nextForecastKey;
+  }
+  r.forecastLine.applyOptions({visible:r.forecastVisible&&!!projection});
+  if(d.intelligence?.forecast?.status==='EXPERIMENTAL'&&!projection)
+   text('forecastStatus','Forecast скрыт: данные, горизонт или математические границы не соответствуют текущему графику.');
   r.primitive.update();
   if(r.version!==d.version||changed){
    r.volume.setData(d.candles.map(c=>({time:c.time,value:c.volume,color:c.close>=c.open?'#235647':'#653847'})));
@@ -130,8 +172,10 @@ export default function(component){
  }else{
   // Clear the last visible projection whenever the candle feed becomes empty.
   // Otherwise an old forecast stays painted against an "empty" market warning.
-  for(const series of [r.candles,r.volume,r.fast,r.slow,r.st,r.forecastLine])series.setData([]);
-  r.lastRows=[];r.forecastKey='';r.version=-1;r.markers.setMarkers([]);r.primitive.update();
+  for(const series of [r.candles,r.volume,r.fast,r.slow,r.st,r.forecastLine,r.forecastGrid])series.setData([]);
+  r.lastRows=[];r.forecastKey='';r.forecastGridKey='';r.forecastProfile=null;r.version=-1;r.markers.setMarkers([]);r.primitive.update();
+  if(d.intelligence?.forecast?.status==='EXPERIMENTAL')
+   text('forecastStatus','Forecast скрыт: нет свечей для привязки прогноза к графику.');
  }
  const rule=d.rules||{step:'0.00001',tick:'.01',minimum:'5'};const step=+rule.step,tick=+rule.tick;
  r.candles.applyOptions({priceFormat:{type:'price',precision:Math.max(0,-Math.floor(Math.log10(tick))),minMove:tick}});
@@ -240,7 +284,7 @@ export default function(component){
  for(const id of ['width','opacity','lineOpacity','fastColor','slowColor'])$(id).addEventListener('input',()=>{r.opacity=+$('opacity').value/100;layers();savePrefs();},ev);
  $('resetOverlay').addEventListener('click',()=>{applyPrefs(d.overlay_defaults);layers();savePrefs();},ev);
  $('toggleAssistant').addEventListener('click',()=>{const closed=root.classList.toggle('assistantCollapsed');$('toggleAssistant').setAttribute('aria-expanded',String(!closed));},ev);
- $('fit').addEventListener('click',()=>r.chart.timeScale().setVisibleLogicalRange({from:Math.max(0,bars.length-120),to:bars.length+6}),ev);
+ $('fit').addEventListener('click',()=>r.chart.timeScale().setVisibleLogicalRange({from:Math.max(0,bars.length-120),to:bars.length+10}),ev);
  all('[data-tab]').forEach(b=>b.addEventListener('click',()=>{r.tab=b.dataset.tab;all('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));showJournal();},ev));
  const canvas=$('chart');
  canvas.addEventListener('pointerdown',e=>{const y=e.clientY-canvas.getBoundingClientRect().top;const candidates=[['sl','stop'],['tp','target']].filter(([layer])=>r.layers[layer]).map(([layer,key])=>({key,dist:Math.abs(y-r.candles.priceToCoordinate(+s[key]))})).sort((a,b)=>a.dist-b.dist);if(candidates[0]?.dist<9){r.drag=candidates[0].key;r.chart.applyOptions({handleScroll:false,handleScale:false});canvas.setPointerCapture(e.pointerId);e.preventDefault();e.stopPropagation();}}, {...ev,capture:true});

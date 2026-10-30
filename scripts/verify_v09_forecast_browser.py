@@ -24,12 +24,14 @@ def fixture():
         candles.append(dict(time=latest-(119-i)*step,open=price,high=price+.5,
                             low=price-.4,close=price+.2,volume=10,closed=True))
     last=candles[-1]
-    forecast={'status':'EXPERIMENTAL','points':[
+    forecast={'status':'EXPERIMENTAL','symbol':'BTCUSDT','timeframe':'15',
+              'data_as_of':last['time']+step,'points':[
         dict(target_time=last['time']+step*(1+j),
              lower=str(last['close']-j*.4),median=str(last['close']),
              upper=str(last['close']+j*.4)) for j in (1,2,4,8)]}
     return dict(context='BTCUSDT:15',symbol='BTCUSDT',interval='15',
         mode='Market Data',fresh=True,status='Live',age=1,error='',version=1,
+        readiness=dict(forecast_feed_ready=True,candle_data_fresh=True),
         candles=candles,quote=dict(price=last['close'],bid=last['close']-.01,
         ask=last['close']+.01,change=1,ts=latest+step),
         rules=dict(step='0.00001',tick='0.01',minimum='5'),
@@ -76,6 +78,57 @@ def verify():
                 line:e.__runtime.forecastLine.data().length,
                 canvases:e.querySelectorAll('#chart canvas').length})''')
             assert state['chart'] and state['canvases']>=4 and state['line']==5,state
+            assert not errors,errors
+            # Causal timestamps must land at the CLOSE boundary, not one bar
+            # before. Horizontal gaps 1/2/4/8 must also be proportional.
+            geometry=page.locator('.terminal').evaluate("""e=>{
+                const r=e.__runtime,closed=window._data.candles.at(-1),
+                asOf=closed.time+900,steps=[0,1,2,4,8],
+                times=steps.map(h=>asOf+h*900),
+                line=r.forecastLine.data(),grid=JSON.parse(r.forecastGridKey||'[]'),
+                x=times.map(t=>r.chart.timeScale().timeToCoordinate(t));
+                return {times,positions:line.map(p=>p.time),grid:grid.map(p=>p.time),
+                    values:line.map(p=>p.value),x,fan:r.forecastProfile};
+            }""")
+            assert geometry['positions']==geometry['times'],geometry
+            assert geometry['grid']==[geometry['times'][0]+i*900 for i in range(1,9)],geometry
+            assert len(geometry['fan'])==5
+            assert [p['time'] for p in geometry['fan']]==geometry['positions']
+            assert all(v is not None for v in geometry['x']),geometry
+            spacing=[b-a for a,b in zip(geometry['x'],geometry['x'][1:])]
+            assert all(abs(delta-spacing[0]*units)<.2 for delta,units in zip(spacing,(1,1,2,4))),geometry
+            # All layers must reject a mismatched symbol, a stale candle stream,
+            # a time-offset error or malformed interval quantiles together.
+            for snippet in (
+              "window._data.intelligence.forecast.symbol='ETHUSDT'",
+              "window._data.intelligence.forecast.data_as_of+=900",
+              "window._data.intelligence.forecast.points[0].lower='-1'",
+              "window._data.intelligence.forecast.points[0].upper='NaN'",
+              "window._data.intelligence.forecast.points[0].median='9999999'",
+              "window._data.readiness.forecast_feed_ready=false",
+            ):
+                page.evaluate("""code=>{const backup=structuredClone(window._data);
+                  new Function(code)();
+                  window._invoke();
+                  window._data=backup;}""",snippet)
+                assert page.locator('.terminal').evaluate(
+                    'e=>e.__runtime.forecastLine.data().length')==0,snippet
+                assert page.locator('.terminal').evaluate(
+                    'e=>e.__runtime.forecastGridKey')=='',snippet
+                assert page.locator('.terminal').evaluate(
+                    'e=>e.__runtime.forecastProfile') is None,snippet
+                page.evaluate("() => window._invoke()")
+                assert page.locator('.terminal').evaluate(
+                    'e=>e.__runtime.forecastLine.data().length')==5,snippet
+            # A current still-forming candle may share the anchor timestamp,
+            # but it must not shift the future targets or enter the forecast.
+            page.evaluate("""() => {const last=window._data.candles.at(-1);
+                window._data.candles.push({time:last.time+900,open:100,high:101,
+                    low:99,close:100,volume:3,closed:false});
+                window._invoke();}""")
+            assert page.locator('.terminal').evaluate(
+                'e=>e.__runtime.forecastLine.data().map(p=>p.time)')==geometry['positions']
+            page.evaluate("""() => {window._data.candles.pop();window._invoke()}""")
             assert not errors,errors
             page.locator('#forecastOverlay').uncheck()
             assert not page.locator('.terminal').evaluate(
