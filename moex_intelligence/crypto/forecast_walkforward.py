@@ -84,9 +84,12 @@ def evaluate_purged_walkforward(
     Bybit.validate(symbol, timeframe)
     if type(folds) is not int or not 2 <= folds <= 6:
         raise ValueError("Walk-forward folds must be an integer from 2 to 6")
-    if (type(final_fraction) not in (float, int)
-            or not math.isfinite(final_fraction)
-            or not .10 <= final_fraction <= .35):
+    try:
+        fraction = (float(final_fraction)
+                    if type(final_fraction) in (float,int) else float("nan"))
+    except (TypeError, ValueError, OverflowError):
+        fraction = float("nan")
+    if not math.isfinite(fraction) or not .10 <= fraction <= .35:
         raise ValueError("Final holdout fraction must be between 10% and 35%")
     horizon = max(HistoricalVolatilityBaseline.horizons)
     if type(embargo_bars) is not int or not horizon <= embargo_bars <= 64:
@@ -100,7 +103,7 @@ def evaluate_purged_walkforward(
     count = len(checked)
     # Only the final incomplete candle may be omitted by _closed_rows().
     validated_candles = tuple(candles[:count])
-    start_final = math.floor(count * (1 - final_fraction))
+    start_final = math.floor(count * (1 - fraction))
     earliest = HistoricalVolatilityBaseline.sample_bars + embargo_bars
     usable = start_final - earliest
     if usable < folds * (horizon + stride):
@@ -148,7 +151,7 @@ def evaluate_purged_walkforward(
         baseline_version=HistoricalVolatilityBaseline.version,
         total_closed_candles=count, folds_requested=folds,
         folds_evaluated=evaluated, embargo_bars=embargo_bars,
-        final_fraction=float(final_fraction), folds=tuple(results),
+        final_fraction=fraction, folds=tuple(results),
         sealed_final=sealed,
         note="Development folds only. Final holdout is fingerprinted but NOT scored. "
              "The Random Walk/EWMA baseline is fixed and never fitted; the purge "
