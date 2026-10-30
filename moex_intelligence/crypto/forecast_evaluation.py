@@ -20,10 +20,10 @@ class HorizonScore:
     horizon_candles: int
     observations: int
     empirical_coverage: float
-    mean_absolute_error: float
+    mean_absolute_error: float | None
     mean_absolute_percentage_error: float | None
-    mean_band_width_pct: float
-    random_walk_mae: float
+    mean_band_width_pct: float | None
+    random_walk_mae: float | None
     nominal_coverage: float = HistoricalVolatilityBaseline.nominal_coverage
     unbounded_percentage_errors: int = 0
 
@@ -66,11 +66,17 @@ def _closed_rows(candles: Sequence, timeframe: str):
         moment, price = raw.get('time'), raw.get('close')
         if type(moment) is not int or moment < 0 or moment % step:
             raise ValueError('Unaligned candle time')
-        if type(price) not in (int, float) or not math.isfinite(price) or price <= 0:
+        if type(price) not in (int, float):
+            raise ValueError('Invalid candle close')
+        try:
+            price = float(price)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError('Invalid candle close') from exc
+        if not math.isfinite(price) or price <= 0:
             raise ValueError('Invalid candle close')
         if rows and moment - rows[-1][0] != step:
             raise ValueError('Reordered, repeated or missing candles')
-        rows.append((moment, float(price)))
+        rows.append((moment, price))
     return rows
 
 
