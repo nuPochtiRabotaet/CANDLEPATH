@@ -23,7 +23,8 @@ class OverlayPrimitive {
     }
    }
   }
-  // ForecastPoint.target_time is the future candle CLOSE. Chart data use OPEN.
+  // Probability fan is aligned with candle OPEN timestamps. ForecastPoint.target_time
+  // denotes the future candle CLOSE boundary and is shifted left one interval.
   const fc=data?.intelligence?.forecast;
   if(r.forecastVisible && fc?.status==='EXPERIMENTAL' && fc.points?.length){
    const last=[...(data.candles||[])].reverse().find(c=>c.closed);
