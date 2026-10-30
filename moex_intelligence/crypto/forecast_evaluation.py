@@ -98,11 +98,12 @@ def _closed_rows(candles: Sequence, timeframe: str):
 
 def evaluate_historical_baseline(candles, symbol, timeframe, *,
                                  holdout_fraction=0.30, stride=8,
-                                 min_required_origins=30):
+                                 min_required_origins=30, evaluation_window=None):
     """Chronological, non-overlapping-origin replay against *held-out* prices.
 
     A fixed, never-fitted Random Walk/EWMA baseline is evaluated at origins
-    inside the last holdout_fraction of the provided chronological dataset.
+    inside the last holdout_fraction of the provided chronological dataset,
+    or within an explicit validated [start, end) window for multi-fold replay.
     At each origin, the baseline sees at most the previous 120 closes. Its
     forward scores are computed only after the envelope was generated.
 
@@ -126,10 +127,22 @@ def evaluate_historical_baseline(candles, symbol, timeframe, *,
     step = seconds(timeframe)
     window = HistoricalVolatilityBaseline.sample_bars
     max_horizon = max(HistoricalVolatilityBaseline.horizons)
-    # The first scored future bar must be in the untouched chronological holdout.
-    holdout_start = max(window, math.floor(len(rows) * (1 - holdout_fraction)))
+    # An explicit [start,end) window permits multiple chronological folds.
+    # No target candle may lie outside this window, and its first observed
+    # future price is at start. The default remains exactly as before.
+    if evaluation_window is None:
+        holdout_start = max(window, math.floor(len(rows) * (1 - holdout_fraction)))
+        window_end = len(rows)
+    else:
+        if (not isinstance(evaluation_window, tuple)
+                or len(evaluation_window) != 2
+                or any(type(index) is not int for index in evaluation_window)):
+            raise ValueError('Evaluation window requires two integer indices')
+        holdout_start, window_end = evaluation_window
+        if not window <= holdout_start < window_end <= len(rows):
+            raise ValueError('Evaluation window is outside causal candle range')
     first_origin = holdout_start - 1
-    last_origin = len(rows) - 1 - max_horizon
+    last_origin = window_end - 1 - max_horizon
     sums = {h: {'n': 0, 'hits': 0, 'below': 0, 'above': 0,
                 'abs': Decimal(0), 'ape': Decimal(0),
                 'width': Decimal(0), 'interval_score': Decimal(0),
