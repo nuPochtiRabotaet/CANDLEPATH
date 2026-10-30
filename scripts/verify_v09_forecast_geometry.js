@@ -10,6 +10,14 @@ const ctx={LightweightCharts:{}};
 vm.runInNewContext(source+'\nglobalThis.__project=forecastProjection;',ctx,{timeout:2500});
 const project=ctx.__project;
 
+// Cross-language integration mode: Python's actual Forecast dataclass is
+// serialized into the very same pure JS geometry function used by the chart.
+if(process.argv.includes('--project-json')){
+ const payload=JSON.parse(fs.readFileSync(0,'utf8'));
+ console.log(JSON.stringify(project(payload)));
+ process.exit(0);
+}
+
 function sample(interval='15'){
  const seconds=interval==='D'?86400:Number(interval)*60;
  const start=Math.floor(1800000000/seconds)*seconds;
