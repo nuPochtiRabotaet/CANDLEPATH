@@ -12,6 +12,36 @@ from .intelligence import Forecast, ForecastPoint
 from .market import seconds, SYMBOLS, INTERVALS
 
 
+def ewma_price_envelope(closes, horizons, *, z=1.2815515655446004):
+    """Pure EWMA Random Walk envelope shared by live and offline replay.
+
+    No timestamps or future prices are accepted. The caller guarantees the
+    input slice contains only observations available at its forecast origin.
+    """
+    if not isinstance(closes, (tuple, list)) or len(closes) < 2:
+        raise ValueError('Too few observed prices')
+    if any(type(p) not in (int, float) or not math.isfinite(p) or p <= 0
+           for p in closes):
+        raise ValueError('Invalid observed price')
+    returns = [math.log(b) - math.log(a) for a, b in zip(closes, closes[1:])]
+    if not all(math.isfinite(r) and abs(r) < .7 for r in returns):
+        raise ValueError('Extreme/invalid log return; forecast suppressed')
+    decay = .94
+    weights = [decay ** i for i in range(len(returns))]
+    variance = sum(w * r * r for w, r in zip(weights, reversed(returns))) / sum(weights)
+    sigma = math.sqrt(variance)
+    envelope = []
+    for horizon in horizons:
+        if type(horizon) is not int or horizon <= 0:
+            raise ValueError('Invalid forecast horizon')
+        spread = z * sigma * math.sqrt(horizon)
+        lower, upper = closes[-1] * math.exp(-spread), closes[-1] * math.exp(spread)
+        if not all(math.isfinite(v) and v > 0 for v in (lower, upper)):
+            raise ValueError('Numerically unstable interval')
+        envelope.append((lower, closes[-1], upper))
+    return tuple(envelope)
+
+
 class HistoricalVolatilityBaseline:
     version = 'rw-ewma80-experimental-v1'
     min_bars = 60
@@ -73,23 +103,14 @@ class HistoricalVolatilityBaseline:
         last_close_time = last_time + step
         if not 0 <= now - last_close_time < step:
             return self._unavailable(symbol, timeframe, as_of, 'Last closed candle is stale')
-        # Subtract log-prices rather than dividing extreme floats (under/overflow).
-        returns = [math.log(b[1])-math.log(a[1]) for a, b in zip(closed, closed[1:])]
-        if not all(math.isfinite(v) and abs(v) < .7 for v in returns):
-            return self._unavailable(symbol, timeframe, as_of, 'Extreme/invalid log return; forecast suppressed')
-        # EWMA of squared log-returns, normalized so short samples do not bias toward zero.
-        decay = .94
-        weights = [decay ** i for i in range(len(returns))]
-        variance = sum(w * r * r for w, r in zip(weights, reversed(returns))) / sum(weights)
-        sigma = math.sqrt(variance)
+        try:
+            envelope = ewma_price_envelope([price for _, price in closed], self.horizons, z=self.z80)
+        except ValueError as exc:
+            return self._unavailable(symbol, timeframe, as_of, str(exc))
         points = []
-        for horizon in self.horizons:
+        for horizon, (lower, median, upper) in zip(self.horizons, envelope):
             target = last_close_time + horizon * step
-            spread = self.z80 * sigma * math.sqrt(horizon)
-            lower, upper = last_close * math.exp(-spread), last_close * math.exp(spread)
-            if not all(math.isfinite(v) and v > 0 for v in (lower, upper)):
-                return self._unavailable(symbol, timeframe, as_of, 'Numerically unstable interval')
-            points.append(ForecastPoint(target, str(lower), str(last_close), str(upper)))
+            points.append(ForecastPoint(target, str(lower), str(median), str(upper)))
         fingerprint = hashlib.sha256(f'{self.version}:{symbol}:{timeframe}:{last_time}'.encode()).hexdigest()[:16]
         return Forecast(fingerprint, symbol, timeframe, now, last_close_time,
                         self.version, 'EXPERIMENTAL', tuple(points), self.nominal_coverage,

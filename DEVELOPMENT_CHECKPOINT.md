@@ -44,3 +44,13 @@ Live experimental forecasts are now first journaled immutably in SQLite and reco
 Verification (local rc3 source overlaid with v0.9 feature changes): 26 focused tests passed; 318 dependency-compatible tests passed with 25 deselected. An earlier broader run gave 332 passed, 11 failed due to missing Streamlit/MCP imports; full collection had four import errors. Real Chromium synthetic-graph smoke script passed (render, toggle, stale status, empty-feed recovery); JS syntax and Python compileall passed. macOS Safari, actual Bybit REST/WS, full requirements suite, historical calibration and proven directional prediction are outstanding.
 
 Changes remain stacked in development PRs only; main untouched, LIVE disabled.
+
+## v0.9 incremental research — causal offline replay (2026-10-30; PR review)
+
+Added a separate, strictly read-only historical replay tool for the EXPERIMENTAL Random Walk/EWMA Forecast. A shared pure mathematical helper supplies both the existing live Forecast Overlay and offline evaluation, preserving its original model version and quantile formula. Walk-forward origins use only pre-origin closed candles; chronological final 30% is the default diagnostic holdout, with origin spacing 8 candles and minimum 30 origins. Reports observed interval coverage, absolute and relative prediction error, band width, and the explicitly equivalent flat Random Walk median baseline.
+
+New files: moex_intelligence/crypto/forecast_evaluation.py, scripts/evaluate_forecast_v09.py, tests/test_forecast_replay_v09.py, docs/FORECAST_REPLAY_V09.md. No retrospective evaluations are written into the immutable live forecast journal; the existing crypto SQLite file is opened in read-only mode for CLI evaluation. No trading or user holdings changed.
+
+Local verification on staged rc3 + incremental v0.9 source: 43 targeted tests passed; 348 broad tests passed with 11 missing Streamlit/MCP dependency import failures and 4 collection errors. This is NOT a complete clean GitHub-branch test run, and GitHub Actions was already blocked before jobs could start. Temporary database CLI checked on 1000 synthetic candles (37 origins); no persisted forecast records were created. Actual Bybit data, Safari and calibrated model advantage remain UNVERIFIED.
+
+Next: independent validation with genuine saved candles and separate untouched time periods; fix CI pre-job failures; full macOS acceptance; compare simple baseline/advanced candidate before any forecast-driven BUY/SELL. This is not a v0.9 release.
