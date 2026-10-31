@@ -35,7 +35,7 @@ python scripts/evaluate_spot_trades_csv_v09.py \
           ~/Downloads/BTCUSDT_2026-10-29.csv \
   --symbol BTCUSDT --timeframes 1 15 \
   --output-dir ~/Desktop/candlepath-research-october \
-  --evaluate
+  --evaluate --compare-momentum
 ```
 
 Choose a **new output directory** for each run. The script never overwrites
@@ -69,3 +69,30 @@ python -m pytest tests/test_spot_trade_import_v09.py -q
 CI also runs all existing Python tests, JavaScript geometry contracts and
 a Chromium smoke test. Synthetic tests cannot authenticate any uploaded
 source history. No raw user-supplied market files are committed.
+
+## Paired directional challenger (optional)
+
+The `--compare-momentum` flag requires `--evaluate`, computes the already
+implemented **fixed, shrunk log-momentum candidate** against the flat Random
+Walk median for the same continuous offline market segment, on the same
+chronologically separated development folds. Every origin supplies both
+models only the previous 120 CLOSED candles. Neither sees outcomes from
+the last 20% sealed final holdout.
+
+The output JSON contains a `directional_research` section per evaluated
+segment: paired MAE, percentage MAE gain, interval score, empirical coverage,
+directional hit fraction with descriptive Wilson bounds, fold origins, and
+matching sealed-holdout SHA-256. Segments too short for a meaningful
+walk-forward are **not promoted or labeled successful**.
+
+**Interpretation:**
+- Positive candidate MAE gain = lower absolute forecast error on that fold,
+  not profitable trades or reliable directional accuracy.
+- A 51% direction hit rate does not prove an advantage, especially after
+  fees, spread, slippage, repeated hypothesis testing and market dependence.
+- Contradictory folds or another session with negative gain are reasons to
+  investigate robustness, not to cherry-pick.
+- The new result explicitly says `RESEARCH_ONLY_NOT_APPROVED`, with
+  `trading_edge_verified:false`. No live model, signal or paper trade changes.
+- This is not the prospective final holdout evaluation. Never use the sealed
+  20% for tuning; lock the candidate and study protocol before final scoring.
