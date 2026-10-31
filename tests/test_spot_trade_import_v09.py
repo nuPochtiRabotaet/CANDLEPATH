@@ -140,7 +140,7 @@ def test_cli_uses_actual_walkforward_engine_and_seals_final_holdout(tmp_path):
     command = [sys.executable, str(root/"scripts/evaluate_spot_trades_csv_v09.py"),
                "--input", str(first), str(second), "--symbol", "BTCUSDT",
                "--timeframes", "1", "15", "--output-dir", str(out),
-               "--evaluate"]
+               "--evaluate", "--compare-momentum"]
     run = subprocess.run(command, capture_output=True, text=True, timeout=90)
     assert run.returncode == 0, run.stderr
     report = json.loads(run.stdout)
@@ -153,8 +153,38 @@ def test_cli_uses_actual_walkforward_engine_and_seals_final_holdout(tmp_path):
     assert one["final_status"] == "SEALED_UNSCORED"
     assert one["development"]["sealed_final"]["evaluated"] is False
     assert one["development"]["folds_evaluated"] == 3
+    assert one["directional_status"] == "EVALUATED_DEVELOPMENT_ONLY"
+    assert one["candidate_deployment"] == "RESEARCH_ONLY_NOT_APPROVED"
+    assert one["directional_research"]["final_holdout_evaluated"] is False
+    assert (one["directional_research"]["final_holdout_sha256"] ==
+            one["development"]["sealed_final"]["sha256"])
+    for bf, cf in zip(one["development"]["folds"],
+                      one["directional_research"]["folds"]):
+        assert bf["result"]["origins"] == cf["origins"]
+        assert bf["validation_start_index"] == cf["validation_start_index"]
+        assert bf["validation_end_exclusive"] == cf["validation_end_exclusive"]
+    assert report["trading_edge_verified"] is False
     assert outputs["15"]["research_status"] in ("INSUFFICIENT_HISTORY", "INSUFFICIENT")
     assert [hashlib.sha256(p.read_bytes()).hexdigest() for p in (first, second)] == hashes
     rerun = subprocess.run(command, capture_output=True, text=True, timeout=90)
     assert rerun.returncode == 2   # exclusive create, no silent overwrite
     assert [hashlib.sha256(p.read_bytes()).hexdigest() for p in (first, second)] == hashes
+
+
+def test_directional_flag_requires_explicit_research_mode(tmp_path):
+    start = utc_millis("2026-10-25T00:00:00")
+    source = write_trades(tmp_path/"BTCUSDT_2026-10-25.csv",
+                          sample_rows(start, 15))
+    before = hashlib.sha256(source.read_bytes()).hexdigest()
+    root = Path(__file__).resolve().parents[1]
+    output = tmp_path/"output"
+    command = [
+        sys.executable, str(root/"scripts/evaluate_spot_trades_csv_v09.py"),
+        "--input", str(source), "--symbol", "BTCUSDT", "--timeframes", "1",
+        "--output-dir", str(output), "--compare-momentum",
+    ]
+    result = subprocess.run(command, capture_output=True, text=True, timeout=30)
+    assert result.returncode == 2
+    assert "--compare-momentum requires --evaluate" in result.stderr
+    assert not output.exists()
+    assert hashlib.sha256(source.read_bytes()).hexdigest() == before
