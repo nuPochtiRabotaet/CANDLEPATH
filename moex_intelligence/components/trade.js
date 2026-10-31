@@ -14,7 +14,10 @@ function forecastProjection(data){
     fc.symbol!==data.symbol||String(fc.timeframe)!==String(data.interval)||
     data.readiness?.forecast_feed_ready!==true||data.readiness?.candle_data_fresh!==true||
     !Number.isSafeInteger(step)||step<=0)return null;
- const anchor=[...candles].reverse().find(c=>c.closed===true);
+ let anchor=null;
+ for(let i=candles.length-1;i>=0;i--){
+  if(candles[i].closed===true){anchor=candles[i];break;}
+ }
  if(!anchor||!Number.isSafeInteger(anchor.time))return null;
  const observedTime=anchor.time+step,observedClose=Number(anchor.close);
  if(!Number.isSafeInteger(observedTime)||Number(fc.data_as_of)!==observedTime||
@@ -38,6 +41,26 @@ function forecastProjection(data){
  const steps=(prev-observedTime)/step;
  const grid=Array.from({length:steps},(_,i)=>({time:observedTime+(i+1)*step}));
  return {profile,grid,line:profile.map(p=>({time:p.time,value:p.median}))};
+}
+// Keep a faithful fallback for historical corrections while live ticks use
+// update() rather than repeatedly rebuilding entire chart series.
+function candleChangePlan(previous,current){
+ if(!current.length)return {mode:'empty',from:0};
+ if(!previous.length||current.length<previous.length||
+    previous[0].time!==current[0].time)return {mode:'reset',from:0};
+ const equal=(a,b)=>a.time===b.time&&a.open===b.open&&a.high===b.high&&
+   a.low===b.low&&a.close===b.close&&a.volume===b.volume&&a.closed===b.closed;
+ for(let i=0;i<previous.length-1;i++){
+  if(!equal(previous[i],current[i]))return {mode:'reset',from:0};
+ }
+ const last=previous.length-1;
+ if(previous[last].time!==current[last].time)return {mode:'reset',from:0};
+ for(let i=previous.length;i<current.length;i++){
+  if(!Number.isSafeInteger(current[i].time)||
+     current[i].time<=current[i-1].time)return {mode:'reset',from:0};
+ }
+ const from=equal(previous[last],current[last])?previous.length:last;
+ return {mode:from<current.length?'tail':'same',from};
 }
 class OverlayPrimitive {
  constructor(runtime){this.r=runtime;this.view={zOrder:()=> 'bottom',renderer:()=>({draw:target=>target.useMediaCoordinateSpace(scope=>this.draw(scope))})};}
@@ -94,8 +117,8 @@ export default function(component){
   r.forecastGrid=r.chart.addSeries(LC.LineSeries,{...opts,visible:false});
   r.markers=LC.createSeriesMarkers(r.candles,[]);r.primitive=new OverlayPrimitive(r);r.candles.attachPrimitive(r.primitive);
   r.observer=new MutationObserver(()=>{if(!root.isConnected){clearTimeout(r.timer);clearTimeout(r.prefTimer);r.observer.disconnect();r.chart.remove();root.__runtime=null;}});r.observer.observe(document.body,{childList:true,subtree:true});
-  r.chart.subscribeCrosshairMove(p=>{const bar=p.seriesData?.get(r.candles);if(bar)text('crosshair',`${local(p.time)}  O ${num(bar.open)}  H ${num(bar.high)}  L ${num(bar.low)}  C ${num(bar.close)}`);const sig=r.data?.signals.filter(s=>s.timestamp===p.time);$('signalTooltip').hidden=!sig?.length;if(sig?.length)$('signalTooltip').textContent=sig.map(s=>`${s.type==='BUY'?'BUY':'SELL / EXIT'} · ${s.strategy}\nГраница закрытия ${local(s.timestamp)} · ${num(s.reference_price)} USDT\nФактически обнаружен ${local(s.detected_at)}\nИсторическая отметка условия, не исполненная сделка\n${s.explanation.join('\n')}\n${s.regime} · ${s.status}\n${JSON.stringify(s.parameters)}\n${s.cost_assumption}`).join('\n\n');});
-  r.chart.subscribeClick(p=>{const s=r.data?.signals.filter(s=>s.timestamp===p.time).at(-1);if(s)showSignal(s);});
+  r.chart.subscribeCrosshairMove(p=>{const bar=p.seriesData?.get(r.candles);if(bar)text('crosshair',`${local(p.time)}  O ${num(bar.open)}  H ${num(bar.high)}  L ${num(bar.low)}  C ${num(bar.close)}`);const sig=r.signalsByTime?.get(p.time);$('signalTooltip').hidden=!sig?.length;if(sig?.length)$('signalTooltip').textContent=sig.map(s=>`${s.type==='BUY'?'BUY':'SELL / EXIT'} · ${s.strategy}\nГраница закрытия ${local(s.timestamp)} · ${num(s.reference_price)} USDT\nФактически обнаружен ${local(s.detected_at)}\nИсторическая отметка условия, не исполненная сделка\n${s.explanation.join('\n')}\n${s.regime} · ${s.status}\n${JSON.stringify(s.parameters)}\n${s.cost_assumption}`).join('\n\n');});
+  r.chart.subscribeClick(p=>{const s=r.signalsByTime?.get(p.time)?.at(-1);if(s)showSignal(s);});
  }
  function readPrefs(){return {version:1,...r.layers,intensity:+$('opacity').value,width:+$('width').value,line_opacity:+$('lineOpacity').value,fast_color:$('fastColor').value,slow_color:$('slowColor').value};}
  function applyPrefs(p){for(const k of Object.keys(r.layers))r.layers[k]=p[k];$('opacity').value=p.intensity;r.opacity=p.intensity/100;$('width').value=p.width;$('lineOpacity').value=p.line_opacity;$('fastColor').value=p.fast_color;$('slowColor').value=p.slow_color;}
@@ -103,8 +126,15 @@ export default function(component){
  if(r.pendingPrefs===JSON.stringify(d.overlay_settings))r.pendingPrefs=null;
  if(d.overlay_settings&&!r.pendingPrefs&&r.appliedPrefs!==JSON.stringify(d.overlay_settings)){applyPrefs(d.overlay_settings);r.appliedPrefs=JSON.stringify(d.overlay_settings);}
  r.data=d;r.renderCount++;root.dataset.renders=r.renderCount;
+ // Time-indexed signal lookup avoids rescanning the full list per mouse move.
+ r.signalsByTime=new Map();
+ for(const signal of d.signals){
+  const bucket=r.signalsByTime.get(signal.timestamp);
+  if(bucket)bucket.push(signal);
+  else r.signalsByTime.set(signal.timestamp,[signal]);
+ }
  const changed=r.context!==d.context;
- if(changed){for(const key of ['candles','volume','fast','slow','st','forecastLine','forecastGrid'])r[key].setData([]);r.forecastProfile=null;r.forecastGridKey='';r.markers.setMarkers([]);r.version=-1;r.context=d.context;r.inputs={...d.inputs};r.seq=d.inputs.seq||0;r.initializedPrice=!!d.quote.price;r.lastRows=[];r.forecastKey='';r.chart.timeScale().resetTimeScale();}
+ if(changed){for(const key of ['candles','volume','fast','slow','st','forecastLine','forecastGrid'])r[key].setData([]);r.forecastProfile=null;r.forecastGridKey='';r.markers.setMarkers([]);r.version=-1;r.context=d.context;r.inputs={...d.inputs};r.seq=d.inputs.seq||0;r.initializedPrice=!!d.quote.price;r.lastRows=[];r.lastCandleSnapshot=[];r.forecastKey='';r.chart.timeScale().resetTimeScale();}
  else if(!r.initializedPrice&&d.quote.price){r.inputs={...d.inputs};r.initializedPrice=true;}
  else if(d.inputs.seq>r.seq){r.inputs={...d.inputs};r.seq=d.inputs.seq;}
  root.dataset.context=d.context;const s=r.inputs;
@@ -142,9 +172,24 @@ export default function(component){
  $('empty').hidden=!!d.candles.length;
  const bars=d.candles.map(c=>({time:c.time,open:c.open,high:c.high,low:c.low,close:c.close}));
  if(bars.length){
-  const previous=r.lastRows||[];
-  if(!previous.length||previous[0].time!==bars[0].time||bars.length<previous.length||previous.slice(0,-1).some((bar,i)=>JSON.stringify(bar)!==JSON.stringify(bars[i]))){r.candles.setData(bars);if(!previous.length)r.chart.timeScale().setVisibleLogicalRange({from:Math.max(0,bars.length-120),to:bars.length+10});}
-  else for(let i=Math.max(0,previous.length-1);i<bars.length;i++)if(JSON.stringify(bars[i])!==JSON.stringify(previous[i]))r.candles.update(bars[i]);
+  const plan=candleChangePlan(r.lastCandleSnapshot||[],d.candles);
+  const volumes=d.candles.map(c=>({time:c.time,value:c.volume,
+   color:c.close>=c.open?'#235647':'#653847'}));
+  if(plan.mode==='reset'){
+   r.candles.setData(bars);
+   r.volume.setData(volumes);
+   if(!r.lastRows?.length)r.chart.timeScale().setVisibleLogicalRange({
+    from:Math.max(0,bars.length-120),to:bars.length+10});
+  }else if(plan.mode==='tail'){
+   for(let i=plan.from;i<bars.length;i++){
+    r.candles.update(bars[i]);
+    r.volume.update(volumes[i]);
+   }
+  }
+  // Defensive historical snapshot: same-version mutations must not go stale.
+  r.lastCandleSnapshot=d.candles.map(c=>({
+   time:c.time,open:c.open,high:c.high,low:c.low,
+   close:c.close,volume:c.volume,closed:c.closed}));
   r.lastRows=bars;
   // Never offset a predicted CLOSE time to the beginning of its candle.
   // Validate provenance and quantile ordering before publishing any chart data.
@@ -164,8 +209,7 @@ export default function(component){
   if(d.intelligence?.forecast?.status==='EXPERIMENTAL'&&!projection)
    text('forecastStatus','Forecast скрыт: данные, горизонт или математические границы не соответствуют текущему графику.');
   r.primitive.update();
-  if(r.version!==d.version||changed){
-   r.volume.setData(d.candles.map(c=>({time:c.time,value:c.volume,color:c.close>=c.open?'#235647':'#653847'})));
+  if(r.version!==d.version||changed||plan.mode!=='same'){
    for(const [key,field] of [['fast','fast'],['slow','slow'],['st','supertrend']])r[key].setData(d.analysis.overlay.filter(p=>Number.isFinite(p[field])).map(p=>({time:p.time,value:p[field]})));
    r.version=d.version;
   }
@@ -173,7 +217,7 @@ export default function(component){
   // Clear the last visible projection whenever the candle feed becomes empty.
   // Otherwise an old forecast stays painted against an "empty" market warning.
   for(const series of [r.candles,r.volume,r.fast,r.slow,r.st,r.forecastLine,r.forecastGrid])series.setData([]);
-  r.lastRows=[];r.forecastKey='';r.forecastGridKey='';r.forecastProfile=null;r.version=-1;r.markers.setMarkers([]);r.primitive.update();
+  r.lastRows=[];r.lastCandleSnapshot=[];r.forecastKey='';r.forecastGridKey='';r.forecastProfile=null;r.version=-1;r.markers.setMarkers([]);r.primitive.update();
   if(d.intelligence?.forecast?.status==='EXPERIMENTAL')
    text('forecastStatus','Forecast скрыт: нет свечей для привязки прогноза к графику.');
  }
@@ -215,7 +259,8 @@ export default function(component){
   const alpha=hex=>'rgba('+[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)).join(',')+','+(+$('lineOpacity').value/100)+')';
   for(const key of Object.keys(r.layers))$(key).checked=r.layers[key];
   r.fast.applyOptions({visible:r.layers.ema,lineWidth:+$('width').value,color:alpha($('fastColor').value)});r.slow.applyOptions({visible:r.layers.ema,lineWidth:+$('width').value,color:alpha($('slowColor').value)});r.st.applyOptions({visible:r.layers.st,lineWidth:+$('width').value,color:alpha('#ac9eea')});r.volume.applyOptions({visible:r.layers.volume});
-  r.markers.setMarkers(r.layers.markers?[...new Map(d.signals.filter(s=>d.candles.some(c=>c.time===s.timestamp)).map(s=>[s.timestamp+':'+s.type,s])).values()].map(s=>({time:s.timestamp,position:s.type==='BUY'?'belowBar':'aboveBar',shape:s.type==='BUY'?'arrowUp':'arrowDown',color:s.type==='BUY'?'#31F3A2':'#FF5474',text:s.type==='BUY'?'BUY':'SELL',size:.7})).sort((a,b)=>a.time-b.time):[]);
+  const candleTimes=new Set(d.candles.map(c=>c.time));
+   r.markers.setMarkers(r.layers.markers?[...new Map(d.signals.filter(s=>candleTimes.has(s.timestamp)).map(s=>[s.timestamp+':'+s.type,s])).values()].map(s=>({time:s.timestamp,position:s.type==='BUY'?'belowBar':'aboveBar',shape:s.type==='BUY'?'arrowUp':'arrowDown',color:s.type==='BUY'?'#31F3A2':'#FF5474',text:s.type==='BUY'?'BUY':'SELL',size:.7})).sort((a,b)=>a.time-b.time):[]);
   root.dataset.ribbon=String(r.layers.ribbon);root.dataset.markers=String(r.layers.markers);levels();
  }
  function showJournal(){
