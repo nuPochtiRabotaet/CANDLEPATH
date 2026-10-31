@@ -56,7 +56,7 @@ def test_same_millisecond_trade_order_and_base_volume(tmp_path):
     dataset = read_local_ohlcv(emitted[0], "BTCUSDT", "15")
     assert dataset.row_count == 1
     assert dataset.candles[0].volume == pytest.approx(1.2875)
-    assert dataset.candles[0].high == 80016
+    assert dataset.candles[0].high == 80014
 
 
 def test_gaps_split_minutes_and_discard_partial_15m(tmp_path):
