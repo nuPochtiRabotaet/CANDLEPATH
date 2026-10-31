@@ -20,6 +20,7 @@ from moex_intelligence.crypto.offline_ohlcv import read_local_ohlcv
 from moex_intelligence.crypto.spot_trade_import import (
     read_spot_trade_minutes, segment_spot_trade_minutes, write_spot_candle_segments)
 from moex_intelligence.crypto.forecast_walkforward import evaluate_purged_walkforward
+from moex_intelligence.crypto.momentum_evaluation import compare_momentum_to_rw
 
 
 def main(argv=None):
@@ -32,8 +33,12 @@ def main(argv=None):
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--evaluate", action="store_true",
                         help="Run the actual CandlePath purged walk-forward; final holdout stays SEALED")
+    parser.add_argument("--compare-momentum", action="store_true",
+                        help="Paired Random Walk vs fixed shrunk-momentum research on the same sealed development folds; NEVER a trading signal")
     parser.add_argument("--min-origins", type=int, default=30)
     args = parser.parse_args(argv)
+    if args.compare_momentum and not args.evaluate:
+        parser.error("--compare-momentum requires --evaluate")
     if len(set(args.timeframes)) != len(args.timeframes):
         raise ValueError("Duplicate requested timeframe")
     # Avoid reading millions of source rows a second time for each timeframe.
@@ -65,6 +70,16 @@ def main(argv=None):
                     result["research_status"] = evaluation.status
                     result["development"] = evaluation.as_dict()
                     result["final_status"] = "SEALED_UNSCORED"
+                    if args.compare_momentum:
+                        paired = compare_momentum_to_rw(
+                            dataset.candles, args.symbol, timeframe,
+                            min_required_origins=args.min_origins)
+                        if (paired.final_holdout_evaluated
+                                or paired.final_holdout_sha256 != evaluation.sealed_final.sha256):
+                            raise ValueError("Directional research final holdout mismatch; fail closed")
+                        result["directional_research"] = paired.as_dict()
+                        result["directional_status"] = paired.status
+                        result["candidate_deployment"] = "RESEARCH_ONLY_NOT_APPROVED"
             outputs.append(result)
     report = {
         "verification": "USER_SUPPLIED_TRADE_CSV_FORMAT_VALIDATED_NOT_EXCHANGE_VERIFIED",
@@ -73,6 +88,8 @@ def main(argv=None):
         "no_api_calls": True, "no_orders": True, "no_live_forecasts": True,
         "missing_minutes": "SPLIT_SEGMENTS_NO_BACKFILL",
         "final_holdout": "UNSCORED_WHEN_EVALUATED",
+        "directional_candidate": "RESEARCH_ONLY_NEVER_PROMOTE_AUTOMATICALLY",
+        "trading_edge_verified": False,
         "sources": sources, "outputs": outputs,
     }
     # Exclusive create: avoid silent overwrite of an earlier experiment.
