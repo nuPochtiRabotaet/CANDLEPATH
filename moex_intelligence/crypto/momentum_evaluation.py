@@ -14,6 +14,7 @@ from .forecast_baseline import HistoricalVolatilityBaseline, ewma_price_envelope
 from .forecast_evaluation import _closed_rows
 from .forecast_walkforward import evaluate_purged_walkforward
 from .momentum_candidate import CANDIDATE_VERSION, momentum_envelope
+from .regime_research import REGIMES, REGIME_VERSION, classify_past_volatility
 from .market import seconds
 
 
@@ -39,6 +40,23 @@ class PairedHorizon:
 
 
 @dataclass(frozen=True)
+class RegimeHorizon:
+    """Historical, pre-origin volatility state. Small strata are descriptive only."""
+    regime: str
+    horizon_candles: int
+    observations: int
+    rw_mae: float | None
+    candidate_mae: float | None
+    candidate_mae_gain_pct: float | None
+    rw_coverage: float | None
+    candidate_coverage: float | None
+    candidate_direction_hit_rate: float | None
+    nonflat_actuals: int
+    direction_hits: int
+    sample_sufficient: bool
+
+
+@dataclass(frozen=True)
 class PairedFold:
     fold_number: int
     origins: int
@@ -46,6 +64,7 @@ class PairedFold:
     validation_start_index: int
     validation_end_exclusive: int
     horizons: tuple[PairedHorizon, ...]
+    volatility_regimes: tuple[RegimeHorizon, ...]
 
 
 @dataclass(frozen=True)
@@ -56,6 +75,7 @@ class CandidateComparison:
     timeframe: str
     random_walk_version: str
     candidate_version: str
+    regime_version: str
     folds: tuple[PairedFold, ...]
     final_holdout_sha256: str
     final_holdout_evaluated: bool
@@ -63,6 +83,30 @@ class CandidateComparison:
 
     def as_dict(self):
         return asdict(self)
+
+
+def _new_bucket():
+    return {"n":0,"rw_abs":Decimal(0),"candidate_abs":Decimal(0),
+            "rw_interval":Decimal(0),"candidate_interval":Decimal(0),
+            "rw_covered":0,"candidate_covered":0,
+            "moving_actuals":0,"nonflat_predictions":0,"direction_hits":0}
+
+
+def _add_scored(b, c_error, r_error, c_interval, r_interval,
+                c_hit, r_hit, anchor, candidate_median, actual):
+    b["n"] += 1
+    b["candidate_abs"] += c_error
+    b["rw_abs"] += r_error
+    b["candidate_interval"] += c_interval
+    b["rw_interval"] += r_interval
+    b["candidate_covered"] += c_hit
+    b["rw_covered"] += r_hit
+    if actual != anchor:
+        b["moving_actuals"] += 1
+        if candidate_median != anchor:
+            b["nonflat_predictions"] += 1
+            if (candidate_median > anchor) == (actual > anchor):
+                b["direction_hits"] += 1
 
 
 def _decimal(value):
@@ -134,17 +178,16 @@ def compare_momentum_to_rw(candles,symbol,timeframe,*,folds=3,
     for f in split.folds:
         start,end=f.validation_start_index,f.validation_end_exclusive
         origins=skipped=0
-        buckets={h:{"n":0,"rw_abs":Decimal(0),"candidate_abs":Decimal(0),
-                    "rw_interval":Decimal(0),"candidate_interval":Decimal(0),
-                    "rw_covered":0,"candidate_covered":0,
-                    "moving_actuals":0,"nonflat_predictions":0,"direction_hits":0}
-                 for h in HistoricalVolatilityBaseline.horizons}
+        buckets={h:_new_bucket() for h in HistoricalVolatilityBaseline.horizons}
+        regime_buckets={label:{h:_new_bucket() for h in HistoricalVolatilityBaseline.horizons}
+                        for label in REGIMES}
         for index in range(start-1,end-longest,stride):
             observed=tuple(p for _,p in rows[max(0,index+1-window):index+1])
             try:
                 candidate=momentum_envelope(observed,HistoricalVolatilityBaseline.horizons)
                 reference=ewma_price_envelope(observed,HistoricalVolatilityBaseline.horizons,
                                              z=HistoricalVolatilityBaseline.z80)
+                past_regime=classify_past_volatility(observed)
             except ValueError:
                 skipped+=1
                 continue
@@ -157,20 +200,9 @@ def compare_momentum_to_rw(candles,symbol,timeframe,*,folds=3,
                 actual=rows[target][1]
                 c_error,c_interval,c_hit=_score(*c,actual,anchor)
                 r_error,r_interval,r_hit=_score(*r,actual,anchor)
-                b=buckets[h]
-                b["n"]+=1
-                b["candidate_abs"]+=c_error
-                b["rw_abs"]+=r_error
-                b["candidate_interval"]+=c_interval
-                b["rw_interval"]+=r_interval
-                b["candidate_covered"]+=c_hit
-                b["rw_covered"]+=r_hit
-                if actual!=anchor:
-                    b["moving_actuals"]+=1
-                    if c[1]!=anchor:
-                        b["nonflat_predictions"]+=1
-                        if (c[1]>anchor)==(actual>anchor):
-                            b["direction_hits"]+=1
+                for b in (buckets[h], regime_buckets[past_regime][h]):
+                    _add_scored(b,c_error,r_error,c_interval,r_interval,
+                                c_hit,r_hit,anchor,c[1],actual)
 
         points=[]
         for h,b in sorted(buckets.items()):
@@ -200,12 +232,36 @@ def compare_momentum_to_rw(candles,symbol,timeframe,*,folds=3,
                 direction_wilson_95_lower=wilson_low,
                 direction_wilson_95_upper=wilson_high,
                 direction_sample_sufficient=b["moving_actuals"]>=30))
+        regime_results=[]
+        for label in REGIMES:
+            for h,b in sorted(regime_buckets[label].items()):
+                if not b["n"]:
+                    continue
+                n=Decimal(b["n"])
+                rw=b["rw_abs"]/n
+                challenger=b["candidate_abs"]/n
+                gain=(Decimal(100)*(rw-challenger)/rw if rw>0 else None)
+                regime_results.append(RegimeHorizon(
+                    regime=label,horizon_candles=h,observations=b["n"],
+                    rw_mae=_finite(rw),candidate_mae=_finite(challenger),
+                    candidate_mae_gain_pct=_finite(gain) if gain is not None else None,
+                    rw_coverage=b["rw_covered"]/b["n"],
+                    candidate_coverage=b["candidate_covered"]/b["n"],
+                    candidate_direction_hit_rate=(
+                        b["direction_hits"]/b["moving_actuals"]
+                        if b["moving_actuals"] else None),
+                    nonflat_actuals=b["moving_actuals"],
+                    direction_hits=b["direction_hits"],
+                    sample_sufficient=(b["n"]>=30 and b["moving_actuals"]>=30)))
+        # Every scored outcome belongs to exactly one PRE-ORIGIN regime.
+        for h in HistoricalVolatilityBaseline.horizons:
+            assert sum(b[h]["n"] for b in regime_buckets.values())==buckets[h]["n"]
         if origins>=min_required_origins:
             complete+=1
         reports.append(PairedFold(
             fold_number=f.number,origins=origins,skipped_origins=skipped,
             validation_start_index=start,validation_end_exclusive=end,
-            horizons=tuple(points)))
+            horizons=tuple(points),volatility_regimes=tuple(regime_results)))
 
     return CandidateComparison(
         mode="PAIRED_DIRECTIONAL_RESEARCH_SEALED_FINAL",
@@ -213,7 +269,8 @@ def compare_momentum_to_rw(candles,symbol,timeframe,*,folds=3,
                 if complete==folds else "INSUFFICIENT"),
         symbol=symbol,timeframe=timeframe,
         random_walk_version=HistoricalVolatilityBaseline.version,
-        candidate_version=CANDIDATE_VERSION,folds=tuple(reports),
+        candidate_version=CANDIDATE_VERSION,regime_version=REGIME_VERSION,
+        folds=tuple(reports),
         final_holdout_sha256=split.sealed_final.sha256,
         final_holdout_evaluated=False,
         note="Both models use identical pre-origin closed candles and are "
@@ -223,4 +280,9 @@ def compare_momentum_to_rw(candles,symbol,timeframe,*,folds=3,
              "holdout remains SEALED and unscored. Direction hit rate includes "
              "all nonflat realized moves; flat candidate calls count as misses. "
              "Wilson 95% bounds are descriptive and do not imply independent "
-             "market observations, statistical trading edge, or validated accuracy.")
+             "market observations, statistical trading edge, or validated accuracy. "
+             "Volatility labels use only 120 pre-origin closed prices with fixed "
+             "20-vs-99 return RMS thresholds (expanding >=1.25, contracting <=0.80). "
+             "Regime splits are retrospective descriptive diagnostics: a stratum "
+             "under 30 scored origins or nonflat outcomes is insufficient and "
+             "never authorizes model selection, strategy promotion or trading.")
