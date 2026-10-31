@@ -50,6 +50,8 @@ jobs:
         run: node --check moex_intelligence/components/trade.js
       - name: Deterministic forecast geometry and quantile contract
         run: node scripts/verify_v09_forecast_geometry.js
+      - name: Deterministic chart update and signal indexing contract
+        run: node scripts/verify_v09_chart_updates.js
       - name: Full Python tests (not selectively skipped)
         run: python -m pytest -q --disable-warnings --junitxml=pytest-candlepath-v09.xml
       - name: Browser integration smoke on synthetic candles
