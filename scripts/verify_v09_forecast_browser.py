@@ -159,7 +159,50 @@ def verify():
             assert page.locator('.terminal').evaluate(
                 'e=>e.__runtime.volume.data().length')==120
             assert not errors,errors
-            return 'PASS: render, toggle, unavailable, empty feed, same-version recovery, JS errors'
+            # Same-version live changes previously updated candle close but
+            # left volume stale when the back-end version was unchanged.
+            before=page.locator('.terminal').evaluate("""e=>({
+                volume:e.__runtime.volume.data().at(-1).value,
+                close:e.__runtime.candles.data().at(-1).close})""")
+            page.evaluate("""() => {const bar=window._data.candles.at(-1);
+                bar.volume+=9;bar.close+=.1;window._invoke()}""")
+            after=page.locator('.terminal').evaluate("""e=>({
+                volume:e.__runtime.volume.data().at(-1).value,
+                close:e.__runtime.candles.data().at(-1).close})""")
+            assert after['volume']==before['volume']+9,(before,after)
+            assert abs(after['close']-before['close']-.1)<1e-6,(before,after)
+            # Historical volume correction must force a full rebuild, not a
+            # tail-only update; no old bar may survive as a ghost.
+            page.evaluate("""() => {window._data.candles[20].volume=77;
+                window._invoke()}""")
+            value=page.locator('.terminal').evaluate(
+                'e=>e.__runtime.volume.data()[20].value')
+            assert value==77,value
+            # Append a partial candle, then remove it. Both price and volume
+            # must exactly match the incoming snapshot without stale tail bars.
+            page.evaluate("""() => {const tail=window._data.candles.at(-1);
+                window._data.candles.push({time:tail.time+900,open:100,
+                    high:101,low:99,close:100,volume:3,closed:false});
+                window._invoke()}""")
+            assert page.locator('.terminal').evaluate(
+                'e=>e.__runtime.volume.data().length')==121
+            page.evaluate("""() => {window._data.candles.pop();
+                window._invoke()}""")
+            assert page.locator('.terminal').evaluate(
+                'e=>e.__runtime.volume.data().length')==120
+            # Same timestamp can carry several signals: all hover details
+            # remain indexed and last-on-click order remains unchanged.
+            page.evaluate("""() => {
+                const t=window._data.candles[60].time;
+                window._data.signals=[{timestamp:t,type:'BUY',strategy:'One'},
+                    {timestamp:t,type:'EXIT',strategy:'Two'}];
+                window._invoke()}""")
+            indexed=page.locator('.terminal').evaluate("""e=>{
+                const ts=window._data.candles[60].time;
+                return e.__runtime.signalsByTime.get(ts).map(s=>s.strategy)}""")
+            assert indexed==['One','Two'],indexed
+            assert not errors,errors
+            return 'PASS: forecast geometry, same-version volume, historical correction, append/truncate, indexed signals'
         finally:
             browser.close()
 
