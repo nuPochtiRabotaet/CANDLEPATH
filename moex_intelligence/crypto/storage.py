@@ -44,15 +44,40 @@ COMMIT;''')
     def candles(self,symbol,interval):
         with self.connect() as db:return [Candle(**json.loads(r[0])) for r in db.execute('SELECT body FROM candles WHERE symbol=? AND interval=? ORDER BY time',(symbol,interval))]
     def save_candles(self,symbol,interval,rows):
+        """Persist a batch without one SQLite read per candle.
+
+        The immutable-closed-candle rule is checked against the database and
+        against earlier rows *within the same batch*. A conflicting update
+        aborts the transaction; pre-existing user data is never overwritten.
+        Bounded IN queries avoid SQLite parameter-count limits.
+        """
         from dataclasses import asdict
+        items=list(rows)
+        if not items:
+            return
         with self.connect() as db:
             db.execute('BEGIN IMMEDIATE')
-            for c in rows:
-                old=db.execute('SELECT body FROM candles WHERE symbol=? AND interval=? AND time=?',(symbol,interval,c.time)).fetchone()
-                if old and json.loads(old[0])['closed']:
-                    if c.closed and Candle(**json.loads(old[0]))!=c:raise MarketError('Закрытая свеча в журнале неизменяема')
+            existing={}
+            times=list(dict.fromkeys(c.time for c in items))
+            for offset in range(0,len(times),400):
+                batch=times[offset:offset+400]
+                placeholders=','.join('?' for _ in batch)
+                for stamp,body in db.execute(
+                    f'SELECT time,body FROM candles WHERE symbol=? AND interval=? AND time IN ({placeholders})',
+                    (symbol,interval,*batch)):
+                    existing[stamp]=json.loads(body)
+            changes=[]
+            for c in items:
+                previous=existing.get(c.time)
+                if previous and previous['closed']:
+                    if c.closed and Candle(**previous)!=c:
+                        raise MarketError('Закрытая свеча в журнале неизменяема')
                     continue
-                db.execute('INSERT OR REPLACE INTO candles VALUES(?,?,?,?)',(symbol,interval,c.time,json.dumps(asdict(c))))
+                record=asdict(c)
+                existing[c.time]=record
+                changes.append((symbol,interval,c.time,json.dumps(record)))
+            if changes:
+                db.executemany('INSERT OR REPLACE INTO candles VALUES(?,?,?,?)',changes)
     def publish(self,signals):
         with self.connect() as db:
             db.executemany('INSERT OR IGNORE INTO signals VALUES(?,?,?)',[(s['id'],json.dumps(s,ensure_ascii=False,allow_nan=False),time.time()) for s in signals])
