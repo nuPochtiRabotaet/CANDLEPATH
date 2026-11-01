@@ -102,7 +102,8 @@ def test_unrelated_exit_never_closes_position(monkeypatch):
 
 
 def test_single_position_risk_allocation_and_never_reenter_same_open(monkeypatch):
-    plug(monkeypatch,[(140,{}),(141,{})])
+    # Two independent BUY strategies at the SAME origin never open two positions.
+    plug(monkeypatch,[(140,{}),(140,{"strategy":"Mean Reversion"})])
     bars=history(patches={141:(100.,102.,98.,100.)})
     report=simulate_paper_paths(bars,"BTCUSDT","1")
     assert report["folds"][0]["events"]["buys"]==1
