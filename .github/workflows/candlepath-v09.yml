@@ -3,6 +3,7 @@ name: CandlePath v0.9 verification
 'on':
   push:
     branches:
+      - develop/v0.9
       - audit/v09-ten-pass-hardening
       - feat/v09-offline-forecast-evaluation
       - fix/v09-replay-regression-round2

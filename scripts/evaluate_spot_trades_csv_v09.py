@@ -21,6 +21,7 @@ from moex_intelligence.crypto.spot_trade_import import (
     read_spot_trade_minutes, segment_spot_trade_minutes, write_spot_candle_segments)
 from moex_intelligence.crypto.forecast_walkforward import evaluate_purged_walkforward
 from moex_intelligence.crypto.momentum_evaluation import compare_momentum_to_rw
+from moex_intelligence.crypto.signal_outcome_research import audit_buy_signal_outcomes
 
 
 def main(argv=None):
@@ -35,10 +36,18 @@ def main(argv=None):
                         help="Run the actual CandlePath purged walk-forward; final holdout stays SEALED")
     parser.add_argument("--compare-momentum", action="store_true",
                         help="Paired Random Walk vs fixed shrunk-momentum research on the same sealed development folds; NEVER a trading signal")
+    parser.add_argument("--audit-signals", action="store_true",
+                        help="Research current BUY chart rules at NEXT candle opens with fees; no trades")
+    parser.add_argument("--assumed-spread-bps", type=float, default=0.0,
+                        help="Full symmetric spread assumption for offline cost estimate (default 0, optimistic)")
     parser.add_argument("--min-origins", type=int, default=30)
     args = parser.parse_args(argv)
     if args.compare_momentum and not args.evaluate:
         parser.error("--compare-momentum requires --evaluate")
+    if args.audit_signals and not args.evaluate:
+        parser.error("--audit-signals requires --evaluate")
+    if args.assumed_spread_bps and not args.audit_signals:
+        parser.error("--assumed-spread-bps requires --audit-signals")
     if len(set(args.timeframes)) != len(args.timeframes):
         raise ValueError("Duplicate requested timeframe")
     # Avoid reading millions of source rows a second time for each timeframe.
@@ -80,6 +89,17 @@ def main(argv=None):
                         result["directional_research"] = paired.as_dict()
                         result["directional_status"] = paired.status
                         result["candidate_deployment"] = "RESEARCH_ONLY_NOT_APPROVED"
+                    if args.audit_signals:
+                        signal_audit = audit_buy_signal_outcomes(
+                            dataset.candles, args.symbol, timeframe,
+                            min_required_origins=args.min_origins,
+                            assumed_spread_bps=args.assumed_spread_bps)
+                        if signal_audit.final_holdout_evaluated or (
+                                signal_audit.final_holdout_sha256 != evaluation.sealed_final.sha256):
+                            raise ValueError("Signal audit final holdout mismatch; fail closed")
+                        result["signal_outcome_research"] = signal_audit.as_dict()
+                        result["signal_outcome_status"] = signal_audit.status
+                        result["trading_edge_verified"] = False
             outputs.append(result)
     report = {
         "verification": "USER_SUPPLIED_TRADE_CSV_FORMAT_VALIDATED_NOT_EXCHANGE_VERIFIED",
@@ -90,6 +110,7 @@ def main(argv=None):
         "final_holdout": "UNSCORED_WHEN_EVALUATED",
         "directional_candidate": "RESEARCH_ONLY_NEVER_PROMOTE_AUTOMATICALLY",
         "trading_edge_verified": False,
+        "signal_audit_is_execution_backtest": False,
         "sources": sources, "outputs": outputs,
     }
     # Exclusive create: avoid silent overwrite of an earlier experiment.
