@@ -23,6 +23,7 @@ from moex_intelligence.crypto.forecast_walkforward import evaluate_purged_walkfo
 from moex_intelligence.crypto.momentum_evaluation import compare_momentum_to_rw
 from moex_intelligence.crypto.signal_outcome_research import audit_buy_signal_outcomes
 from moex_intelligence.crypto.paper_path_research import simulate_paper_paths
+from moex_intelligence.crypto.paper_rules_research import load_research_rules
 
 
 def main(argv=None):
@@ -43,6 +44,8 @@ def main(argv=None):
                         help="Full symmetric spread assumption for offline cost estimate (default 0, optimistic)")
     parser.add_argument("--simulate-paper-paths", action="store_true",
                         help="Isolated sequential SPOT paths with single long, stop/target, fees and fixed capital limits; NOT real Paper/Trading")
+    parser.add_argument("--paper-rules-file", type=Path,
+                        help="Optional strict, USER-SUPPLIED UNVERIFIED Spot rule scenario JSON; does not certify historical Bybit rules")
     parser.add_argument("--paper-initial-cash", default="10000",
                         help="Isolated hypothetical quote-currency bankroll per development fold")
     parser.add_argument("--paper-max-hold-bars", type=int, default=16)
@@ -58,8 +61,12 @@ def main(argv=None):
         parser.error("--assumed-spread-bps requires --audit-signals or --simulate-paper-paths")
     if not args.simulate_paper_paths and (args.paper_initial_cash != "10000" or args.paper_max_hold_bars != 16):
         parser.error("Paper-only parameters require --simulate-paper-paths")
+    if args.paper_rules_file is not None and not args.simulate_paper_paths:
+        parser.error("--paper-rules-file requires --simulate-paper-paths")
     if len(set(args.timeframes)) != len(args.timeframes):
         raise ValueError("Duplicate requested timeframe")
+    assumed_rules = (load_research_rules(args.paper_rules_file, args.symbol)
+                     if args.paper_rules_file is not None else None)
     # Avoid reading millions of source rows a second time for each timeframe.
     minutes, sources = read_spot_trade_minutes(args.input, args.symbol)
     outputs = []
@@ -116,7 +123,8 @@ def main(argv=None):
                             assumed_spread_bps=args.assumed_spread_bps,
                             initial_cash=args.paper_initial_cash,
                             max_hold_bars=args.paper_max_hold_bars,
-                            min_required_origins=args.min_origins)
+                            min_required_origins=args.min_origins,
+                            assumed_rules=assumed_rules)
                         if (paper_path["final_holdout_evaluated"] or
                                 paper_path["final_holdout_sha256"] != evaluation.sealed_final.sha256):
                             raise ValueError("Paper-path research holdout mismatch; fail closed")
@@ -135,6 +143,7 @@ def main(argv=None):
         "trading_edge_verified": False,
         "signal_audit_is_execution_backtest": False,
         "paper_path_is_live_or_production_paper": False,
+        "assumed_paper_rules":assumed_rules.snapshot() if assumed_rules else None,
         "sources": sources, "outputs": outputs,
     }
     # Exclusive create: avoid silent overwrite of an earlier experiment.
