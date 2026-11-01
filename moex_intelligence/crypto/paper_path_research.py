@@ -19,9 +19,10 @@ from .forecast_walkforward import evaluate_purged_walkforward
 from .market import seconds
 from .risk import PROFILE
 from .paper_risk_research import ResearchEquityGuards
+from .paper_rules_research import ResearchSpotRules
 from .signal_outcome_research import STRATEGIES
 
-VERSION = "single-long-ohlcv-path-v09-research-2"
+VERSION = "single-long-ohlcv-path-v09-research-3"
 MAX_HOLD_BARS = 16
 QTY_STEP = Decimal("0.000001")
 CAP_FRACTION = Decimal(str(PROFILE["symbol"]))
@@ -45,7 +46,7 @@ def _quote_at(mid, spread_bps):
     return {"ask": str(mid*(1+spread)), "bid": str(mid*(1-spread))}
 
 
-def _buy_for_cash(cash, open_price, stop, spread_bps, model):
+def _buy_for_cash(cash, open_price, stop, spread_bps, model, assumed_rules=None):
     quote = _quote_at(open_price, spread_bps)
     unit = estimate("BUY", Decimal(1), quote, model)
     stop_quote = _quote_at(stop, spread_bps)
@@ -58,7 +59,10 @@ def _buy_for_cash(cash, open_price, stop, spread_bps, model):
         cash*CAP_FRACTION/debit_unit,
         cash*RISK_FRACTION/risk_unit,
         cash/debit_unit)
-    qty = (cap_qty/QTY_STEP).to_integral_value(rounding=ROUND_FLOOR)*QTY_STEP
+    step = assumed_rules.step if assumed_rules is not None else QTY_STEP
+    if assumed_rules is not None:
+        cap_qty=min(cap_qty,assumed_rules.maximum)
+    qty = (cap_qty/step).to_integral_value(rounding=ROUND_FLOOR)*step
     if qty <= 0:
         return None
     buy = estimate("BUY", qty, quote, model)
@@ -67,11 +71,19 @@ def _buy_for_cash(cash, open_price, stop, spread_bps, model):
     actual_stop = estimate("SELL", buy.net_base, stop_quote, model)
     if -buy.cash_delta - actual_stop.cash_delta > cash*RISK_FRACTION:
         raise ValueError("Risk allocation exceeded stop budget")
+    # Never invent a fill if this EXPLICIT assumed scenario would reject
+    # minimum notional or leave a legally uncloseable base-fee residue.
+    if assumed_rules is not None:
+        if not assumed_rules.check_entry(buy,stop_quote["bid"],model):
+            return None
     return buy
 
 
-def _closed_exit(position, price, cash, spread_bps, model, reason, i, rows):
-    sold = estimate("SELL", position["base"], _quote_at(price, spread_bps), model)
+def _closed_exit(position, price, cash, spread_bps, model, reason, i, rows, assumed_rules=None):
+    quote = _quote_at(price, spread_bps)
+    if assumed_rules is not None and not assumed_rules.sellable_at(position["base"],quote["bid"],model):
+        raise ValueError("UNEXECUTABLE_RESEARCH_EXIT: assumed rules reject full sale; no fabricated proceeds")
+    sold = estimate("SELL", position["base"], quote, model)
     after = cash + sold.cash_delta
     pnl = sold.cash_delta - position["debit"]
     return after, {
@@ -92,7 +104,8 @@ def _closed_exit(position, price, cash, spread_bps, model, reason, i, rows):
 
 def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
                          initial_cash="10000", max_hold_bars=MAX_HOLD_BARS,
-                         cost_model=None, min_required_origins=30):
+                         cost_model=None, min_required_origins=30,
+                         assumed_rules=None):
     """Evaluate isolated development-fold virtual paths, never live/Paper orders.
 
     Rules: one SPOT long at a time, deterministic strategy priority, max 25%
@@ -119,6 +132,10 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
     model = CostModel() if cost_model is None else cost_model
     if not isinstance(model, CostModel):
         raise ValueError("Expected validated CandlePath CostModel")
+    if assumed_rules is not None and (
+            not isinstance(assumed_rules, ResearchSpotRules)
+            or assumed_rules.symbol != symbol):
+        raise ValueError("Research rules missing or symbol mismatch")
 
     split = evaluate_purged_walkforward(
         candles, symbol, timeframe, min_required_origins=min_required_origins)
@@ -153,12 +170,13 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
         cash=cash_start
         high_water=cash_start
         max_drawdown=Decimal(0)
-        risk_ledger=ResearchEquityGuards(cash_start)
+        risk_ledger=ResearchEquityGuards(cash_start, assumed_rules)
         pos=None
         trades=[]
         counts={"buys":0,"exits":0,"rejected_entry":0,
                 "ignored_while_open":0,"blocked_drawdown":0,
                 "blocked_day_loss":0,"blocked_week_loss":0,
+                "rejected_rules":0,
                 "ambiguous_stop_first":0,"forced_fold_close":0}
         for i in range(start+1,end):
             bar=rows[i]
@@ -178,7 +196,7 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
                         "RULE_EXIT" if any(s["type"]=="EXIT" and s["strategy"]==pos["strategy"] for s in prior) else
                         "MAX_HOLD" if i-pos["entry_idx"]>=max_hold_bars else None)
                 if reason:
-                    cash,done=_closed_exit(pos,opened,cash,assumed_spread_bps,model,reason,i,rows)
+                    cash,done=_closed_exit(pos,opened,cash,assumed_spread_bps,model,reason,i,rows,assumed_rules)
                     trades.append(done);pos=None;counts["exits"]+=1
                     high_water=max(high_water,cash)
                     max_drawdown=max(max_drawdown,(high_water-cash)/high_water)
@@ -203,10 +221,12 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
                         quote=_quote_at(price, assumed_spread_bps)
                         if not stop<D(quote["bid"])<=D(quote["ask"])<target:
                             counts["rejected_entry"]+=len(candidates)
+                        elif assumed_rules is not None and not assumed_rules.levels_on_tick(stop,target):
+                            counts["rejected_rules"]+=len(candidates)
                         else:
-                            order=_buy_for_cash(cash,price,stop,assumed_spread_bps,model)
+                            order=_buy_for_cash(cash,price,stop,assumed_spread_bps,model,assumed_rules)
                             if order is None:
-                                counts["rejected_entry"]+=len(candidates)
+                                counts["rejected_rules" if assumed_rules is not None else "rejected_entry"]+=len(candidates)
                             else:
                                 debit=-order.cash_delta
                                 cash-=debit
@@ -230,7 +250,7 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
                     cause=("STOP_FIRST_AMBIGUOUS" if stop_hit and target_hit else
                            "STOP" if stop_hit else "TARGET")
                     exit_px=pos["stop"] if stop_hit else pos["target"]
-                    cash,done=_closed_exit(pos,exit_px,cash,assumed_spread_bps,model,cause,i,rows)
+                    cash,done=_closed_exit(pos,exit_px,cash,assumed_spread_bps,model,cause,i,rows,assumed_rules)
                     trades.append(done);pos=None;counts["exits"]+=1
                     high_water=max(high_water,cash)
                     max_drawdown=max(max_drawdown,(high_water-cash)/high_water)
@@ -239,7 +259,7 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
             if pos is not None and i==end-1:
                 cash,done=_closed_exit(pos,bar["close"],cash,
                                        assumed_spread_bps,model,
-                                       "FOLD_CLOSE_OPTIMISTIC",i,rows)
+                                       "FOLD_CLOSE_OPTIMISTIC",i,rows,assumed_rules)
                 trades.append(done);counts["forced_fold_close"]+=1;counts["exits"]+=1
                 pos=None
                 high_water=max(high_water,cash)
@@ -266,7 +286,8 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
         "symbol":symbol,"timeframe":timeframe,"version":VERSION,
         "rules_version":RULES_VERSION,"cost_model":model.snapshot(),
         "spread_assumed_full_bps":str(D(assumed_spread_bps)),
-        "max_hold_bars":max_hold_bars,"virtual_step":str(QTY_STEP),
+        "assumed_spot_rules":assumed_rules.snapshot() if assumed_rules else None,
+        "max_hold_bars":max_hold_bars,"virtual_step":str(assumed_rules.step if assumed_rules else QTY_STEP),
         "safety_limits":{
             "maximum_symbol_fraction":str(CAP_FRACTION),
             "maximum_initial_stop_risk_fraction":str(RISK_FRACTION),
@@ -286,8 +307,12 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
                "At intrabar stop/target collisions STOP is first; gap exits "
                "use the OPEN, stop/target fills at thresholds are optimistic. "
                "Terminal liquidation at last fold close is optimistic. "
-               "One long at a time, folds reset bankroll, fixed quantity step "
-               "not verified against exchange rules. Only capital allocation, "
+               "One long at a time, folds reset bankroll; exchange constraints "
+               "are not verified. If provided, quantity and stop/target tick "
+               "plus min-notional and projected full sellability are filtered "
+               "against the supplied, UNVERIFIED hypothetical rules. An "
+               "unexecutable actual exit FAILS CLOSED without invented PnL. "
+               "Only capital allocation, "
                "initial stop risk, marked-equity drawdown and UTC day/week "
                "historical entry gates are modeled; not full production Paper "
                "gating, ongoing intrabar equity drawdown, "
