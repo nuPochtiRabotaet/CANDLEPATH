@@ -150,12 +150,6 @@ def test_native_real_rule_engine_can_process_fixture_without_publishing():
 def test_trade_csv_cli_signals_are_readonly_and_final_sealed(tmp_path):
     path=tmp_path/"BTCUSDT_2026-10-25.csv"
     n=1600
-    t0=int(time.time()//STEP)*STEP-(n+10)*STEP
-    with path.open("w",encoding="utf8",newline="") as f:
-        w=csv.writer(f);w.writerow(["id","timestamp","price","volume","side","rpi"])
-        for i in range(n):
-            w.writerow([i+1,(t0+i*STEP)*1000,str(100+i*.01),
-                        ".02","buy" if i%2 else "sell","0"])
     # The fixture must match its filename's UTC day. Use a deterministic day
     # rather than the current clock; keeps the test runnable any month/year.
     day=int(__import__("datetime").datetime(2026,10,25,tzinfo=__import__("datetime").timezone.utc).timestamp()*1000)
@@ -203,3 +197,60 @@ def test_signal_cli_requires_explicit_eval_mode(tmp_path):
     assert result.returncode==2
     assert "--audit-signals requires --evaluate" in result.stderr
     assert not (tmp_path/"out").exists()
+
+
+def test_exact_hypothetical_entry_exit_prices_are_future_opens(monkeypatch):
+    import moex_intelligence.crypto.signal_outcome_research as module
+    data=candles()
+    origin=128
+    def one(rows,symbol,timeframe):
+        bar=rows[origin]
+        return {"signals":[{
+            "status":"confirmed","strategy":"Trend Following","type":"BUY",
+            "candle_time":bar["time"],"timestamp":bar["time"]+STEP,
+            "reference_price":bar["close"]}]}
+    monkeypatch.setattr(module,"analyze",one)
+    report=audit_buy_signal_outcomes(data,"BTCUSDT","1")
+    f=report.folds[0]
+    s=next(x for x in f.outcomes if
+           x.strategy=="Trend Following" and x.horizon_candles==1)
+    assert s.observations==1
+    expected_gross=(data[origin+2].open/data[origin+1].open-1)*100
+    assert s.mean_gross_return_pct==pytest.approx(expected_gross)
+    assert s.mean_net_return_pct==pytest.approx(
+        float(_cash_return(data[origin+1].open,data[origin+2].open,0,
+                           CostModel())))
+    assert f.confirmed_buy_signals==1
+    assert all(x.observations==0 for x in report.folds[1].outcomes)
+
+
+def test_future_generated_signal_fails_closed(monkeypatch):
+    import moex_intelligence.crypto.signal_outcome_research as module
+    def future(rows,symbol,timeframe):
+        future_time=rows[-1]["time"]+STEP
+        return {"signals":[{
+            "status":"confirmed","strategy":"Trend Following","type":"BUY",
+            "candle_time":future_time,"timestamp":future_time+STEP,
+            "reference_price":123.0}]}
+    monkeypatch.setattr(module,"analyze",future)
+    with pytest.raises(ValueError,match="outside the available historical prefix"):
+        audit_buy_signal_outcomes(candles(),"BTCUSDT","1")
+
+
+def test_extreme_finite_values_never_serialize_nonfinite_metrics():
+    from decimal import Decimal
+    from moex_intelligence.crypto.signal_outcome_research import _summary
+    huge=Decimal("1e400")
+    result=_summary("Breakout Detection",8,[huge],[-huge])
+    assert result.mean_gross_return_pct is None
+    assert result.mean_net_return_pct is None
+    assert result.min_net_return_pct is None
+    assert result.max_net_return_pct is None
+    json.dumps(result.__dict__,allow_nan=False)
+
+
+def test_missing_or_reordered_candles_cannot_be_scored():
+    data=candles()
+    with pytest.raises(ValueError,match="missing candles|Reordered|duplicate"):
+        audit_buy_signal_outcomes(data[:200]+data[201:],
+                                  "BTCUSDT","1")
