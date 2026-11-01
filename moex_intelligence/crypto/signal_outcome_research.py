@@ -95,6 +95,15 @@ def _cash_return(entry_open, exit_open, spread_bps, cost_model):
     return Decimal(100) * (sell.cash_delta / initial - Decimal(1))
 
 
+def _safe_float(value):
+    """Do not serialize Infinity from extreme but finite hypothetical outcomes."""
+    try:
+        numeric = float(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    return numeric if math.isfinite(numeric) else None
+
+
 def _summary(strategy, h, gross_values, net_values):
     n = len(net_values)
     if not n:
@@ -107,9 +116,9 @@ def _summary(strategy, h, gross_values, net_values):
     return SignalOutcome(
         strategy, h, n,
         sum(x > 0 for x in gross_values), sum(x > 0 for x in net_values),
-        float(sum(gross_values) / n), float(sum(net_values) / n),
-        float(middle), float(sum(abs(x) for x in gross_values) / n),
-        float(arr[0]), float(arr[-1]), n >= 30)
+        _safe_float(sum(gross_values) / n), _safe_float(sum(net_values) / n),
+        _safe_float(middle), _safe_float(sum(abs(x) for x in gross_values) / n),
+        _safe_float(arr[0]), _safe_float(arr[-1]), n >= 30)
 
 
 def audit_buy_signal_outcomes(candles, symbol, timeframe, *,
@@ -166,6 +175,8 @@ def audit_buy_signal_outcomes(candles, symbol, timeframe, *,
             if type(timestamp) is not int or (timestamp - rows[0]["time"]) % step:
                 raise ValueError("Noncausal or unaligned signal")
             origin = (timestamp - rows[0]["time"]) // step
+            if not 0 <= origin < end:
+                raise ValueError("Generated signal is outside the available historical prefix")
             if not start <= origin < end:
                 continue
             if signal.get("timestamp") != timestamp + step or signal["reference_price"] != rows[origin]["close"]:
@@ -219,6 +230,7 @@ def audit_buy_signal_outcomes(candles, symbol, timeframe, *,
         note="Hypothetical fixed-horizon next-open-to-next-open BUY outcomes; "
              "not real fills, bid/ask, a stop/target/EXIT strategy backtest, "
              "calibrated prediction, net portfolio profit or validated trading edge. "
+             "Next-bar open fill is an OPTIMISTIC availability assumption. "
              "Default 0-bps spread is an OPTIMISTIC bound with hypothetical "
              "taker commissions and slippage. SELL/EXIT only counted, not shorted. "
              "Overlapping signal/horizon outcomes are dependent. Each fold's "
