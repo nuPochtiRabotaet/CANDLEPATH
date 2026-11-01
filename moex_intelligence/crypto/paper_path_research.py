@@ -18,9 +18,10 @@ from .forecast_evaluation import _closed_rows
 from .forecast_walkforward import evaluate_purged_walkforward
 from .market import seconds
 from .risk import PROFILE
+from .paper_risk_research import ResearchEquityGuards
 from .signal_outcome_research import STRATEGIES
 
-VERSION = "single-long-ohlcv-path-v09-research-1"
+VERSION = "single-long-ohlcv-path-v09-research-2"
 MAX_HOLD_BARS = 16
 QTY_STEP = Decimal("0.000001")
 CAP_FRACTION = Decimal(str(PROFILE["symbol"]))
@@ -96,7 +97,7 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
 
     Rules: one SPOT long at a time, deterministic strategy priority, max 25%
     account allocation, max .75% initial stop budget, block new entries at
-    >=12% realized equity drawdown. Historical exchange lot/minimums and
+    >=12% marked liquidation-equity drawdown, and UTC 3% daily / 6% weekly\n    marked-equity losses. Historical exchange lot/minimums and
     live quote freshness are NOT represented (fixed research quantity step).
 
     At each next candle OPEN: first exit on STOP/TARGET gap, then matching
@@ -152,14 +153,22 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
         cash=cash_start
         high_water=cash_start
         max_drawdown=Decimal(0)
+        risk_ledger=ResearchEquityGuards(cash_start)
         pos=None
         trades=[]
         counts={"buys":0,"exits":0,"rejected_entry":0,
                 "ignored_while_open":0,"blocked_drawdown":0,
+                "blocked_day_loss":0,"blocked_week_loss":0,
                 "ambiguous_stop_first":0,"forced_fold_close":0}
         for i in range(start+1,end):
             bar=rows[i]
             prior=by_index.get(i-1,())
+            # At this OPEN only known information can block a new BUY.
+            # The previous day's/week's close is the reset anchor; this
+            # open's possible gap is never erased by period rollover.
+            gate=risk_ledger.at_open(bar["time"],cash,pos,bar["open"],
+                                     assumed_spread_bps,model)
+            closed_at_open=False
             if pos is not None:
                 # A gap skips a stop threshold: use the worse NEXT OPEN,
                 # never invent a fill at the higher stop price.
@@ -175,13 +184,13 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
                     max_drawdown=max(max_drawdown,(high_water-cash)/high_water)
                     # A single bar must never close and reopen in the same
                     # next-open execution event.
-                    continue
-            if pos is None:
+                    closed_at_open=True
+            if pos is None and not closed_at_open:
                 candidates=[s for s in prior if s["type"]=="BUY"]
                 if candidates:
                     candidates.sort(key=lambda s:(STRATEGIES.index(s["strategy"]),s["candle_time"]))
-                    if (high_water-cash)/high_water>=HALT_DD_FRACTION:
-                        counts["blocked_drawdown"]+=len(candidates)
+                    if gate is not None:
+                        counts[gate]+=len(candidates)
                     elif i==end-1:
                         counts["rejected_entry"]+=len(candidates)
                     else:
@@ -225,16 +234,20 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
                     trades.append(done);pos=None;counts["exits"]+=1
                     high_water=max(high_water,cash)
                     max_drawdown=max(max_drawdown,(high_water-cash)/high_water)
-        # Every fold is separately capitalized, rather than carrying a
-        # position or a learned rule into the next development fold.
-        if pos is not None:
-            final=end-1
-            cash,done=_closed_exit(pos,rows[final]["close"],cash,
-                                   assumed_spread_bps,model,"FOLD_CLOSE_OPTIMISTIC",
-                                   final,rows)
-            trades.append(done);counts["forced_fold_close"]+=1;counts["exits"]+=1
-            high_water=max(high_water,cash)
-            max_drawdown=max(max_drawdown,(high_water-cash)/high_water)
+            # Every fold is separately capitalized and finished flat. This
+            # liquidation is the final CLOSE, never the next-fold OPEN.
+            if pos is not None and i==end-1:
+                cash,done=_closed_exit(pos,bar["close"],cash,
+                                       assumed_spread_bps,model,
+                                       "FOLD_CLOSE_OPTIMISTIC",i,rows)
+                trades.append(done);counts["forced_fold_close"]+=1;counts["exits"]+=1
+                pos=None
+                high_water=max(high_water,cash)
+                max_drawdown=max(max_drawdown,(high_water-cash)/high_water)
+            # CLOSE mark uses this bar's fully observed outcome; it cannot
+            # retroactively affect an entry already made at its OPEN.
+            risk_ledger.at_close(bar["time"],cash,pos,bar["close"],
+                                 assumed_spread_bps,model)
         if counts["buys"]!=len(trades) or counts["exits"]!=len(trades):
             raise ValueError("Unbalanced hypothetical virtual positions")
         reports.append({
@@ -242,6 +255,7 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
             "starting_cash":str(cash_start),"ending_cash":str(cash),
             "net_return_pct":str(Decimal(100)*(cash/cash_start-1)),
             "max_realized_drawdown_pct":str(Decimal(100)*max_drawdown),
+            "marked_equity_guards":risk_ledger.snapshot(),
             "trade_count":len(trades),"events":counts,
             "trades":trades})
     sufficient=split.status=="EVALUATED_DEVELOPMENT_ONLY" and all(
@@ -256,7 +270,10 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
         "safety_limits":{
             "maximum_symbol_fraction":str(CAP_FRACTION),
             "maximum_initial_stop_risk_fraction":str(RISK_FRACTION),
-            "realized_drawdown_entry_halt_fraction":str(HALT_DD_FRACTION),
+            "marked_drawdown_entry_halt_fraction":str(HALT_DD_FRACTION),
+            "marked_day_loss_entry_halt_fraction":str(D(PROFILE["day_loss"])),
+            "marked_week_loss_entry_halt_fraction":str(D(PROFILE["week_loss"])),
+            "mark_basis":"AFTER_COST_HYPOTHETICAL_LIQUIDATION_AT_OPEN_AND_CLOSE",
             "max_open_positions":1},
         "final_holdout_sha256":split.sealed_final.sha256,
         "final_holdout_evaluated":False,
@@ -271,7 +288,8 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
                "Terminal liquidation at last fold close is optimistic. "
                "One long at a time, folds reset bankroll, fixed quantity step "
                "not verified against exchange rules. Only capital allocation, "
-               "initial stop risk and realized drawdown limits are modeled; "
-               "not full daily/weekly Paper gating, open-equity drawdown, "
+               "initial stop risk, marked-equity drawdown and UTC day/week "
+               "historical entry gates are modeled; not full production Paper "
+               "gating, ongoing intrabar equity drawdown, "
                "min notional, partial fills or protective worker operations. "
                "Last 20% strictly sealed. No automatic trading-model promotion."}
