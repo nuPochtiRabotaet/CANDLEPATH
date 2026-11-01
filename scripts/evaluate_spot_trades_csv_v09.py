@@ -24,6 +24,7 @@ from moex_intelligence.crypto.momentum_evaluation import compare_momentum_to_rw
 from moex_intelligence.crypto.signal_outcome_research import audit_buy_signal_outcomes
 from moex_intelligence.crypto.paper_path_research import simulate_paper_paths
 from moex_intelligence.crypto.paper_rules_research import load_research_rules
+from moex_intelligence.crypto.paper_cost_stress_research import run_paper_cost_stress
 
 
 def main(argv=None):
@@ -44,6 +45,8 @@ def main(argv=None):
                         help="Full symmetric spread assumption for offline cost estimate (default 0, optimistic)")
     parser.add_argument("--simulate-paper-paths", action="store_true",
                         help="Isolated sequential SPOT paths with single long, stop/target, fees and fixed capital limits; NOT real Paper/Trading")
+    parser.add_argument("--stress-paper-costs", action="store_true",
+                        help="Optional fixed LOW/PAPER-LIKE/STRESSED cost scenarios, RESEARCH ONLY; significantly more CPU")
     parser.add_argument("--paper-rules-file", type=Path,
                         help="Optional strict, USER-SUPPLIED UNVERIFIED Spot rule scenario JSON; does not certify historical Bybit rules")
     parser.add_argument("--paper-initial-cash", default="10000",
@@ -63,6 +66,8 @@ def main(argv=None):
         parser.error("Paper-only parameters require --simulate-paper-paths")
     if args.paper_rules_file is not None and not args.simulate_paper_paths:
         parser.error("--paper-rules-file requires --simulate-paper-paths")
+    if args.stress_paper_costs and not args.simulate_paper_paths:
+        parser.error("--stress-paper-costs requires --simulate-paper-paths")
     if len(set(args.timeframes)) != len(args.timeframes):
         raise ValueError("Duplicate requested timeframe")
     assumed_rules = (load_research_rules(args.paper_rules_file, args.symbol)
@@ -131,6 +136,18 @@ def main(argv=None):
                         result["paper_path_research"] = paper_path
                         result["paper_path_status"] = paper_path["status"]
                         result["trading_edge_verified"] = False
+                        if args.stress_paper_costs:
+                            stress = run_paper_cost_stress(
+                                dataset.candles, args.symbol, timeframe,
+                                assumed_rules=assumed_rules,
+                                initial_cash=args.paper_initial_cash,
+                                max_hold_bars=args.paper_max_hold_bars,
+                                min_required_origins=args.min_origins)
+                            if (stress["final_holdout_evaluated"]
+                                    or stress["final_holdout_sha256"] != evaluation.sealed_final.sha256):
+                                raise ValueError("Cost sensitivity holdout mismatch; fail closed")
+                            result["paper_cost_stress_research"] = stress
+                            result["cost_scenarios_are_market_verified"] = False
             outputs.append(result)
     report = {
         "verification": "USER_SUPPLIED_TRADE_CSV_FORMAT_VALIDATED_NOT_EXCHANGE_VERIFIED",
@@ -143,6 +160,7 @@ def main(argv=None):
         "trading_edge_verified": False,
         "signal_audit_is_execution_backtest": False,
         "paper_path_is_live_or_production_paper": False,
+        "cost_scenarios_are_market_verified": False,
         "assumed_paper_rules":assumed_rules.snapshot() if assumed_rules else None,
         "sources": sources, "outputs": outputs,
     }
