@@ -74,7 +74,7 @@ def test_downward_stop_gap_fills_next_open_not_stale_stop(monkeypatch):
     t=trades_of(report)[0]
     assert t["reason"]=="STOP_GAP"
     assert t["exit_reference_price"]=="97.0"
-    assert t["exit_open_time"]==bars[142].time
+    assert t["exit_event_time"]==bars[142].time
 
 
 def test_target_gap_is_not_filled_at_stale_target(monkeypatch):
@@ -91,7 +91,7 @@ def test_matching_rule_exit_after_entry_uses_next_open(monkeypatch):
     bars=history()
     t=trades_of(simulate_paper_paths(bars,"BTCUSDT","1"))[0]
     assert t["reason"]=="RULE_EXIT"
-    assert t["exit_open_time"]==bars[142].time
+    assert t["exit_event_time"]==bars[142].time
 
 
 def test_unrelated_exit_never_closes_position(monkeypatch):
