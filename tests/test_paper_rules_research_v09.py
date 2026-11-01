@@ -176,3 +176,41 @@ def test_cli_rejects_implicit_rule_mode_before_reading_trade_data(tmp_path):
     assert proc.returncode==2
     assert "--paper-rules-file requires --simulate-paper-paths" in proc.stderr
     assert not (tmp_path/"out").exists()
+
+
+def test_native_cli_rules_scenario_is_readonly_and_stays_sealed(tmp_path):
+    import csv
+    root=Path(__file__).resolve().parents[1]
+    snapshots=assume(tmp_path)
+    sources=[]
+    for day,count in [(25,1440),(26,160)]:
+        path=tmp_path/f"BTCUSDT_2026-10-{day}.csv"
+        start=int(datetime(2026,10,day,tzinfo=timezone.utc).timestamp()*1000)
+        with path.open("w",newline="",encoding="utf8") as stream:
+            writer=csv.writer(stream)
+            writer.writerow(["id","timestamp","price","volume","side","rpi"])
+            for i in range(count):
+                writer.writerow([i+1,start+i*60000,
+                                 str(100+i*Decimal("0.001")),
+                                 "0.1","buy","0"])
+        sources.append(path)
+    checksums=[hashlib.sha256(p.read_bytes()).hexdigest()
+               for p in [*sources,snapshots]]
+    output=tmp_path/"results"
+    command=[sys.executable,
+             str(root/"scripts/evaluate_spot_trades_csv_v09.py"),
+             "--input",*(str(p) for p in sources),
+             "--symbol","BTCUSDT","--timeframes","1",
+             "--output-dir",str(output),"--evaluate",
+             "--simulate-paper-paths","--paper-rules-file",str(snapshots)]
+    result=subprocess.run(command,capture_output=True,text=True,timeout=120)
+    assert result.returncode==0,result.stderr
+    payload=json.loads(result.stdout)
+    assert payload["assumed_paper_rules"]["original_sha256"]==checksums[-1]
+    assert payload["assumed_paper_rules"]["historically_verified"] is False
+    assert payload["paper_path_is_live_or_production_paper"] is False
+    assert payload["outputs"][0]["paper_path_research"]["final_holdout_evaluated"] is False
+    assert payload["outputs"][0]["paper_path_research"]["assumed_spot_rules"]["provenance"]==PROVENANCE
+    assert [hashlib.sha256(p.read_bytes()).hexdigest()
+            for p in [*sources,snapshots]]==checksums
+    assert subprocess.run(command,capture_output=True,timeout=120).returncode==2
