@@ -21,15 +21,19 @@ def _periods(open_time: int):
     return day.date().isoformat(), f"{year}-W{week:02d}"
 
 
-def liquidation_equity(cash, position, reference_price, spread_bps, model):
+def liquidation_equity(cash, position, reference_price, spread_bps, model, assumed_rules=None):
     """Cash plus after-cost liquidation proceeds at a known candle OPEN/CLOSE."""
     # Local import avoids duplicating spread conventions from the replay.
     from .paper_path_research import _quote_at
     equity = D(cash)
     if position is not None:
-        sold = estimate("SELL", position["base"],
-                        _quote_at(reference_price, spread_bps), model)
-        equity += sold.cash_delta
+        quote = _quote_at(reference_price, spread_bps)
+        # Zero recovery for holdings rendered uncloseable by assumed rules;
+        # never invent proceeds from an illegal liquidation.
+        if assumed_rules is None or assumed_rules.sellable_at(
+                position["base"], quote["bid"], model):
+            sold = estimate("SELL", position["base"], quote, model)
+            equity += sold.cash_delta
     if not equity.is_finite() or equity <= 0:
         raise ValueError("Invalid hypothetical after-cost liquidation equity")
     return equity
@@ -38,10 +42,11 @@ def liquidation_equity(cash, position, reference_price, spread_bps, model):
 class ResearchEquityGuards:
     """One-fold UTC guards; not persisted and never reads account state."""
 
-    def __init__(self, initial_cash):
+    def __init__(self, initial_cash, assumed_rules=None):
         start = D(initial_cash)
         if not start.is_finite() or start <= 0:
             raise ValueError("Invalid research cash")
+        self.assumed_rules = assumed_rules
         self.high_water = start
         self.last_close_equity = start
         self.day_anchor = start
@@ -82,7 +87,8 @@ class ResearchEquityGuards:
         if self.week_key != week:
             self.week_anchor = self.last_close_equity
             self.week_key = week
-        equity = liquidation_equity(cash, position, opening, spread_bps, model)
+        equity = liquidation_equity(cash, position, opening, spread_bps, model,
+                                    self.assumed_rules)
         self._last_open = time
         self.open_marks += 1
         self._observe(equity)
@@ -105,7 +111,8 @@ class ResearchEquityGuards:
         """After-event close mark; cannot affect an already-made OPEN decision."""
         if time != self._last_open:
             raise ValueError("Close mark must match the last opened candle")
-        equity = liquidation_equity(cash, position, closing, spread_bps, model)
+        equity = liquidation_equity(cash, position, closing, spread_bps, model,
+                                    self.assumed_rules)
         self._observe(equity)
         self.last_close_equity = equity
         self.close_marks += 1
