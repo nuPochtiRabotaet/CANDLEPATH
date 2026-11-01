@@ -76,7 +76,8 @@ def _closed_exit(position, price, cash, spread_bps, model, reason, i, rows):
     return after, {
         "strategy":position["strategy"], "signal_time":position["signal_time"],
         "entry_open_time":rows[position["entry_idx"]]["time"],
-        "exit_open_time":rows[i]["time"],
+        "exit_event_time":(rows[i]["time"]+rows[1]["time"]-rows[0]["time"]
+                           if reason=="FOLD_CLOSE_OPTIMISTIC" else rows[i]["time"]),
         "reason":reason,
         "entry_price":str(position["entry_price"]),
         "exit_reference_price":str(D(price)),
@@ -191,7 +192,7 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
                         # At the OPEN the original historical stop/target must
                         # still straddle the actual bid/ask, without refitting.
                         quote=_quote_at(price, assumed_spread_bps)
-                        if not stop<D(quote["bid"])<D(quote["ask"])<target:
+                        if not stop<D(quote["bid"])<=D(quote["ask"])<target:
                             counts["rejected_entry"]+=len(candidates)
                         else:
                             order=_buy_for_cash(cash,price,stop,assumed_spread_bps,model)
