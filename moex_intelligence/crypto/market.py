@@ -12,8 +12,21 @@ class MarketError(ValueError):pass
 class Candle:
     time:int;open:float;high:float;low:float;close:float;volume:float;closed:bool
     def __post_init__(self):
-        import math
-        if self.time<0 or not all(math.isfinite(v) for v in [self.open,self.high,self.low,self.close,self.volume]) or self.low<=0 or self.volume<0 or self.high<max(self.open,self.close,self.low) or self.low>min(self.open,self.close):raise MarketError('Некорректная свеча')
+        # A non-boolean closed flag (e.g. the string "false") must NEVER be
+        # interpreted as a confirmed price observation.
+        if type(self.time) is not int or self.time<0 or type(self.closed) is not bool:
+            raise MarketError('Некорректное время или признак закрытия свечи')
+        values=(self.open,self.high,self.low,self.close,self.volume)
+        if any(type(v) not in (int,float) for v in values):
+            raise MarketError('Некорректный тип цены/объёма свечи')
+        try:
+            finite=all(math.isfinite(float(v)) for v in values)
+        except (OverflowError,TypeError,ValueError) as exc:
+            raise MarketError('Некорректная свеча: переполнение числового поля') from exc
+        if (not finite or self.low<=0 or self.volume<0
+                or self.high<max(self.open,self.close,self.low)
+                or self.low>min(self.open,self.close)):
+            raise MarketError('Некорректная свеча')
 
 def merge_candles(existing,incoming,interval):
     rows={c.time:c for c in existing}
@@ -28,7 +41,16 @@ def merge_candles(existing,incoming,interval):
     return out,gaps
 
 def validate_quote(q):
-    if not all(math.isfinite(float(v)) for v in q.values()) or q.get('price',0)<=0 or min(q.get('bid',0),q.get('ask',0))<0:raise MarketError('Некорректная котировка Bybit')
+    try:
+        if not isinstance(q,dict) or not all(math.isfinite(float(v)) for v in q.values()):
+            raise ValueError('Nonfinite or non-dict quote')
+        price=float(q.get('price',0))
+        bid=float(q.get('bid',0))
+        ask=float(q.get('ask',0))
+        if price<=0 or min(bid,ask)<0 or bid>ask:
+            raise ValueError('Invalid quote values')
+    except (TypeError,ValueError,OverflowError) as exc:
+        raise MarketError('Некорректная котировка Bybit') from exc
     return q
 
 class Bybit:
@@ -88,7 +110,17 @@ class Feed:
             topic=b.get('topic','');ts=b.get('ts',0)/1000
             if topic==f'kline.{self.interval}.{self.symbol}':
                 if ts<getattr(self,'last_candle_ts',0):return
-                incoming=[Candle(int(x['start'])//1000,*[float(x[k]) for k in ['open','high','low','close','volume']],bool(x['confirm'])) for x in b['data']]
+                incoming=[]
+                for x in b['data']:
+                    if not isinstance(x,dict) or type(x.get('confirm')) is not bool:
+                        raise MarketError('Некорректный тип kline confirm: требуется Boolean')
+                    try:
+                        candle=Candle(int(x['start'])//1000,
+                                      *[float(x[k]) for k in ('open','high','low','close','volume')],
+                                      x['confirm'])
+                    except (KeyError,TypeError,ValueError,OverflowError) as exc:
+                        raise MarketError('Некорректная свеча в kline WebSocket') from exc
+                    incoming.append(candle)
                 merged,gaps=merge_candles(self.rows,incoming,self.interval)
                 if gaps:raise MarketError('Обнаружен пропуск свечей; backfill')
                 if any(not c.closed for c in merged[:-1]):raise MarketError('Пропущено подтверждение закрытия свечи; backfill')
@@ -216,9 +248,16 @@ class Feed:
             now=time.time();age=now-self.quote.get('ts',0)
             from .risk import quote_ok
             active=now-self.last_ws<=20 and self.status=='Live'
+            def finite_number(value):
+                if type(value) not in (int,float):
+                    return False
+                try:
+                    return math.isfinite(value)
+                except (OverflowError,TypeError,ValueError):
+                    return False
             def valid_price(k):
                 value=self.quote.get(k,0)
-                return isinstance(value,(int,float)) and math.isfinite(value) and value>0
+                return finite_number(value) and value>0
             last_fresh=valid_price('price') and -2<=now-self.quote.get('price_ts',self.quote.get('ts',0))<=15
             bid_ask=valid_price('bid') and valid_price('ask') and self.quote['bid']<=self.quote['ask']
             candle_fresh=bool(self.rows) and self.rows[-1].time<=now<self.rows[-1].time+seconds(self.interval)+5 and 0<=now-getattr(self,'last_candle_event',0)<=65
@@ -231,7 +270,7 @@ class Feed:
                        'last_price_fresh':last_fresh,'bid_ask_valid':bid_ask,'candle_data_fresh':candle_fresh,
                        'forecast_feed_ready':candle_stream_active and candle_fresh,'trade_execution_ready':fresh}
             status=self.status if fresh or self.status!='Live' else 'Stale Data'
-            clean_quote={k:v for k,v in self.quote.items() if isinstance(v,(float,int)) and math.isfinite(v)}
+            clean_quote={k:v for k,v in self.quote.items() if finite_number(v)}
             readiness['rules_fresh']=bool(self.rules) and 0<=now-self.rules.get('retrieved',0)<=86400
             readiness['trade_execution_ready']=fresh and readiness['rules_fresh']
             return {'symbol':self.symbol,'interval':self.interval,'candles':[asdict(x) for x in self.rows],'rules':copy.deepcopy(self.rules),'quote':clean_quote,'status':status,'fresh':fresh,'readiness':readiness,'age':age,'error':self.error,'events':list(self.events),'version':self.version}
