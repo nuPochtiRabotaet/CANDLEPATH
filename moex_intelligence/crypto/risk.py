@@ -18,7 +18,7 @@ def quote_ok(q,now=None):
     now=time.time() if now is None else now
     try:
         return q.get('fresh',False) and all(-2<=now-q.get(k+'_ts',q.get('ts',0))<=15 for k in ('price','bid','ask')) and max(q.get(k+'_ts',q.get('ts',0)) for k in ('price','bid','ask'))-min(q.get(k+'_ts',q.get('ts',0)) for k in ('price','bid','ask'))<=5 and all(math.isfinite(float(q[k])) and float(q[k])>0 for k in ('price','bid','ask','ts')) and q['bid']<=q['ask'] and -2<=now-q['ts']<=15
-    except (KeyError,TypeError,ValueError):return False
+    except (KeyError,TypeError,ValueError,OverflowError,AttributeError):return False
 
 def metrics(state,quotes,now=None,rules=None):
     cash=D(state['cash']);value=D(0);risk=D(0);unreal=D(0);missing=[];weights={}
