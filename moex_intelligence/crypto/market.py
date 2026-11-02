@@ -88,12 +88,16 @@ class Feed:
             topic=b.get('topic','');ts=b.get('ts',0)/1000
             if topic==f'kline.{self.interval}.{self.symbol}':
                 if ts<getattr(self,'last_candle_ts',0):return
-                self.last_candle_ts=ts
                 incoming=[Candle(int(x['start'])//1000,*[float(x[k]) for k in ['open','high','low','close','volume']],bool(x['confirm'])) for x in b['data']]
-                self.rows,gaps=merge_candles(self.rows,incoming,self.interval)
+                merged,gaps=merge_candles(self.rows,incoming,self.interval)
                 if gaps:raise MarketError('Обнаружен пропуск свечей; backfill')
-                if any(not c.closed for c in self.rows[:-1]):raise MarketError('Пропущено подтверждение закрытия свечи; backfill')
-                self.store.save_candles(self.symbol,self.interval,incoming);self.version+=1;self.last_candle_event=time.time()
+                if any(not c.closed for c in merged[:-1]):raise MarketError('Пропущено подтверждение закрытия свечи; backfill')
+                # Do not publish a rejected gap/unconfirmed candle, or advance the
+                # event watermark before a durable journal write succeeds.
+                self.store.save_candles(self.symbol,self.interval,incoming)
+                self.rows=merged
+                self.last_candle_ts=ts
+                self.version+=1;self.last_candle_event=time.time()
             elif topic==f'tickers.{self.symbol}':
                 x=b['data'];x=x[0] if isinstance(x,list) else x
                 if ts<self.quote.get('ts',0):return
@@ -103,18 +107,53 @@ class Feed:
                 for source,key in [('lastPrice','price'),('bid1Price','bid'),('ask1Price','ask')]:
                     if source in x:candidate[key]=float(x[source] or 0);candidate[key+'_ts']=ts
                 if 'price24hPcnt' in x:candidate['change']=float(x['price24hPcnt'])*100
-                candidate.update(getattr(self,'book',{}))
+                # The book and ticker are independent feeds. A stale book
+                # quote must not override a *newer* executable ticker side.
+                for side in ('bid','ask'):
+                    book=getattr(self,'book',{})
+                    stamp=side+'_ts'
+                    if side in book and book.get(stamp,0)>=candidate.get(stamp,0):
+                        candidate[side]=book[side]
+                        candidate[stamp]=book.get(stamp,0)
                 candidate['ts']=ts
                 # Keep chart/transport active on invalid executable prices; readiness fails closed.
                 self.quote=candidate
             elif topic==f'orderbook.1.{self.symbol}':
-                if ts<getattr(self,'book',{}).get('bid_ts',0):return
-                x=b['data'];book={}
+                x=b['data']
+                if not isinstance(x,dict):raise MarketError('Некорректное обновление стакана')
+                snapshot=b.get('type')=='snapshot'
+                previous=getattr(self,'book',{})
+                book={} if snapshot else dict(previous)
                 for side,key in [('b','bid'),('a','ask')]:
-                    entries=x.get(side,[])
-                    book[key]=float(entries[0][0]) if b.get('type')=='snapshot' and entries and float(entries[0][1])>0 else 0
-                    book[key+'_ts']=ts
-                self.book=book;self.quote.update(book)
+                    entries=x.get(side)
+                    if entries is None:
+                        if not snapshot:continue
+                        entries=[]
+                    if not isinstance(entries,list):raise MarketError('Некорректная сторона стакана')
+                    # An empty DELTA means "unchanged", never "book side absent".
+                    if not snapshot and not entries:continue
+                    stamp=key+'_ts'
+                    if ts<previous.get(stamp,0):continue
+                    if entries:
+                        try:
+                            price=float(entries[0][0])
+                            qty=float(entries[0][1])
+                        except (IndexError,TypeError,ValueError,OverflowError) as exc:
+                            raise MarketError('Некорректный уровень стакана') from exc
+                        if not math.isfinite(price) or not math.isfinite(qty) or qty<0 or (qty>0 and price<=0):
+                            raise MarketError('Некорректная цена или объём стакана')
+                        book[key]=price if qty>0 else 0
+                    else:
+                        book[key]=0
+                    book[stamp]=ts
+                self.book=book
+                # Only a newer book side may supersede an existing quote;
+                # omitted/unchanged sides retain their own causal timestamp.
+                for key in ('bid','ask'):
+                    stamp=key+'_ts'
+                    if key in book and book.get(stamp,0)>=self.quote.get(stamp,0):
+                        self.quote[key]=book[key]
+                        self.quote[stamp]=book[stamp]
             elif b.get('op')=='subscribe' and b.get('success'):
                 self.transport_connected=True;return
             else:return
@@ -136,7 +175,12 @@ class Feed:
         with self.lock:
             rows,gaps=merge_candles(self.rows,recent,self.interval)
             if gaps:raise MarketError('История содержит пропуски')
-            self.rows=rows;self.rules=rules;self.quote=quote;self.book={};self.store.save_candles(self.symbol,self.interval,recent);self.version+=1;self.backfills+=1;self.event('REST синхронизация завершена');self.status='Connecting';self.error=''
+            # Persist before exposing the synchronized candles/quotes. If a
+            # disk error occurs the previous in-memory view remains intact.
+            self.store.save_candles(self.symbol,self.interval,recent)
+            self.rows=rows;self.rules=rules;self.quote=quote;self.book={}
+            self.last_candle_ts=0
+            self.version+=1;self.backfills+=1;self.event('REST синхронизация завершена');self.status='Connecting';self.error=''
     async def run(self):
         delay=1
         while not self.stop.is_set() and time.monotonic()-self.touched<90:
