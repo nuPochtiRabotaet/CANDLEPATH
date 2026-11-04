@@ -22,7 +22,7 @@ from .paper_risk_research import ResearchEquityGuards
 from .paper_rules_research import ResearchSpotRules
 from .signal_outcome_research import STRATEGIES
 
-VERSION = "single-long-ohlcv-path-v09-research-3"
+VERSION = "single-long-ohlcv-path-v09-research-4"
 MAX_HOLD_BARS = 16
 QTY_STEP = Decimal("0.000001")
 CAP_FRACTION = Decimal(str(PROFILE["symbol"]))
@@ -86,11 +86,14 @@ def _closed_exit(position, price, cash, spread_bps, model, reason, i, rows, assu
     sold = estimate("SELL", position["base"], quote, model)
     after = cash + sold.cash_delta
     pnl = sold.cash_delta - position["debit"]
+    close_available = reason in ('STOP', 'TARGET', 'STOP_FIRST_AMBIGUOUS', 'FOLD_CLOSE_OPTIMISTIC')
     return after, {
         "strategy":position["strategy"], "signal_time":position["signal_time"],
         "entry_open_time":rows[position["entry_idx"]]["time"],
         "exit_event_time":(rows[i]["time"]+rows[1]["time"]-rows[0]["time"]
-                           if reason=="FOLD_CLOSE_OPTIMISTIC" else rows[i]["time"]),
+                           if close_available else rows[i]["time"]),
+        "exit_time_precision": "BAR_CLOSE_AVAILABILITY" if close_available else "NEXT_OPEN",
+        "exit_bar_open_time": rows[i]["time"],
         "reason":reason,
         "entry_price":str(position["entry_price"]),
         "exit_reference_price":str(D(price)),
@@ -105,7 +108,7 @@ def _closed_exit(position, price, cash, spread_bps, model, reason, i, rows, assu
 def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
                          initial_cash="10000", max_hold_bars=MAX_HOLD_BARS,
                          cost_model=None, min_required_origins=30,
-                         assumed_rules=None):
+                         assumed_rules=None, strategy=None):
     """Evaluate isolated development-fold virtual paths, never live/Paper orders.
 
     Rules: one SPOT long at a time, deterministic strategy priority, max 25%
@@ -122,6 +125,8 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
     at a fold end are force-liquidated at that last close, explicitly tagged
     optimistic. No execution/portfolio claims or actual time-of-day liquidity.
     """
+    if strategy is not None and strategy not in STRATEGIES:
+        raise ValueError('Unknown strategy filter')
     if type(assumed_spread_bps) not in (float,int) or not math.isfinite(assumed_spread_bps) or not 0<=assumed_spread_bps<=100:
         raise ValueError("Assumed full spread must be 0..100 bps")
     if type(max_hold_bars) is not int or not 1<=max_hold_bars<=64:
@@ -165,7 +170,7 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
                 levels=sig.get("risk_estimates",{})
                 _positive_decimal(levels.get("stop"), "stop")
                 _positive_decimal(levels.get("target"), "target")
-            if start<=origin<end:
+            if start<=origin<end and (strategy is None or sig['strategy']==strategy):
                 by_index.setdefault(origin,[]).append(sig)
         cash=cash_start
         high_water=cash_start
@@ -284,6 +289,7 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
         "mode":"ISOLATED_SEALED_DEV_SINGLE_LONG_PATH_RESEARCH",
         "status":"DESCRIPTIVE_DEV_ONLY" if sufficient else "INSUFFICIENT_TRADE_SAMPLE",
         "symbol":symbol,"timeframe":timeframe,"version":VERSION,
+        "strategy_filter":strategy,
         "rules_version":RULES_VERSION,"cost_model":model.snapshot(),
         "spread_assumed_full_bps":str(D(assumed_spread_bps)),
         "assumed_spot_rules":assumed_rules.snapshot() if assumed_rules else None,

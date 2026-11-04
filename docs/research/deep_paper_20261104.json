@@ -1,0 +1,341 @@
+{
+  "source_sha256": "3e93db2c4e06acd8f60134e398fb5ae93a9eac0a85fc65471f16cf3ee7c1d7d6",
+  "source": "USER_SUPPLIED_CSV_UNVERIFIED",
+  "rows": 8640,
+  "development_end_exclusive": 6912,
+  "sealed_final_evaluated": false,
+  "assumptions": "Spread 4bps; per-side fee/slippage LOW 5/2, PAPER 10/5, STRESS 20/10 bps. Fixed, no tuning.",
+  "aggregation": "Three separately capitalized 10000-USDT folds; net P&L summed, not compounded; DD is worst fold sampled liquidation DD.",
+  "results": {
+    "LOW": {
+      "Trend Following": {
+        "trades": 58,
+        "net_pnl": "-326.592511869576688447424328",
+        "win_rate": 0.1724137931034483,
+        "expectancy": "-5.630905377061667042196971172",
+        "profit_factor": "0.1085379069373917152072130526",
+        "max_drawdown": 1.3684595527576,
+        "exits": {
+          "MAX_HOLD": 23,
+          "STOP": 28,
+          "TARGET": 7
+        },
+        "folds": [
+          {
+            "fold": 1,
+            "trade_count": 24,
+            "net_return_pct": "-1.351903771592831884138495130"
+          },
+          {
+            "fold": 2,
+            "trade_count": 16,
+            "net_return_pct": "-0.9944670204028892784233295600"
+          },
+          {
+            "fold": 3,
+            "trade_count": 18,
+            "net_return_pct": "-0.9195543267000457219124185900"
+          }
+        ]
+      },
+      "Mean Reversion": {
+        "trades": 15,
+        "net_pnl": "-45.811529551248225860878002",
+        "win_rate": 0.2,
+        "expectancy": "-3.0541019700832150573918668",
+        "profit_factor": "0.1369355379825975600202523546",
+        "max_drawdown": 0.2957704979693379,
+        "exits": {
+          "MAX_HOLD": 4,
+          "STOP": 1,
+          "RULE_EXIT": 10
+        },
+        "folds": [
+          {
+            "fold": 1,
+            "trade_count": 5,
+            "net_return_pct": "-0.2861414655900816769287800200"
+          },
+          {
+            "fold": 2,
+            "trade_count": 4,
+            "net_return_pct": "-0.1000832835748005802200"
+          },
+          {
+            "fold": 3,
+            "trade_count": 6,
+            "net_return_pct": "-0.0718905463476000014600"
+          }
+        ]
+      },
+      "Breakout Detection": {
+        "trades": 109,
+        "net_pnl": "-613.037236660021065058073737",
+        "win_rate": 0.1834862385321101,
+        "expectancy": "-5.624194831743312523468566394",
+        "profit_factor": "0.1416032118365257868246561739",
+        "max_drawdown": 2.684635454616239,
+        "exits": {
+          "TARGET": 18,
+          "MAX_HOLD": 26,
+          "STOP": 63,
+          "FOLD_CLOSE_OPTIMISTIC": 2
+        },
+        "folds": [
+          {
+            "fold": 1,
+            "trade_count": 34,
+            "net_return_pct": "-1.576326445721122472046350660"
+          },
+          {
+            "fold": 2,
+            "trade_count": 37,
+            "net_return_pct": "-1.969611665544926887853786730"
+          },
+          {
+            "fold": 3,
+            "trade_count": 38,
+            "net_return_pct": "-2.584434255334161290680600030"
+          }
+        ]
+      }
+    },
+    "PAPER": {
+      "Trend Following": {
+        "trades": 58,
+        "net_pnl": "-554.558679897874291754511170",
+        "win_rate": 0.06896551724137931,
+        "expectancy": "-9.561356549963349857836399483",
+        "profit_factor": "0.01899119055654034656643041450",
+        "max_drawdown": 2.2922191927013325,
+        "exits": {
+          "MAX_HOLD": 23,
+          "STOP": 28,
+          "TARGET": 7
+        },
+        "folds": [
+          {
+            "fold": 1,
+            "trade_count": 24,
+            "net_return_pct": "-2.292219192701332447863607240"
+          },
+          {
+            "fold": 2,
+            "trade_count": 16,
+            "net_return_pct": "-1.624514839999881757423674700"
+          },
+          {
+            "fold": 3,
+            "trade_count": 18,
+            "net_return_pct": "-1.628852766277528712257829760"
+          }
+        ]
+      },
+      "Mean Reversion": {
+        "trades": 15,
+        "net_pnl": "-105.568346274679204368139863",
+        "win_rate": 0.06666666666666667,
+        "expectancy": "-7.0378897516452802912093242",
+        "profit_factor": "0.003065932416449196819581940024",
+        "max_drawdown": 0.4945035994178453,
+        "exits": {
+          "MAX_HOLD": 4,
+          "STOP": 1,
+          "RULE_EXIT": 10
+        },
+        "folds": [
+          {
+            "fold": 1,
+            "trade_count": 5,
+            "net_return_pct": "-0.4849053445335331087813986300"
+          },
+          {
+            "fold": 2,
+            "trade_count": 4,
+            "net_return_pct": "-0.259578449118704777400"
+          },
+          {
+            "fold": 3,
+            "trade_count": 6,
+            "net_return_pct": "-0.311199669094554157500"
+          }
+        ]
+      },
+      "Breakout Detection": {
+        "trades": 109,
+        "net_pnl": "-1035.979814624004273054205725",
+        "win_rate": 0.10091743119266056,
+        "expectancy": "-9.504401969027562138111979128",
+        "profit_factor": "0.04155355877589272728373053186",
+        "max_drawdown": 4.148614147192107,
+        "exits": {
+          "TARGET": 18,
+          "MAX_HOLD": 26,
+          "STOP": 63,
+          "FOLD_CLOSE_OPTIMISTIC": 2
+        },
+        "folds": [
+          {
+            "fold": 1,
+            "trade_count": 34,
+            "net_return_pct": "-2.903171401739749213400663110"
+          },
+          {
+            "fold": 2,
+            "trade_count": 37,
+            "net_return_pct": "-3.406589866751214369766094210"
+          },
+          {
+            "fold": 3,
+            "trade_count": 38,
+            "net_return_pct": "-4.050036877749079147375299900"
+          }
+        ]
+      }
+    },
+    "STRESS": {
+      "Trend Following": {
+        "trades": 58,
+        "net_pnl": "-976.415919643403890009527551",
+        "win_rate": 0.0,
+        "expectancy": "-16.83475723523110155188840605",
+        "profit_factor": "0E+24",
+        "max_drawdown": 4.028258844093929,
+        "exits": {
+          "MAX_HOLD": 23,
+          "STOP": 28,
+          "TARGET": 7
+        },
+        "folds": [
+          {
+            "fold": 1,
+            "trade_count": 24,
+            "net_return_pct": "-4.028258844093929355526807710"
+          },
+          {
+            "fold": 2,
+            "trade_count": 16,
+            "net_return_pct": "-2.793045028807442606850935760"
+          },
+          {
+            "fold": 3,
+            "trade_count": 18,
+            "net_return_pct": "-2.942855323532666937717532040"
+          }
+        ]
+      },
+      "Mean Reversion": {
+        "trades": 15,
+        "net_pnl": "-217.089628142282467809893112",
+        "win_rate": 0.0,
+        "expectancy": "-14.4726418761521645206595408",
+        "profit_factor": "0E+24",
+        "max_drawdown": 0.8654293912562823,
+        "exits": {
+          "MAX_HOLD": 4,
+          "STOP": 1,
+          "RULE_EXIT": 10
+        },
+        "folds": [
+          {
+            "fold": 1,
+            "trade_count": 5,
+            "net_return_pct": "-0.8558884174236080712989311200"
+          },
+          {
+            "fold": 2,
+            "trade_count": 4,
+            "net_return_pct": "-0.557425035235024221600"
+          },
+          {
+            "fold": 3,
+            "trade_count": 6,
+            "net_return_pct": "-0.757582828764192385200"
+          }
+        ]
+      },
+      "Breakout Detection": {
+        "trades": 109,
+        "net_pnl": "-1811.304142980528561037113411",
+        "win_rate": 0.01834862385321101,
+        "expectancy": "-16.61746920165622533061571937",
+        "profit_factor": "0.003077804378873642483843390976",
+        "max_drawdown": 6.829917468784974,
+        "exits": {
+          "TARGET": 18,
+          "MAX_HOLD": 26,
+          "STOP": 63,
+          "FOLD_CLOSE_OPTIMISTIC": 2
+        },
+        "folds": [
+          {
+            "fold": 1,
+            "trade_count": 34,
+            "net_return_pct": "-5.338814900295473173058171830"
+          },
+          {
+            "fold": 2,
+            "trade_count": 37,
+            "net_return_pct": "-6.039911316836571103890790090"
+          },
+          {
+            "fold": 3,
+            "trade_count": 38,
+            "net_return_pct": "-6.734315212673241333422172190"
+          }
+        ]
+      }
+    }
+  },
+  "passive_25pct_buy_hold": {
+    "LOW": [
+      {
+        "net_pnl": "-94.4863312386186818520",
+        "max_drawdown_pct": "1.771420810527437549162260844"
+      },
+      {
+        "net_pnl": "8.0216404795637238400",
+        "max_drawdown_pct": "1.284285648697430739276209000"
+      },
+      {
+        "net_pnl": "-62.6439188833289141440",
+        "max_drawdown_pct": "1.672197507107481998550194721"
+      }
+    ],
+    "PAPER": [
+      {
+        "net_pnl": "-98.332803380573826480",
+        "max_drawdown_pct": "1.769314986837090264796962312"
+      },
+      {
+        "net_pnl": "4.011911076793327200",
+        "max_drawdown_pct": "1.282714123810930733736809119"
+      },
+      {
+        "net_pnl": "-66.540524097776091840",
+        "max_drawdown_pct": "1.670202574796862450167831396"
+      }
+    ],
+    "STRESS": [
+      {
+        "net_pnl": "-105.52873618039494600",
+        "max_drawdown_pct": "1.765373952725817877909877466"
+      },
+      {
+        "net_pnl": "-3.48865584788079360",
+        "max_drawdown_pct": "1.279846794560854089485192357"
+      },
+      {
+        "net_pnl": "-73.82970147016989576",
+        "max_drawdown_pct": "1.666461837459219756088950480"
+      }
+    ]
+  },
+  "cash_baseline_net_pnl": 0,
+  "limitations": [
+    "No observed bid/ask or historical symbol rules",
+    "Intrabar threshold fills optimistic; availability at close",
+    "One month / one instrument; no proven edge",
+    "Passive reference has no stop; not risk-matched"
+  ]
+}
