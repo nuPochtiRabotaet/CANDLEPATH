@@ -36,9 +36,38 @@ assert.deepEqual(kind(old,[bar(900),bar(1800),bar(2600)]),{mode:'reset',from:0})
 assert.deepEqual(kind(old,[...copy(old),bar(2700)]),{mode:'reset',from:0});
 assert.deepEqual(kind(old,[]),{mode:'empty',from:0});
 
+// Multiple strategies can signal the same candle/type; do not silently
+// discard the first hypothesis or draw overlapping duplicate arrows.
+vm.runInNewContext(src+'\\nglobalThis.__markers=markerPlan;',context,{timeout:2500});
+const markerPlan=context.__markers;
+const candidates=[
+ {id:'A',timestamp:1800,type:'BUY',strategy:'Trend Following'},
+ {id:'B',timestamp:1800,type:'BUY',strategy:'Breakout Detection'},
+ {id:'C',timestamp:1800,type:'EXIT',strategy:'Mean Reversion'},
+ {id:'A',timestamp:1800,type:'BUY',strategy:'Trend Following'},
+ {id:'D',timestamp:2700,type:'BUY',strategy:'Trend Following'},
+ {id:'E',timestamp:1800,type:'SHORT',strategy:'Unsupported'},
+ {id:'F',timestamp:3600,type:'EXIT',strategy:'Out of view'},
+];
+const sourceBefore=JSON.stringify(candidates);
+const grouped=copy(markerPlan(candidates,new Set([1800,2700])));
+assert.deepEqual(grouped.map(m=>({time:m.time,text:m.text,position:m.position})),[
+ {time:1800,text:'BUY ×2',position:'belowBar'},
+ {time:1800,text:'EXIT',position:'aboveBar'},
+ {time:2700,text:'BUY',position:'belowBar'}
+]);
+assert.equal(JSON.stringify(candidates),sourceBefore);
+assert.deepEqual(copy(markerPlan([
+ {timestamp:1800,type:'BUY',strategy:'One'},
+ {timestamp:1800,type:'BUY',strategy:'One'},
+ {timestamp:1800,type:'BUY',strategy:'Two'}
+],new Set([1800]))).map(m=>m.text),['BUY ×2']);
+assert.deepEqual(copy(markerPlan(candidates,new Set())),[]);
+
 // This catches O(n^2) marker filtering regressions in source: index candles once.
 assert.match(src,/const candleTimes=new Set\(d\.candles\.map\(/);
 assert.match(src,/r\.signalsByTime=new Map\(\)/);
+assert.match(src,/function markerPlan\(/);
 assert.doesNotMatch(src,/d\.candles\.some\(c=>c\.time===s\.timestamp\)/);
 assert.doesNotMatch(src,/r\.data\?\.signals\.filter\(s=>s\.timestamp===p\.time\)/);
 
