@@ -42,6 +42,17 @@ function forecastProjection(data){
  const grid=Array.from({length:steps},(_,i)=>({time:observedTime+(i+1)*step}));
  return {profile,grid,line:profile.map(p=>({time:p.time,value:p.median}))};
 }
+// Read-only summary of the validated projection: a movement *range*, not
+// a directional signal or a calibrated probability of a profitable trade.
+function forecastRange(projection){
+ const points=projection?.profile;
+ if(!Array.isArray(points)||points.length<2)return null;
+ const first=points[0],last=points.at(-1);
+ const minutes=(last.time-first.time)/60,reference=first.median;
+ if(!Number.isFinite(minutes)||minutes<=0||!Number.isFinite(reference)||reference<=0)return null;
+ return {minutes,lower:last.lower,median:last.median,upper:last.upper,
+  lowerPct:(last.lower/reference-1)*100,upperPct:(last.upper/reference-1)*100};
+}
 // Keep a faithful fallback for historical corrections while live ticks use
 // update() rather than repeatedly rebuilding entire chart series.
 function candleChangePlan(previous,current){
@@ -206,7 +217,15 @@ export default function(component){
    r.forecastKey=nextForecastKey;
   }
   r.forecastLine.applyOptions({visible:r.forecastVisible&&!!projection});
-  if(d.intelligence?.forecast?.status==='EXPERIMENTAL'&&!projection)
+  const range=forecastRange(projection);
+  if(range){
+   const horizon=range.minutes%1440===0?range.minutes/1440+' сут.':range.minutes%60===0?range.minutes/60+' ч.':range.minutes+' мин.';
+   const signed=value=>(value>=0?'+':'')+num(value)+'%';
+   text('forecastStatus','Forecast · эксперимент · '+horizon+': модельный диапазон '+
+    num(range.lower)+'–'+num(range.upper)+' USDT ('+signed(range.lowerPct)+' … '+
+    signed(range.upperPct)+' от последнего закрытия), медиана '+num(range.median)+
+    ' USDT. Random Walk + EWMA: номинальные 80%, независимая вероятность не подтверждена. Направление и доходность сделки не прогнозируются.');
+  }else if(d.intelligence?.forecast?.status==='EXPERIMENTAL')
    text('forecastStatus','Forecast скрыт: данные, горизонт или математические границы не соответствуют текущему графику.');
   r.primitive.update();
   if(r.version!==d.version||changed||plan.mode!=='same'){
