@@ -9,7 +9,7 @@ from moex_intelligence.crypto.strategy_coliseum_research import (
     SelectionPolicy, select_coliseum_candidates, run_cli)
 
 
-def fixture(n=1, *, rows=70000, source="VERIFIED_ARCHIVE", all_positive=True):
+def fixture(n=1, *, rows=70000, source="VERIFIED_PUBLIC_ARCHIVE", all_positive=True):
     names = [f"candidate-{i:04d}" for i in range(n)]
     roster = [{"id": name,
                "family": f"family-{i % 10}",
@@ -40,6 +40,8 @@ def test_candidates_can_be_shortlisted_but_never_integrated():
     study, roster = fixture(3)
     out = select_coliseum_candidates(study, roster)
     assert out["candidate_count"] == 3
+    assert len(out["selection_run_sha256"]) == 64
+    assert out["selection_run_sha256"] == select_coliseum_candidates(study, roster)["selection_run_sha256"]
     assert out["qualified_count"] == 3
     assert out["shortlisted_for_independent_validation"] == [r["id"] for r in roster]
     assert out["sealed_final_evaluated"] is False
@@ -54,6 +56,21 @@ def test_short_month_history_blocks_all_promotions():
     out = select_coliseum_candidates(study, roster)
     assert out["qualified_count"] == 0
     assert all("INSUFFICIENT_HISTORY_5M" in r["rejection_reasons"] for r in out["standings"])
+
+
+def test_arbitrary_provenance_label_is_not_trusted():
+    study, roster = fixture(source="SOME_RANDOM_LABEL")
+    out = select_coliseum_candidates(study, roster)
+    assert out["qualified_count"] == 0
+    assert "UNVERIFIED_SOURCE" in out["standings"][0]["rejection_reasons"]
+
+
+def test_roster_hash_does_not_depend_on_input_order():
+    study, roster = fixture(3)
+    a = select_coliseum_candidates(study, roster)
+    b = select_coliseum_candidates(study, list(reversed(roster)))
+    assert a["roster_sha256"] == b["roster_sha256"]
+    assert a["selection_run_sha256"] == b["selection_run_sha256"]
 
 
 def test_unverified_provenance_blocks_shortlist():
