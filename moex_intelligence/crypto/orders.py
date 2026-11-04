@@ -14,10 +14,11 @@ def revision(s):return digest({k:s.get(k) for k in ('cash','positions','realized
 def rule_revision(r):return digest({k:v for k,v in r.items() if k!='retrieved'})
 def spread(q):return (D(q['ask'])-D(q['bid']))/((D(q['ask'])+D(q['bid']))/2)*10000
 
-def sell_preview(state,quotes,symbol,quantity,rules,dispose_sellable=False):
+def sell_preview(state,quotes,symbol,quantity,rules,dispose_sellable=False,*,now=None):
+    now=time.time() if now is None else now
     q=quotes.get(symbol,{})
-    if not quote_ok(q):raise RiskError('Stale Data: нет свежего Bid/Ask')
-    if not rules or not 0<=time.time()-rules.get('retrieved',0)<=86400:raise RiskError('Нет актуальных правил')
+    if not quote_ok(q,now):raise RiskError('Stale Data: нет свежего Bid/Ask')
+    if not rules or not 0<=now-rules.get('retrieved',0)<=86400:raise RiskError('Нет актуальных правил')
     qty=D(quantity);p=state['positions'].get(symbol)
     if not qty.is_finite() or qty<=0 or floor_step(qty,rules['step'])!=qty:raise RiskError('Некорректное количество / шаг')
     if not p or qty>D(p['qty']):raise RiskError('Количество превышает позицию')
