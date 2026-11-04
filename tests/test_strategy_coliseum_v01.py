@@ -144,9 +144,9 @@ def test_financial_results_must_be_finite_and_reconcile():
 
 
 def test_shortlist_never_exceeds_20_and_family_cap():
-    study, roster = fixture(100)
+    study, roster = fixture(2000)
     result = select_coliseum_candidates(study, roster)
-    assert result["candidate_count"] == len(result["standings"]) == 100
+    assert result["candidate_count"] == len(result["standings"]) == 2000
     assert result["qualified_count"] == 20
     assert len(set(result["shortlisted_for_independent_validation"])) == 20
     assert result["standings"] == select_coliseum_candidates(study, roster)["standings"]
@@ -181,3 +181,18 @@ def test_readonly_cli_refuses_to_overwrite_sources_and_output(tmp_path):
         run_cli([str(src), str(man), str(src)])
     assert json.loads(src.read_text()) == study
     assert json.loads(man.read_text()) == roster
+
+def test_selection_gates_cannot_be_silently_weakened():
+    from decimal import Decimal
+    study, roster = fixture()
+    defaults = SelectionPolicy()
+    for replacement in (
+        {"min_days_5m": 30}, {"min_trades": 2},
+        {"min_trades_per_fold": 1},
+        {"min_paper_profit_factor": Decimal("1.00")},
+        {"maximum_paper_drawdown_pct": Decimal("40")},
+        {"maximum_per_family": 20},
+        {"fold_capital_usdt": Decimal("100")},
+    ):
+        with pytest.raises(ValueError):
+            select_coliseum_candidates(study, roster, policy=replace(defaults, **replacement))
