@@ -192,20 +192,30 @@ def verify():
                 'e=>e.__runtime.volume.data().length')==120
             # Same timestamp can carry several signals: all hover details
             # remain indexed and last-on-click order remains unchanged.
+            # Same-side strategies must show a count, not silently disappear.
             page.evaluate("""() => {
                 const t=window._data.candles[60].time;
-                window._data.signals=[{timestamp:t,type:'BUY',strategy:'One'},
-                    {timestamp:t,type:'EXIT',strategy:'Two'}];
+                window._data.signals=[{id:'s1',timestamp:t,type:'BUY',strategy:'One'},
+                    {id:'s2',timestamp:t,type:'BUY',strategy:'Three'},
+                    {id:'s3',timestamp:t,type:'EXIT',strategy:'Two'}];
                 window._invoke()}""")
             indexed=page.locator('.terminal').evaluate("""e=>{
                 const ts=window._data.candles[60].time;
                 return e.__runtime.signalsByTime.get(ts).map(s=>s.strategy)}""")
-            assert indexed==['One','Two'],indexed
+            assert indexed==['One','Three','Two'],indexed
             # Technical EXIT is not a filled SELL, even without a position.
             markers=page.locator('.terminal').evaluate("""e=>
                 e.__runtime.markers.markers().map(m=>({time:m.time,text:m.text}))""")
             t=page.evaluate('window._data.candles[60].time')
-            assert markers==[{'time':t,'text':'BUY'},{'time':t,'text':'EXIT'}],markers
+            assert markers==[{'time':t,'text':'BUY ×2'},{'time':t,'text':'EXIT'}],markers
+            # Marker layer toggle cannot lose the original strategy count.
+            page.locator('#markers').uncheck()
+            assert page.locator('.terminal').evaluate(
+                'e=>e.__runtime.markers.markers().length')==0
+            page.locator('#markers').check()
+            visible=page.locator('.terminal').evaluate(
+                'e=>e.__runtime.markers.markers().map(m=>m.text)')
+            assert visible==['BUY ×2','EXIT'],visible
             at=page.locator('.terminal').evaluate("""e=>{
                 const r=e.__runtime,c=window._data.candles[60],
                   rect=e.querySelector('#chart').getBoundingClientRect();
@@ -218,7 +228,8 @@ def verify():
             page.mouse.move(at['x'],at['y'])
             page.wait_for_timeout(200)
             tooltip=page.locator('#signalTooltip').inner_text()
-            assert 'BUY · One' in tooltip and 'EXIT · Two' in tooltip,repr(tooltip)
+            assert 'BUY · One' in tooltip and 'BUY · Three' in tooltip,repr(tooltip)
+            assert 'EXIT · Two' in tooltip,repr(tooltip)
             assert 'SELL / EXIT' not in tooltip
             assert 'не исполненная сделка' in tooltip
             # Click the actual chart marker; selecting a signal may only
