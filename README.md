@@ -1,6 +1,6 @@
 > **Рабочая ветка `develop/v0.9`:** активная разработка CandlePath v0.9 Alpha, **не выпущенный релиз**. Код новых исследовательских функций собран здесь; `main` по-прежнему v0.8.2-rc3. Реальные ордера и автономная торговля выключены. Последние интеграционные факты и критерии выпуска: [docs/V09_INTEGRATION_CHECKPOINT.md](docs/V09_INTEGRATION_CHECKPOINT.md). Продуктовое направление: [CANDLE_VISION.md](CANDLE_VISION.md).
 
-> **Проверка v0.9 Alpha на Mac/Linux:** `bash scripts/verify_v09_local.command --strict` — полный pytest, контракты JavaScript и синтетический Chromium. Для полной проверки нужны Node.js и Playwright/Chromium; пропуски приводят к ненулевому коду. Результат не заменяет ручную проверку Safari.
+> **Проверка v0.9 Alpha на Mac/Linux:** `bash scripts/verify_v09_local.command --strict` — полный pytest, контракты JavaScript и синтетический Chromium. Для полной проверки нужны Node.js и Playwright/Chromium; в режиме `--strict` отсутствие любого из этих компонентов приводит к ненулевому коду. Результат не заменяет ручную проверку Safari.
 
 # MOEX Intelligence v0.8.2-rc3
 
