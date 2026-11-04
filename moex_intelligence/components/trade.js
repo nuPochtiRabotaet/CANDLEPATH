@@ -117,7 +117,7 @@ export default function(component){
   r.forecastGrid=r.chart.addSeries(LC.LineSeries,{...opts,visible:false});
   r.markers=LC.createSeriesMarkers(r.candles,[]);r.primitive=new OverlayPrimitive(r);r.candles.attachPrimitive(r.primitive);
   r.observer=new MutationObserver(()=>{if(!root.isConnected){clearTimeout(r.timer);clearTimeout(r.prefTimer);r.observer.disconnect();r.chart.remove();root.__runtime=null;}});r.observer.observe(document.body,{childList:true,subtree:true});
-  r.chart.subscribeCrosshairMove(p=>{const bar=p.seriesData?.get(r.candles);if(bar)text('crosshair',`${local(p.time)}  O ${num(bar.open)}  H ${num(bar.high)}  L ${num(bar.low)}  C ${num(bar.close)}`);const sig=r.signalsByTime?.get(p.time);$('signalTooltip').hidden=!sig?.length;if(sig?.length)$('signalTooltip').textContent=sig.map(s=>`${s.type==='BUY'?'BUY':'SELL / EXIT'} · ${s.strategy}\nГраница закрытия ${local(s.timestamp)} · ${num(s.reference_price)} USDT\nФактически обнаружен ${local(s.detected_at)}\nИсторическая отметка условия, не исполненная сделка\n${(Array.isArray(s.explanation)?s.explanation:[]).join('\n')}\n${s.regime} · ${s.status}\n${JSON.stringify(s.parameters)}\n${s.cost_assumption}`).join('\n\n');});
+  r.chart.subscribeCrosshairMove(p=>{const bar=p.seriesData?.get(r.candles);if(bar)text('crosshair',`${local(p.time)}  O ${num(bar.open)}  H ${num(bar.high)}  L ${num(bar.low)}  C ${num(bar.close)}`);const sig=r.signalsByTime?.get(p.time);$('signalTooltip').hidden=!sig?.length;if(sig?.length)$('signalTooltip').textContent=sig.map(s=>`${s.type==='BUY'?'BUY':'EXIT'} · ${s.strategy}\nГраница закрытия ${local(s.timestamp)} · ${num(s.reference_price)} USDT\nФактически обнаружен ${local(s.detected_at)}\nИсторическая отметка условия, не исполненная сделка\n${(Array.isArray(s.explanation)?s.explanation:[]).join('\n')}\n${s.regime} · ${s.status}\n${JSON.stringify(s.parameters)}\n${s.cost_assumption}`).join('\n\n');});
   r.chart.subscribeClick(p=>{const s=r.signalsByTime?.get(p.time)?.at(-1);if(s)showSignal(s);});
  }
  function readPrefs(){return {version:1,...r.layers,intensity:+$('opacity').value,width:+$('width').value,line_opacity:+$('lineOpacity').value,fast_color:$('fastColor').value,slow_color:$('slowColor').value};}
@@ -139,9 +139,9 @@ export default function(component){
  else if(d.inputs.seq>r.seq){r.inputs={...d.inputs};r.seq=d.inputs.seq;}
  root.dataset.context=d.context;const s=r.inputs;
  function showSignal(sig){
-  text('signal',sig?(sig.type==='BUY'?'Potential Buy':'Potential Exit'):'No Signal');
+  text('signal',sig?(sig.type==='BUY'?'BUY · технический сигнал':'EXIT · технический сигнал'):'No Signal');
   text('strategy',sig?sig.strategy+' · '+local(sig.timestamp):'Ожидание подтверждённого сигнала');
-  text('reasons',sig?(Array.isArray(sig.explanation)?sig.explanation:[]).join('\n')+'\nСформирован после закрытия свечи.\n'+sig.invalidation:'Условия стратегий ещё не выполнены.');
+  text('reasons',sig?(Array.isArray(sig.explanation)?sig.explanation:[]).join('\n')+'\nСформирован после закрытия свечи; не является исполненной сделкой.\n'+sig.invalidation:'Условия стратегий ещё не выполнены.');
  }
  text('market',d.symbol.replace('USDT',' / USDT'));text('price',d.quote.price?num(d.quote.price):'—');text('change',d.quote.change!=null?num(d.quote.change)+'% · 24h':'—');$('change').className=d.quote.change>=0?'bull':'bear';text('connection',d.status+(d.quote.ts?' · '+num(d.age,0)+'с':''));text('tradingMode',d.mode==='Paper Trading'?'LOCAL PAPER':d.mode.toUpperCase());root.dataset.fresh=d.fresh?'true':'false';
  $('connectionError').hidden=!d.error&&!(!d.fresh&&d.candles.length);text('connectionError',d.error||'Stale Data · котировки устарели; действия с виртуальными позициями заблокированы.');
@@ -260,7 +260,7 @@ export default function(component){
   for(const key of Object.keys(r.layers))$(key).checked=r.layers[key];
   r.fast.applyOptions({visible:r.layers.ema,lineWidth:+$('width').value,color:alpha($('fastColor').value)});r.slow.applyOptions({visible:r.layers.ema,lineWidth:+$('width').value,color:alpha($('slowColor').value)});r.st.applyOptions({visible:r.layers.st,lineWidth:+$('width').value,color:alpha('#ac9eea')});r.volume.applyOptions({visible:r.layers.volume});
   const candleTimes=new Set(d.candles.map(c=>c.time));
-   r.markers.setMarkers(r.layers.markers?[...new Map(d.signals.filter(s=>candleTimes.has(s.timestamp)).map(s=>[s.timestamp+':'+s.type,s])).values()].map(s=>({time:s.timestamp,position:s.type==='BUY'?'belowBar':'aboveBar',shape:s.type==='BUY'?'arrowUp':'arrowDown',color:s.type==='BUY'?'#31F3A2':'#FF5474',text:s.type==='BUY'?'BUY':'SELL',size:.7})).sort((a,b)=>a.time-b.time):[]);
+   r.markers.setMarkers(r.layers.markers?[...new Map(d.signals.filter(s=>candleTimes.has(s.timestamp)).map(s=>[s.timestamp+':'+s.type,s])).values()].map(s=>({time:s.timestamp,position:s.type==='BUY'?'belowBar':'aboveBar',shape:s.type==='BUY'?'arrowUp':'arrowDown',color:s.type==='BUY'?'#31F3A2':'#FF5474',text:s.type==='BUY'?'BUY':'EXIT',size:.7})).sort((a,b)=>a.time-b.time):[]);
   root.dataset.ribbon=String(r.layers.ribbon);root.dataset.markers=String(r.layers.markers);levels();
  }
  function showJournal(){
