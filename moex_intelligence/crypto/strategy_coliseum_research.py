@@ -95,12 +95,14 @@ def select_coliseum_candidates(study: dict, roster: list[dict], *,
     """
     if not isinstance(study, dict) or not isinstance(roster, list) or not roster:
         raise ValueError("Study and nonempty frozen roster are required")
-    if not 1 <= policy.maximum_shortlist <= 20 or not 1 <= policy.maximum_per_family <= 20:
-        raise ValueError("Maximum shortlist must be 1..20; family cap 1..20")
-    if policy.min_days_5m < 1 or policy.min_trades < 1 or policy.min_trades_per_fold < 1:
-        raise ValueError("Sample thresholds must be positive")
-    if policy.fold_capital_usdt <= 0 or policy.maximum_paper_drawdown_pct <= 0:
-        raise ValueError("Invalid financial policy")
+    if not 1 <= policy.maximum_shortlist <= 20 or not 1 <= policy.maximum_per_family <= 4:
+        raise ValueError("Maximum shortlist must be 1..20; family cap 1..4")
+    if (policy.min_days_5m < 180 or policy.min_trades < 60
+            or policy.min_trades_per_fold < 10
+            or policy.min_paper_profit_factor < Decimal("1.20")
+            or not Decimal("0") < policy.maximum_paper_drawdown_pct <= Decimal("10")
+            or policy.fold_capital_usdt != Decimal("10000")):
+        raise ValueError("Weakening preregistered selection gates requires a new reviewed research version")
     if not SHA256.fullmatch(str(study.get("source_sha256", ""))):
         raise ValueError("Invalid source SHA256")
     rows = _whole(study.get("rows"), "rows", 1)
