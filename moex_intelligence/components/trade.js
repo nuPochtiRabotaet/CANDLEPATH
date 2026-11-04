@@ -42,6 +42,26 @@ function forecastProjection(data){
  const grid=Array.from({length:steps},(_,i)=>({time:observedTime+(i+1)*step}));
  return {profile,grid,line:profile.map(p=>({time:p.time,value:p.median}))};
 }
+// Hover details are read-only. Old signal snapshots may omit optional
+// fields; never present "undefined" or fabricate discovery timestamps.
+function chartSignalTooltip(sig,local,num){
+ const detected=Number.isSafeInteger(sig.detected_at)?local(sig.detected_at):'нет данных';
+ const price=sig.reference_price!=null&&sig.reference_price!==''&&
+  Number.isFinite(Number(sig.reference_price))?num(sig.reference_price)+' USDT':'цена неизвестна';
+ const parts=[
+  (sig.type==='BUY'?'BUY':'EXIT')+' · '+(sig.strategy||'Стратегия не указана'),
+  'Граница закрытия '+local(sig.timestamp)+' · '+price,
+  'Фактически обнаружен '+detected,
+  'Историческая отметка условия, не исполненная сделка'
+ ];
+ if(Array.isArray(sig.explanation))parts.push(...sig.explanation.filter(x=>typeof x==='string'&&x.trim()));
+ const states=[sig.regime,sig.status].filter(x=>typeof x==='string'&&x.trim());
+ if(states.length)parts.push(states.join(' · '));
+ if(sig.parameters&&typeof sig.parameters==='object'&&Object.keys(sig.parameters).length)
+  parts.push(JSON.stringify(sig.parameters));
+ if(typeof sig.cost_assumption==='string'&&sig.cost_assumption.trim())parts.push(sig.cost_assumption);
+ return parts.join('\n');
+}
 // A candle can contain simultaneous signals from several strategies. One
 // chart label per type/time retains every unique hypothesis without stacking
 // arrows on exactly the same pixel. The hover index still contains all details.
@@ -139,7 +159,7 @@ export default function(component){
   r.forecastGrid=r.chart.addSeries(LC.LineSeries,{...opts,visible:false});
   r.markers=LC.createSeriesMarkers(r.candles,[]);r.primitive=new OverlayPrimitive(r);r.candles.attachPrimitive(r.primitive);
   r.observer=new MutationObserver(()=>{if(!root.isConnected){clearTimeout(r.timer);clearTimeout(r.prefTimer);r.observer.disconnect();r.chart.remove();root.__runtime=null;}});r.observer.observe(document.body,{childList:true,subtree:true});
-  r.chart.subscribeCrosshairMove(p=>{const bar=p.seriesData?.get(r.candles);if(bar)text('crosshair',`${local(p.time)}  O ${num(bar.open)}  H ${num(bar.high)}  L ${num(bar.low)}  C ${num(bar.close)}`);const sig=r.signalsByTime?.get(p.time);$('signalTooltip').hidden=!sig?.length;if(sig?.length)$('signalTooltip').textContent=sig.map(s=>`${s.type==='BUY'?'BUY':'EXIT'} · ${s.strategy}\nГраница закрытия ${local(s.timestamp)} · ${num(s.reference_price)} USDT\nФактически обнаружен ${local(s.detected_at)}\nИсторическая отметка условия, не исполненная сделка\n${(Array.isArray(s.explanation)?s.explanation:[]).join('\n')}\n${s.regime} · ${s.status}\n${JSON.stringify(s.parameters)}\n${s.cost_assumption}`).join('\n\n');});
+  r.chart.subscribeCrosshairMove(p=>{const bar=p.seriesData?.get(r.candles);if(bar)text('crosshair',`${local(p.time)}  O ${num(bar.open)}  H ${num(bar.high)}  L ${num(bar.low)}  C ${num(bar.close)}`);const sig=r.signalsByTime?.get(p.time);$('signalTooltip').hidden=!sig?.length;if(sig?.length)$('signalTooltip').textContent=sig.map(s=>chartSignalTooltip(s,local,num)).join('\n\n');});
   r.chart.subscribeClick(p=>{const s=r.signalsByTime?.get(p.time)?.at(-1);if(s){showSignal(s);$('reasons').closest('details').open=true;}});
  }
  function readPrefs(){return {version:1,...r.layers,intensity:+$('opacity').value,width:+$('width').value,line_opacity:+$('lineOpacity').value,fast_color:$('fastColor').value,slow_color:$('slowColor').value};}
