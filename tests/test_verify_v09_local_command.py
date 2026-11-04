@@ -15,7 +15,7 @@ SOURCE = Path(__file__).resolve().parents[1] / "scripts" / "verify_v09_local.com
 pytestmark = pytest.mark.skipif(shutil.which("bash") is None, reason="Bash unavailable")
 
 
-def run_launcher(tmp_path, *, browser=True, strict=False, fail_node=False):
+def run_launcher(tmp_path, *, browser=True, strict=False, fail_node=False, extra_args=()):
     root = tmp_path / "isolated-checkout"
     (root / "scripts").mkdir(parents=True)
     (root / ".venv" / "bin").mkdir(parents=True)
@@ -57,7 +57,7 @@ def run_launcher(tmp_path, *, browser=True, strict=False, fail_node=False):
         MOEX_DATA_DIR="/should/not/be/reused",
     )
     proc = subprocess.run(
-        ["bash", str(launcher), *(["--strict"] if strict else [])],
+        ["bash", str(launcher), *(["--strict"] if strict else []), *extra_args],
         cwd=root, env=env, text=True, capture_output=True, check=False,
     )
     return proc, mock_log.read_text() if mock_log.exists() else ""
@@ -99,6 +99,7 @@ def test_failing_js_contract_stops_qa_before_python_suite(tmp_path):
 
 
 def test_bad_cli_flag_stops_before_any_commands(tmp_path):
-    result, log = run_launcher(tmp_path, strict=False)
-    assert result.returncode == 0
-    assert "PY -m pytest -q" in log
+    result, log = run_launcher(tmp_path, extra_args=("--not-a-valid-option",))
+    assert result.returncode == 2
+    assert "Usage: bash scripts/verify_v09_local.command" in result.stderr
+    assert not log
