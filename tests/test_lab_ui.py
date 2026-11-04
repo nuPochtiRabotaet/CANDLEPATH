@@ -3,6 +3,10 @@ from datetime import datetime,timezone,timedelta
 from pathlib import Path
 import pytest
 from streamlit.testing.v1 import AppTest
+
+@pytest.fixture(autouse=True)
+def legacy_invest_workspace(monkeypatch):
+    monkeypatch.setenv('CANDLEPATH_ENABLE_LEGACY_INVEST','1')
 from moex_intelligence import lab_ui,portfolio_ui
 from moex_intelligence.data import market_today,get_engine
 from moex_intelligence.portfolio_service import opening_event

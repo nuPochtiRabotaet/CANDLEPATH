@@ -10,6 +10,7 @@ from .design import TOKENS
 from . import dashboard as legacy
 from .advisor import evaluate, investigate, render_investment_report
 from .config import Settings, configure_logging
+from .workspace_mode import legacy_invest_enabled
 from .data import get_engine, market_today
 from .education import ASSETS, TERMS, NETWORK_HELP, network_message
 from .persistence import ResearchStore
@@ -390,7 +391,7 @@ def scenarios_page(dataset):
 
 
 def main():
-    st.set_page_config(page_title='MOEX Intelligence',page_icon='◈',layout='wide',initial_sidebar_state='expanded')
+    st.set_page_config(page_title='CandlePath v0.9',page_icon='◈',layout='wide',initial_sidebar_state='expanded')
     configure_logging()
     from .upgrades import ensure_v081_backup
     try:ensure_v081_backup(Settings.from_env().data_dir)
@@ -398,8 +399,14 @@ def main():
         st.error('Не удалось создать резервную копию перед обновлением. Данные не изменены: '+str(exc));return
     from .experience import apply_theme,overview_page
     apply_theme()
-    st.session_state.setdefault('workspace_mode','Invest')
-    workspace=st.sidebar.segmented_control('Рабочее пространство',['Invest','Trade'],key='workspace_mode')
+    if legacy_invest_enabled():
+        # Legacy tests and maintenance start in Invest only when explicitly opted in.
+        st.session_state.setdefault('workspace_mode','Invest')
+        workspace=st.sidebar.segmented_control('Рабочее пространство',['Trade','Invest'],key='workspace_mode')
+    else:
+        # Crypto-first by default; legacy investment storage and code are not touched.
+        st.session_state.workspace_mode='Trade'
+        workspace='Trade'
     if workspace=='Trade':
         st.markdown('<style>[data-testid="stSidebar"]{display:none!important}[data-testid="stMainBlockContainer"]{max-width:100%;padding:1rem 1.25rem}header[data-testid="stHeader"]{height:0}</style>',unsafe_allow_html=True)
         from .crypto.ui import page as trade_page
