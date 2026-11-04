@@ -42,6 +42,28 @@ function forecastProjection(data){
  const grid=Array.from({length:steps},(_,i)=>({time:observedTime+(i+1)*step}));
  return {profile,grid,line:profile.map(p=>({time:p.time,value:p.median}))};
 }
+// A candle can contain simultaneous signals from several strategies. One
+// chart label per type/time retains every unique hypothesis without stacking
+// arrows on exactly the same pixel. The hover index still contains all details.
+function markerPlan(signals,candleTimes){
+ const buckets=new Map(),seen=new Set();
+ for(const signal of signals){
+  if(!Number.isSafeInteger(signal.timestamp)||!candleTimes.has(signal.timestamp)||
+     (signal.type!=='BUY'&&signal.type!=='EXIT'))continue;
+  const identity=signal.id||signal.timestamp+':'+signal.type+':'+signal.strategy;
+  if(seen.has(identity))continue;
+  seen.add(identity);
+  const key=signal.timestamp+':'+signal.type,group=buckets.get(key);
+  if(group)group.count++;
+  else buckets.set(key,{time:signal.timestamp,type:signal.type,count:1});
+ }
+ return [...buckets.values()].map(({time,type,count})=>({
+  time,position:type==='BUY'?'belowBar':'aboveBar',
+  shape:type==='BUY'?'arrowUp':'arrowDown',
+  color:type==='BUY'?'#31F3A2':'#FF5474',
+  text:type+(count>1?' ×'+count:''),size:.7
+ })).sort((a,b)=>a.time-b.time||((a.position==='belowBar')?-1:1));
+}
 // Keep a faithful fallback for historical corrections while live ticks use
 // update() rather than repeatedly rebuilding entire chart series.
 function candleChangePlan(previous,current){
@@ -260,7 +282,7 @@ export default function(component){
   for(const key of Object.keys(r.layers))$(key).checked=r.layers[key];
   r.fast.applyOptions({visible:r.layers.ema,lineWidth:+$('width').value,color:alpha($('fastColor').value)});r.slow.applyOptions({visible:r.layers.ema,lineWidth:+$('width').value,color:alpha($('slowColor').value)});r.st.applyOptions({visible:r.layers.st,lineWidth:+$('width').value,color:alpha('#ac9eea')});r.volume.applyOptions({visible:r.layers.volume});
   const candleTimes=new Set(d.candles.map(c=>c.time));
-   r.markers.setMarkers(r.layers.markers?[...new Map(d.signals.filter(s=>candleTimes.has(s.timestamp)).map(s=>[s.timestamp+':'+s.type,s])).values()].map(s=>({time:s.timestamp,position:s.type==='BUY'?'belowBar':'aboveBar',shape:s.type==='BUY'?'arrowUp':'arrowDown',color:s.type==='BUY'?'#31F3A2':'#FF5474',text:s.type==='BUY'?'BUY':'EXIT',size:.7})).sort((a,b)=>a.time-b.time):[]);
+  r.markers.setMarkers(r.layers.markers?markerPlan(d.signals,candleTimes):[]);
   root.dataset.ribbon=String(r.layers.ribbon);root.dataset.markers=String(r.layers.markers);levels();
  }
  function showJournal(){
