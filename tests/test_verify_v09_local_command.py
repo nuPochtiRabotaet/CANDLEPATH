@@ -26,7 +26,7 @@ def run_launcher(tmp_path, *, browser=True, strict=False, fail_node=False, node_
     py = root / ".venv" / "bin" / "python"
     py.write_text(
         "#!/bin/sh\n"
-        "printf 'PY %s | DATA=%s\\n' \"$*\" \"$MOEX_DATA_DIR\" >> \"$MOCK_LOG\"\n"
+        "printf 'PY %s | DATA=%s | CACHE=%s\\n' \"$*\" \"$MOEX_DATA_DIR\" \"$PYTHONPYCACHEPREFIX\" >> \"$MOCK_LOG\"\n"
         "if [ \"$1\" = \"-c\" ]; then\n"
         "  [ \"$MOCK_BROWSER_AVAILABLE\" = \"1\" ]\n"
         "  exit $?\n"
@@ -81,9 +81,12 @@ def test_local_qa_runs_all_ci_contracts_and_cleans_temporary_data(tmp_path):
     ):
         assert expected in log
     assert "PASS: local Python, JS and synthetic Chromium checks completed" in result.stdout
-    data_dir = next(line.split("DATA=", 1)[1] for line in log.splitlines() if "DATA=" in line)
+    line = next(line for line in log.splitlines() if line.startswith("PY "))
+    data_dir = line.split("DATA=", 1)[1].split(" | ", 1)[0]
+    cache_dir = line.split("CACHE=", 1)[1]
     assert data_dir.startswith(str(tmp_path) + os.sep)
-    assert not Path(data_dir).exists(), "Temporary test DB must be removed"
+    assert cache_dir == str(Path(data_dir) / "pycache")
+    assert not Path(data_dir).exists(), "Temporary DB and bytecode cache must be removed"
 
 
 @pytest.mark.parametrize("strict,expected", [(False, 0), (True, 2)])
