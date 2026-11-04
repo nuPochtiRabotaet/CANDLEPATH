@@ -226,6 +226,7 @@ def verify():
             page.mouse.click(at['x'],at['y'])
             assert 'EXIT · технический сигнал' in page.locator('#signal').inner_text()
             assert 'не является исполненной сделкой' in page.locator('#reasons').inner_text()
+            assert 'undefined' not in page.locator('#reasons').inner_text()
             assert page.evaluate("""() => Object.keys(window._data.state.positions).length===0
                 && window._data.orders.length===0""")
             # Only the recorded Paper order journal retains SELL semantics.
