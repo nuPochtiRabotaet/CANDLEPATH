@@ -225,6 +225,9 @@ def verify():
             # describe it, never post a Paper SELL or create a position.
             page.mouse.click(at['x'],at['y'])
             assert 'EXIT · технический сигнал' in page.locator('#signal').inner_text()
+            assert 'EXIT = возможный выход' in page.locator('.chartFoot').inner_text()
+            assert 'SELL = выход' not in page.locator('.chartFoot').inner_text()
+            page.locator('details.explain:has(#reasons) > summary').click()
             assert 'не является исполненной сделкой' in page.locator('#reasons').inner_text()
             assert 'undefined' not in page.locator('#reasons').inner_text()
             assert page.evaluate("""() => Object.keys(window._data.state.positions).length===0
