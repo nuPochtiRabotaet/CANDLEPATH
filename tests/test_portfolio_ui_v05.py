@@ -1,5 +1,10 @@
 from pathlib import Path
 from streamlit.testing.v1 import AppTest
+import pytest
+
+@pytest.fixture(autouse=True)
+def legacy_invest_workspace(monkeypatch):
+    monkeypatch.setenv('CANDLEPATH_ENABLE_LEGACY_INVEST','1')
 from moex_intelligence.portfolio import PortfolioStore
 from moex_intelligence.portfolio_ui import portfolio_store
 from moex_intelligence import portfolio_ui as ui
