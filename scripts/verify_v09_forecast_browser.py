@@ -192,15 +192,85 @@ def verify():
                 'e=>e.__runtime.volume.data().length')==120
             # Same timestamp can carry several signals: all hover details
             # remain indexed and last-on-click order remains unchanged.
+            # Same-side strategies must show a count, not silently disappear.
             page.evaluate("""() => {
                 const t=window._data.candles[60].time;
-                window._data.signals=[{timestamp:t,type:'BUY',strategy:'One'},
-                    {timestamp:t,type:'EXIT',strategy:'Two'}];
+                window._data.signals=[{id:'s1',timestamp:t,type:'BUY',strategy:'One'},
+                    {id:'s2',timestamp:t,type:'BUY',strategy:'Three'},
+                    {id:'s3',timestamp:t,type:'EXIT',strategy:'Two'},
+                    {id:'s1',timestamp:t,type:'BUY',strategy:'One'},
+                    {id:'bad',timestamp:t,type:'SHORT',strategy:'Unsupported'}];
                 window._invoke()}""")
+            # Unsupported input must not become EXIT, and a historical
+            # signal must never masquerade as the current NO_SIGNAL state.
+            assert 'NO_SIGNAL' in page.locator('#signal').inner_text()
+            assert 'Актуальной стратегии нет' in page.locator('#strategy').inner_text()
+            assert 'Актуальный сигнал отсутствует' in page.locator('#reasons').text_content()
+            assert 'Unsupported' not in page.locator('#strategy').inner_text()
             indexed=page.locator('.terminal').evaluate("""e=>{
                 const ts=window._data.candles[60].time;
                 return e.__runtime.signalsByTime.get(ts).map(s=>s.strategy)}""")
-            assert indexed==['One','Two'],indexed
+            assert indexed==['One','Three','Two'],indexed
+            # Technical EXIT is not a filled SELL, even without a position.
+            markers=page.locator('.terminal').evaluate("""e=>
+                e.__runtime.markers.markers().map(m=>({time:m.time,text:m.text}))""")
+            t=page.evaluate('window._data.candles[60].time')
+            assert markers==[{'time':t,'text':'BUY ×2'},{'time':t,'text':'EXIT'}],markers
+            # Marker layer toggle cannot lose the original strategy count.
+            page.locator('#markers').uncheck()
+            assert page.locator('.terminal').evaluate(
+                'e=>e.__runtime.markers.markers().length')==0
+            page.locator('#markers').check()
+            visible=page.locator('.terminal').evaluate(
+                'e=>e.__runtime.markers.markers().map(m=>m.text)')
+            assert visible==['BUY ×2','EXIT'],visible
+            at=page.locator('.terminal').evaluate("""e=>{
+                const r=e.__runtime,c=window._data.candles[60],
+                  rect=e.querySelector('#chart').getBoundingClientRect();
+                return {x:rect.left+r.chart.timeScale().timeToCoordinate(c.time),
+                        y:rect.top+r.candles.priceToCoordinate(c.close)};
+            }""")
+            assert isinstance(at['x'],(float,int)) and isinstance(at['y'],(float,int)),at
+            # A real browser pointer move exercises the chart hover path;
+            # programmatic setCrosshairPosition does not simulate a mouse event.
+            page.mouse.move(at['x'],at['y'])
+            page.wait_for_timeout(200)
+            tooltip=page.locator('#signalTooltip').inner_text()
+            assert 'BUY · One' in tooltip and 'BUY · Three' in tooltip,repr(tooltip)
+            assert 'EXIT · Two' in tooltip,repr(tooltip)
+            assert 'SELL / EXIT' not in tooltip
+            assert 'не исполненная сделка' in tooltip
+            assert 'undefined' not in tooltip and 'Invalid Date' not in tooltip,tooltip
+            assert 'Фактически обнаружен нет данных' in tooltip,tooltip
+            assert 'цена неизвестна' in tooltip,tooltip
+            # Click the actual chart marker; selecting a signal may only
+            # describe it, never post a Paper SELL or create a position.
+            rationale=page.locator('details.explain:has(#reasons)')
+            assert not rationale.evaluate('e=>e.open')
+            page.mouse.click(at['x'],at['y'])
+            assert rationale.evaluate('e=>e.open'), 'chart click must reveal signal rationale'
+            assert 'EXIT · технический сигнал' in page.locator('#signal').inner_text()
+            assert 'EXIT = возможный выход' in page.locator('.chartFoot').inner_text()
+            assert 'SELL = выход' not in page.locator('.chartFoot').inner_text()
+            assert 'не является исполненной сделкой' in page.locator('#reasons').inner_text()
+            assert 'undefined' not in page.locator('#reasons').inner_text()
+            assert page.evaluate("""() => Object.keys(window._data.state.positions).length===0
+                && window._data.orders.length===0""")
+            # Only the recorded Paper order journal retains SELL semantics.
+            page.evaluate("""() => {
+                const e=document.querySelector('.terminal');
+                e.__runtime.tab='orders';
+                window._data.orders=[{time:window._data.candles[60].time,
+                    symbol:'BTCUSDT',side:'SELL',quantity:'0.1',
+                    fill:100,fee:0.01,status:'Filled'}];
+                window._invoke();
+            }""")
+            assert 'SELL' in page.locator('#journalBody').inner_text()
+            # Re-render restores the live lifecycle description, not the
+            # previously selected historical EXIT from an earlier snapshot.
+            assert 'NO_SIGNAL' in page.locator('#signal').inner_text()
+            assert 'Актуальный сигнал отсутствует' in page.locator('#reasons').text_content()
+            assert 'не является исполненной сделкой' not in page.locator('#reasons').text_content()
             assert not errors,errors
             return 'PASS: forecast geometry, same-version volume, historical correction, append/truncate, indexed signals'
         finally:

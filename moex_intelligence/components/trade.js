@@ -42,6 +42,48 @@ function forecastProjection(data){
  const grid=Array.from({length:steps},(_,i)=>({time:observedTime+(i+1)*step}));
  return {profile,grid,line:profile.map(p=>({time:p.time,value:p.median}))};
 }
+// Hover details are read-only. Old signal snapshots may omit optional
+// fields; never present "undefined" or fabricate discovery timestamps.
+function chartSignalTooltip(sig,local,num){
+ const detected=Number.isSafeInteger(sig.detected_at)?local(sig.detected_at):'нет данных';
+ const price=sig.reference_price!=null&&sig.reference_price!==''&&
+  Number.isFinite(Number(sig.reference_price))?num(sig.reference_price)+' USDT':'цена неизвестна';
+ const parts=[
+  (sig.type==='BUY'?'BUY':'EXIT')+' · '+(sig.strategy||'Стратегия не указана'),
+  'Граница закрытия '+local(sig.timestamp)+' · '+price,
+  'Фактически обнаружен '+detected,
+  'Историческая отметка условия, не исполненная сделка'
+ ];
+ if(Array.isArray(sig.explanation))parts.push(...sig.explanation.filter(x=>typeof x==='string'&&x.trim()));
+ const states=[sig.regime,sig.status].filter(x=>typeof x==='string'&&x.trim());
+ if(states.length)parts.push(states.join(' · '));
+ if(sig.parameters&&typeof sig.parameters==='object'&&Object.keys(sig.parameters).length)
+  parts.push(JSON.stringify(sig.parameters));
+ if(typeof sig.cost_assumption==='string'&&sig.cost_assumption.trim())parts.push(sig.cost_assumption);
+ return parts.join('\n');
+}
+// A candle can contain simultaneous signals from several strategies. One
+// chart label per type/time retains every unique hypothesis without stacking
+// arrows on exactly the same pixel. The hover index still contains all details.
+function markerPlan(signals,candleTimes){
+ const buckets=new Map(),seen=new Set();
+ for(const signal of signals){
+  if(!signal||!Number.isSafeInteger(signal.timestamp)||!candleTimes.has(signal.timestamp)||
+     (signal.type!=='BUY'&&signal.type!=='EXIT'))continue;
+  const identity=signal.id||signal.timestamp+':'+signal.type+':'+signal.strategy;
+  if(seen.has(identity))continue;
+  seen.add(identity);
+  const key=signal.timestamp+':'+signal.type,group=buckets.get(key);
+  if(group)group.count++;
+  else buckets.set(key,{time:signal.timestamp,type:signal.type,count:1});
+ }
+ return [...buckets.values()].map(({time,type,count})=>({
+  time,position:type==='BUY'?'belowBar':'aboveBar',
+  shape:type==='BUY'?'arrowUp':'arrowDown',
+  color:type==='BUY'?'#31F3A2':'#FF5474',
+  text:type+(count>1?' ×'+count:''),size:.7
+ })).sort((a,b)=>a.time-b.time||((a.position==='belowBar')?-1:1));
+}
 // Keep a faithful fallback for historical corrections while live ticks use
 // update() rather than repeatedly rebuilding entire chart series.
 function candleChangePlan(previous,current){
@@ -117,8 +159,8 @@ export default function(component){
   r.forecastGrid=r.chart.addSeries(LC.LineSeries,{...opts,visible:false});
   r.markers=LC.createSeriesMarkers(r.candles,[]);r.primitive=new OverlayPrimitive(r);r.candles.attachPrimitive(r.primitive);
   r.observer=new MutationObserver(()=>{if(!root.isConnected){clearTimeout(r.timer);clearTimeout(r.prefTimer);r.observer.disconnect();r.chart.remove();root.__runtime=null;}});r.observer.observe(document.body,{childList:true,subtree:true});
-  r.chart.subscribeCrosshairMove(p=>{const bar=p.seriesData?.get(r.candles);if(bar)text('crosshair',`${local(p.time)}  O ${num(bar.open)}  H ${num(bar.high)}  L ${num(bar.low)}  C ${num(bar.close)}`);const sig=r.signalsByTime?.get(p.time);$('signalTooltip').hidden=!sig?.length;if(sig?.length)$('signalTooltip').textContent=sig.map(s=>`${s.type==='BUY'?'BUY':'SELL / EXIT'} · ${s.strategy}\nГраница закрытия ${local(s.timestamp)} · ${num(s.reference_price)} USDT\nФактически обнаружен ${local(s.detected_at)}\nИсторическая отметка условия, не исполненная сделка\n${(Array.isArray(s.explanation)?s.explanation:[]).join('\n')}\n${s.regime} · ${s.status}\n${JSON.stringify(s.parameters)}\n${s.cost_assumption}`).join('\n\n');});
-  r.chart.subscribeClick(p=>{const s=r.signalsByTime?.get(p.time)?.at(-1);if(s)showSignal(s);});
+  r.chart.subscribeCrosshairMove(p=>{const bar=p.seriesData?.get(r.candles);if(bar)text('crosshair',`${local(p.time)}  O ${num(bar.open)}  H ${num(bar.high)}  L ${num(bar.low)}  C ${num(bar.close)}`);const sig=r.signalsByTime?.get(p.time);$('signalTooltip').hidden=!sig?.length;if(sig?.length)$('signalTooltip').textContent=sig.map(s=>chartSignalTooltip(s,local,num)).join('\n\n');});
+  r.chart.subscribeClick(p=>{const s=r.signalsByTime?.get(p.time)?.at(-1);if(s){showSignal(s);$('reasons').closest('details').open=true;}});
  }
  function readPrefs(){return {version:1,...r.layers,intensity:+$('opacity').value,width:+$('width').value,line_opacity:+$('lineOpacity').value,fast_color:$('fastColor').value,slow_color:$('slowColor').value};}
  function applyPrefs(p){for(const k of Object.keys(r.layers))r.layers[k]=p[k];$('opacity').value=p.intensity;r.opacity=p.intensity/100;$('width').value=p.width;$('lineOpacity').value=p.line_opacity;$('fastColor').value=p.fast_color;$('slowColor').value=p.slow_color;}
@@ -128,7 +170,13 @@ export default function(component){
  r.data=d;r.renderCount++;root.dataset.renders=r.renderCount;
  // Time-indexed signal lookup avoids rescanning the full list per mouse move.
  r.signalsByTime=new Map();
+ const seenSignalIds=new Set();
  for(const signal of d.signals){
+  if(!signal||!Number.isSafeInteger(signal.timestamp)||
+     (signal.type!=='BUY'&&signal.type!=='EXIT'))continue;
+  const identity=signal.id||signal.timestamp+':'+signal.type+':'+signal.strategy;
+  if(seenSignalIds.has(identity))continue;
+  seenSignalIds.add(identity);
   const bucket=r.signalsByTime.get(signal.timestamp);
   if(bucket)bucket.push(signal);
   else r.signalsByTime.set(signal.timestamp,[signal]);
@@ -139,20 +187,22 @@ export default function(component){
  else if(d.inputs.seq>r.seq){r.inputs={...d.inputs};r.seq=d.inputs.seq;}
  root.dataset.context=d.context;const s=r.inputs;
  function showSignal(sig){
-  text('signal',sig?(sig.type==='BUY'?'Potential Buy':'Potential Exit'):'No Signal');
+  text('signal',sig?(sig.type==='BUY'?'BUY · технический сигнал':'EXIT · технический сигнал'):'No Signal');
   text('strategy',sig?sig.strategy+' · '+local(sig.timestamp):'Ожидание подтверждённого сигнала');
-  text('reasons',sig?(Array.isArray(sig.explanation)?sig.explanation:[]).join('\n')+'\nСформирован после закрытия свечи.\n'+sig.invalidation:'Условия стратегий ещё не выполнены.');
+  text('reasons',sig?(Array.isArray(sig.explanation)?sig.explanation:[]).join('\n')+'\nСформирован после закрытия свечи; не является исполненной сделкой.'+(sig.invalidation?'\n'+sig.invalidation:''):'Условия стратегий ещё не выполнены.');
  }
  text('market',d.symbol.replace('USDT',' / USDT'));text('price',d.quote.price?num(d.quote.price):'—');text('change',d.quote.change!=null?num(d.quote.change)+'% · 24h':'—');$('change').className=d.quote.change>=0?'bull':'bear';text('connection',d.status+(d.quote.ts?' · '+num(d.age,0)+'с':''));text('tradingMode',d.mode==='Paper Trading'?'LOCAL PAPER':d.mode.toUpperCase());root.dataset.fresh=d.fresh?'true':'false';
  $('connectionError').hidden=!d.error&&!(!d.fresh&&d.candles.length);text('connectionError',d.error||'Stale Data · котировки устарели; действия с виртуальными позициями заблокированы.');
  const forecast=d.intelligence?.forecast;
  text('forecastStatus',forecast?.status==='EXPERIMENTAL'?'Forecast · эксперимент: Random Walk + EWMA, модельный 80% диапазон (НЕ проверенная вероятность).':('Forecast: '+(forecast?.status||'UNAVAILABLE')+' · '+(forecast?.reason||'нет доступного прогноза')));
- text('regime',d.analysis.regime);$('regime').className=d.analysis.regime==='Bullish'?'bull':d.analysis.regime==='Bearish'?'bear':'';showSignal(d.signals.at(-1));
+ text('regime',d.analysis.regime);$('regime').className=d.analysis.regime==='Bullish'?'bull':d.analysis.regime==='Bearish'?'bear':'';
  const life=d.lifecycle?.active||{state:'NO_SIGNAL',reason:'Подходящих условий нет'};
  text('lifecycleState',life.state+(life.type?' · '+life.type:'')+' — '+life.reason);
  root.dataset.signalState=life.state;
  text('signal',life.state==='POTENTIAL'?'Potential '+life.type+' — Awaiting Confirmation':life.state==='ACTIONABLE'?'Actionable '+life.type:life.state);
  if(life.strategy){text('strategy',life.strategy);text('reasons',(life.explanation||[]).join('\n')+'\n'+life.reason);}
+ else {text('strategy','Актуальной стратегии нет · историю см. на графике');
+  text('reasons',life.reason&&life.reason!=='none'?life.reason:'Актуальный сигнал отсутствует.');}
  text('entryZone',life.maximum_entry_price&&!['EXPIRED','INVALIDATED'].includes(life.state)?'Вход '+num(life.minimum_entry_price)+'–'+num(life.maximum_entry_price)+' · до '+local(life.expiration):'');
  text('quality',life.quality?('Net R/R '+num(life.quality.rr)+(life.quality.rr<1?' · Poor Entry Conditions — неблагоприятное соотношение после издержек':' · техническая оценка, не вероятность прибыли')):'');
  const lastBar=d.candles.at(-1),duration=d.interval==='D'?86400:+d.interval*60;
@@ -260,7 +310,7 @@ export default function(component){
   for(const key of Object.keys(r.layers))$(key).checked=r.layers[key];
   r.fast.applyOptions({visible:r.layers.ema,lineWidth:+$('width').value,color:alpha($('fastColor').value)});r.slow.applyOptions({visible:r.layers.ema,lineWidth:+$('width').value,color:alpha($('slowColor').value)});r.st.applyOptions({visible:r.layers.st,lineWidth:+$('width').value,color:alpha('#ac9eea')});r.volume.applyOptions({visible:r.layers.volume});
   const candleTimes=new Set(d.candles.map(c=>c.time));
-   r.markers.setMarkers(r.layers.markers?[...new Map(d.signals.filter(s=>candleTimes.has(s.timestamp)).map(s=>[s.timestamp+':'+s.type,s])).values()].map(s=>({time:s.timestamp,position:s.type==='BUY'?'belowBar':'aboveBar',shape:s.type==='BUY'?'arrowUp':'arrowDown',color:s.type==='BUY'?'#31F3A2':'#FF5474',text:s.type==='BUY'?'BUY':'SELL',size:.7})).sort((a,b)=>a.time-b.time):[]);
+  r.markers.setMarkers(r.layers.markers?markerPlan(d.signals,candleTimes):[]);
   root.dataset.ribbon=String(r.layers.ribbon);root.dataset.markers=String(r.layers.markers);levels();
  }
  function showJournal(){
