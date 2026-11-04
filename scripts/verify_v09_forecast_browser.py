@@ -201,9 +201,11 @@ def verify():
                     {id:'s1',timestamp:t,type:'BUY',strategy:'One'},
                     {id:'bad',timestamp:t,type:'SHORT',strategy:'Unsupported'}];
                 window._invoke()}""")
-            # Unsupported input must not become an EXIT label or override
-            # the last valid historical signal in the assistant.
-            assert 'Two' in page.locator('#strategy').inner_text()
+            # Unsupported input must not become EXIT, and a historical
+            # signal must never masquerade as the current NO_SIGNAL state.
+            assert 'NO_SIGNAL' in page.locator('#signal').inner_text()
+            assert 'Актуальной стратегии нет' in page.locator('#strategy').inner_text()
+            assert 'Актуальный сигнал отсутствует' in page.locator('#reasons').text_content()
             assert 'Unsupported' not in page.locator('#strategy').inner_text()
             indexed=page.locator('.terminal').evaluate("""e=>{
                 const ts=window._data.candles[60].time;
@@ -261,6 +263,11 @@ def verify():
                 window._invoke();
             }""")
             assert 'SELL' in page.locator('#journalBody').inner_text()
+            # Re-render restores the live lifecycle description, not the
+            # previously selected historical EXIT from an earlier snapshot.
+            assert 'NO_SIGNAL' in page.locator('#signal').inner_text()
+            assert 'Актуальный сигнал отсутствует' in page.locator('#reasons').text_content()
+            assert 'не является исполненной сделкой' not in page.locator('#reasons').text_content()
             assert not errors,errors
             return 'PASS: forecast geometry, same-version volume, historical correction, append/truncate, indexed signals'
         finally:
