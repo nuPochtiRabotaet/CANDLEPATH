@@ -8,7 +8,7 @@ const vm=require('node:vm');
 const src=fs.readFileSync(path.join(__dirname,'../moex_intelligence/components/trade.js'),'utf8')
  .replace('export default function(component){','function render(component){');
 const context={LightweightCharts:{}};
-vm.runInNewContext(src+'\nglobalThis.__plan=candleChangePlan;globalThis.__markers=markerPlan;',context,{timeout:2500});
+vm.runInNewContext(src+'\nglobalThis.__plan=candleChangePlan;globalThis.__markers=markerPlan;globalThis.__tooltip=chartSignalTooltip;',context,{timeout:2500});
 const plan=context.__plan;
 const copy=x=>JSON.parse(JSON.stringify(x));
 const bar=(t,price=100,volume=5,closed=true)=>({
@@ -40,6 +40,22 @@ assert.deepEqual(kind(old,[]),{mode:'empty',from:0});
 // discard the first hypothesis or draw overlapping duplicate arrows.
 
 const markerPlan=context.__markers;
+const tooltip=context.__tooltip;
+const minimal=tooltip({type:'BUY',timestamp:1800,strategy:'One'},
+ t=>'T'+t,x=>String(x));
+assert.match(minimal,/BUY · One/);
+assert.match(minimal,/Фактически обнаружен нет данных/);
+assert.match(minimal,/цена неизвестна/);
+assert.doesNotMatch(minimal,/undefined|Invalid Date/);
+const full=tooltip({type:'EXIT',timestamp:1800,detected_at:1810,
+ reference_price:102.5,strategy:'Range',explanation:['cross below'],
+ regime:'Bearish',status:'confirmed',parameters:{window:20},
+ cost_assumption:'round trip estimated'},t=>'T'+t,x=>String(x));
+assert.match(full,/Фактически обнаружен T1810/);
+assert.match(full,/102.5 USDT/);
+assert.match(full,/cross below/);
+assert.match(full,/round trip estimated/);
+assert.doesNotMatch(full,/undefined|Invalid Date/);
 const candidates=[
  {id:'A',timestamp:1800,type:'BUY',strategy:'Trend Following'},
  {id:'B',timestamp:1800,type:'BUY',strategy:'Breakout Detection'},
