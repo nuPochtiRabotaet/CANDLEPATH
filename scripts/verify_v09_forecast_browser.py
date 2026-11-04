@@ -201,6 +201,44 @@ def verify():
                 const ts=window._data.candles[60].time;
                 return e.__runtime.signalsByTime.get(ts).map(s=>s.strategy)}""")
             assert indexed==['One','Two'],indexed
+            # Technical EXIT is not a filled SELL, even without a position.
+            markers=page.locator('.terminal').evaluate("""e=>
+                e.__runtime.markers.markers().map(m=>({time:m.time,text:m.text}))""")
+            assert markers==[{'time':window_time,'text':kind} for kind in ('BUY','EXIT')
+                             for window_time in [page.evaluate('window._data.candles[60].time')]],markers
+            page.evaluate("""() => {
+                const e=document.querySelector('.terminal'),r=e.__runtime;
+                const c=window._data.candles[60];
+                r.chart.setCrosshairPosition(c.close,c.time,r.candles);
+            }""")
+            tooltip=page.locator('#signalTooltip').inner_text()
+            assert 'BUY · One' in tooltip and 'EXIT · Two' in tooltip,tooltip
+            assert 'SELL / EXIT' not in tooltip
+            assert 'не исполненная сделка' in tooltip
+            # Click the actual chart marker; selecting a signal may only
+            # describe it, never post a Paper SELL or create a position.
+            at=page.locator('.terminal').evaluate("""e=>{
+                const r=e.__runtime,c=window._data.candles[60],
+                  rect=e.querySelector('#chart').getBoundingClientRect();
+                return {x:rect.left+r.chart.timeScale().timeToCoordinate(c.time),
+                        y:rect.top+r.candles.priceToCoordinate(c.close)};
+            }""")
+            assert isinstance(at['x'],(float,int)) and isinstance(at['y'],(float,int)),at
+            page.mouse.click(at['x'],at['y'])
+            assert 'EXIT · технический сигнал' in page.locator('#signal').inner_text()
+            assert 'не является исполненной сделкой' in page.locator('#reasons').inner_text()
+            assert page.evaluate("""() => Object.keys(window._data.state.positions).length===0
+                && window._data.orders.length===0""")
+            # Only the recorded Paper order journal retains SELL semantics.
+            page.evaluate("""() => {
+                const e=document.querySelector('.terminal');
+                e.__runtime.tab='orders';
+                window._data.orders=[{time:window._data.candles[60].time,
+                    symbol:'BTCUSDT',side:'SELL',quantity:'0.1',
+                    fill:100,fee:0.01,status:'Filled'}];
+                window._invoke();
+            }""")
+            assert 'SELL' in page.locator('#journalBody').inner_text()
             assert not errors,errors
             return 'PASS: forecast geometry, same-version volume, historical correction, append/truncate, indexed signals'
         finally:
