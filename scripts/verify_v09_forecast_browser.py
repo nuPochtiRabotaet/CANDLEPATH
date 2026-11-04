@@ -81,6 +81,9 @@ def verify():
             status=page.locator('#forecastStatus').inner_text()
             assert '2 ч.' in status and 'модельный диапазон' in status,status
             assert 'USDT' in status and 'медиана' in status,status
+            # Synthetic last close 112.1, last horizon +/-3.2 USDT.
+            assert '108,90–115,30 USDT' in status,status
+            assert status.count('2,85%')==2,status
             assert 'номинальные 80%' in status,status
             assert 'Направление и доходность сделки не прогнозируются' in status,status
             assert not errors,errors
