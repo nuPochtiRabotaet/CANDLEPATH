@@ -2,7 +2,7 @@
 import copy,json,time,hashlib
 from .analysis import analyze,PARAMS,VERSION
 from .market import seconds
-from .costs import CostModel,estimate
+from .orders import sell_preview
 from .risk import plan,floor_step,quote_ok
 TTL_BARS={'Trend Following':1,'Mean Reversion':2,'Breakout Detection':1}
 TERMINAL={'EXPIRED','INVALIDATED'}
@@ -67,8 +67,17 @@ class SignalLifecycle:
                     elif not quote_ok(quote,now) or not candle_fresh:event(rec,'CONFIRMED','Ожидание свежего рынка; Actionable запрещён')
                     elif rec['type']=='EXIT':
                         held=state['positions'].get(symbol)
-                        if held and rules and estimate('SELL',held['qty'],quote,CostModel.from_state(state)).notional>=__import__('decimal').Decimal(str(rules['minimum'])):event(rec,'ACTIONABLE','Потенциальный выход из существующего long; short не открывается')
-                        else:event(rec,'CONFIRMED','Потенциальный выход; исполнимая позиция отсутствует')
+                        if not held:
+                            event(rec,'CONFIRMED','Потенциальный выход; позиция отсутствует')
+                        else:
+                            try:
+                                # Readiness is for the selected manual quantity, not
+                                # gross holdings. Reuse Paper's read-only sale gate;
+                                # never prepare or execute an order from a signal.
+                                sell_preview(state,{symbol:quote},symbol,quantity,rules,now=now)
+                                event(rec,'ACTIONABLE','Выход выбранным количеством проверен; требуется Paper Preview → Confirm. Продажа не исполнена')
+                            except (ValueError,ArithmeticError,KeyError,TypeError) as exc:
+                                event(rec,'REJECTED_BY_RISK',str(exc))
                     elif price<=rec['invalidation_price']:event(rec,'INVALIDATED','Нарушен уровень отмены гипотезы')
                     elif price>rec['maximum_entry_price']:event(rec,'EXPIRED','Opportunity Missed — цена выше диапазона входа')
                     elif regime in ('Bearish','High Volatility') or (rec['strategy']=='Mean Reversion' and regime!='Range'):event(rec,'INVALIDATED','Режим рынка несовместим с гипотезой')
