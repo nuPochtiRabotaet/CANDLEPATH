@@ -206,24 +206,17 @@ def verify():
                 e.__runtime.markers.markers().map(m=>({time:m.time,text:m.text}))""")
             assert markers==[{'time':window_time,'text':kind} for kind in ('BUY','EXIT')
                              for window_time in [page.evaluate('window._data.candles[60].time')]],markers
-            page.evaluate("""() => {
-                const e=document.querySelector('.terminal'),r=e.__runtime;
-                const c=window._data.candles[60];
-                r.chart.setCrosshairPosition(c.close,c.time,r.candles);
-            }""")
+            assert isinstance(at['x'],(float,int)) and isinstance(at['y'],(float,int)),at
+            # A real browser pointer move exercises the chart hover path;
+            # programmatic setCrosshairPosition does not simulate a mouse event.
+            page.mouse.move(at['x'],at['y'])
+            page.wait_for_timeout(200)
             tooltip=page.locator('#signalTooltip').inner_text()
-            assert 'BUY · One' in tooltip and 'EXIT · Two' in tooltip,tooltip
+            assert 'BUY · One' in tooltip and 'EXIT · Two' in tooltip,repr(tooltip)
             assert 'SELL / EXIT' not in tooltip
             assert 'не исполненная сделка' in tooltip
             # Click the actual chart marker; selecting a signal may only
             # describe it, never post a Paper SELL or create a position.
-            at=page.locator('.terminal').evaluate("""e=>{
-                const r=e.__runtime,c=window._data.candles[60],
-                  rect=e.querySelector('#chart').getBoundingClientRect();
-                return {x:rect.left+r.chart.timeScale().timeToCoordinate(c.time),
-                        y:rect.top+r.candles.priceToCoordinate(c.close)};
-            }""")
-            assert isinstance(at['x'],(float,int)) and isinstance(at['y'],(float,int)),at
             page.mouse.click(at['x'],at['y'])
             assert 'EXIT · технический сигнал' in page.locator('#signal').inner_text()
             assert 'не является исполненной сделкой' in page.locator('#reasons').inner_text()
