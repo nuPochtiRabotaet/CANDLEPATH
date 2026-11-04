@@ -197,8 +197,14 @@ def verify():
                 const t=window._data.candles[60].time;
                 window._data.signals=[{id:'s1',timestamp:t,type:'BUY',strategy:'One'},
                     {id:'s2',timestamp:t,type:'BUY',strategy:'Three'},
-                    {id:'s3',timestamp:t,type:'EXIT',strategy:'Two'}];
+                    {id:'s3',timestamp:t,type:'EXIT',strategy:'Two'},
+                    {id:'s1',timestamp:t,type:'BUY',strategy:'One'},
+                    {id:'bad',timestamp:t,type:'SHORT',strategy:'Unsupported'}];
                 window._invoke()}""")
+            # Unsupported input must not become an EXIT label or override
+            # the last valid historical signal in the assistant.
+            assert 'Two' in page.locator('#strategy').inner_text()
+            assert 'Unsupported' not in page.locator('#strategy').inner_text()
             indexed=page.locator('.terminal').evaluate("""e=>{
                 const ts=window._data.candles[60].time;
                 return e.__runtime.signalsByTime.get(ts).map(s=>s.strategy)}""")
