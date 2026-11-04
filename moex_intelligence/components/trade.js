@@ -141,7 +141,7 @@ export default function(component){
  function showSignal(sig){
   text('signal',sig?(sig.type==='BUY'?'BUY · технический сигнал':'EXIT · технический сигнал'):'No Signal');
   text('strategy',sig?sig.strategy+' · '+local(sig.timestamp):'Ожидание подтверждённого сигнала');
-  text('reasons',sig?(Array.isArray(sig.explanation)?sig.explanation:[]).join('\n')+'\nСформирован после закрытия свечи; не является исполненной сделкой.\n'+sig.invalidation:'Условия стратегий ещё не выполнены.');
+  text('reasons',sig?(Array.isArray(sig.explanation)?sig.explanation:[]).join('\n')+'\nСформирован после закрытия свечи; не является исполненной сделкой.'+(sig.invalidation?'\n'+sig.invalidation:''):'Условия стратегий ещё не выполнены.');
  }
  text('market',d.symbol.replace('USDT',' / USDT'));text('price',d.quote.price?num(d.quote.price):'—');text('change',d.quote.change!=null?num(d.quote.change)+'% · 24h':'—');$('change').className=d.quote.change>=0?'bull':'bear';text('connection',d.status+(d.quote.ts?' · '+num(d.age,0)+'с':''));text('tradingMode',d.mode==='Paper Trading'?'LOCAL PAPER':d.mode.toUpperCase());root.dataset.fresh=d.fresh?'true':'false';
  $('connectionError').hidden=!d.error&&!(!d.fresh&&d.candles.length);text('connectionError',d.error||'Stale Data · котировки устарели; действия с виртуальными позициями заблокированы.');
