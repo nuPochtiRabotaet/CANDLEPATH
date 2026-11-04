@@ -7,8 +7,9 @@ const path=require('node:path');
 const source=fs.readFileSync(path.join(__dirname,'../moex_intelligence/components/trade.js'),'utf8')
   .replace('export default function(component){','function render(component){');
 const ctx={LightweightCharts:{}};
-vm.runInNewContext(source+'\nglobalThis.__project=forecastProjection;',ctx,{timeout:2500});
+vm.runInNewContext(source+'\nglobalThis.__project=forecastProjection;globalThis.__range=forecastRange;',ctx,{timeout:2500});
 const project=ctx.__project;
+const range=ctx.__range;
 
 // Cross-language integration mode: Python's actual Forecast dataclass is
 // serialized into the very same pure JS geometry function used by the chart.
@@ -35,6 +36,17 @@ const copy=o=>JSON.parse(JSON.stringify(o));
 let checked=0;
 const valid=project(sample());
 assert.ok(valid);
+// The same validated fan drives numeric explanation; never invent confidence.
+const explained=range(valid);
+assert.equal(explained.minutes,120);checked++;
+assert.equal(explained.lower,92);checked++;
+assert.equal(explained.median,100);checked++;
+assert.equal(explained.upper,108);checked++;
+assert.ok(Math.abs(explained.lowerPct+8)<1e-10);checked++;
+assert.ok(Math.abs(explained.upperPct-8)<1e-10);checked++;
+assert.equal(range(project(sample('5'))).minutes,40);checked++;
+assert.equal(range(project(sample('D'))).minutes,8*1440);checked++;
+assert.equal(range(null),null);checked++;
 assert.deepEqual(Array.from(valid.line,p=>p.time),[0,1,2,4,8].map(h=>1800000000+h*900));checked++;
 assert.deepEqual(Array.from(valid.grid,p=>p.time),Array.from({length:8},(_,i)=>1800000000+(i+1)*900));checked++;
 assert.deepEqual(Array.from(valid.profile,p=>p.median),[100,100,100,100,100]);checked++;
