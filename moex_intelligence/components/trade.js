@@ -48,7 +48,7 @@ function forecastProjection(data){
 function markerPlan(signals,candleTimes){
  const buckets=new Map(),seen=new Set();
  for(const signal of signals){
-  if(!Number.isSafeInteger(signal.timestamp)||!candleTimes.has(signal.timestamp)||
+  if(!signal||!Number.isSafeInteger(signal.timestamp)||!candleTimes.has(signal.timestamp)||
      (signal.type!=='BUY'&&signal.type!=='EXIT'))continue;
   const identity=signal.id||signal.timestamp+':'+signal.type+':'+signal.strategy;
   if(seen.has(identity))continue;
@@ -150,7 +150,13 @@ export default function(component){
  r.data=d;r.renderCount++;root.dataset.renders=r.renderCount;
  // Time-indexed signal lookup avoids rescanning the full list per mouse move.
  r.signalsByTime=new Map();
+ const seenSignalIds=new Set();let lastSupportedSignal=null;
  for(const signal of d.signals){
+  if(!signal||!Number.isSafeInteger(signal.timestamp)||
+     (signal.type!=='BUY'&&signal.type!=='EXIT'))continue;
+  const identity=signal.id||signal.timestamp+':'+signal.type+':'+signal.strategy;
+  if(seenSignalIds.has(identity))continue;
+  seenSignalIds.add(identity);lastSupportedSignal=signal;
   const bucket=r.signalsByTime.get(signal.timestamp);
   if(bucket)bucket.push(signal);
   else r.signalsByTime.set(signal.timestamp,[signal]);
@@ -169,7 +175,7 @@ export default function(component){
  $('connectionError').hidden=!d.error&&!(!d.fresh&&d.candles.length);text('connectionError',d.error||'Stale Data · котировки устарели; действия с виртуальными позициями заблокированы.');
  const forecast=d.intelligence?.forecast;
  text('forecastStatus',forecast?.status==='EXPERIMENTAL'?'Forecast · эксперимент: Random Walk + EWMA, модельный 80% диапазон (НЕ проверенная вероятность).':('Forecast: '+(forecast?.status||'UNAVAILABLE')+' · '+(forecast?.reason||'нет доступного прогноза')));
- text('regime',d.analysis.regime);$('regime').className=d.analysis.regime==='Bullish'?'bull':d.analysis.regime==='Bearish'?'bear':'';showSignal(d.signals.at(-1));
+ text('regime',d.analysis.regime);$('regime').className=d.analysis.regime==='Bullish'?'bull':d.analysis.regime==='Bearish'?'bear':'';showSignal(lastSupportedSignal);
  const life=d.lifecycle?.active||{state:'NO_SIGNAL',reason:'Подходящих условий нет'};
  text('lifecycleState',life.state+(life.type?' · '+life.type:'')+' — '+life.reason);
  root.dataset.signalState=life.state;
