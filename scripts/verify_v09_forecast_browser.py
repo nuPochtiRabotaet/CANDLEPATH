@@ -204,8 +204,14 @@ def verify():
             # Technical EXIT is not a filled SELL, even without a position.
             markers=page.locator('.terminal').evaluate("""e=>
                 e.__runtime.markers.markers().map(m=>({time:m.time,text:m.text}))""")
-            assert markers==[{'time':window_time,'text':kind} for kind in ('BUY','EXIT')
-                             for window_time in [page.evaluate('window._data.candles[60].time')]],markers
+            t=page.evaluate('window._data.candles[60].time')
+            assert markers==[{'time':t,'text':'BUY'},{'time':t,'text':'EXIT'}],markers
+            at=page.locator('.terminal').evaluate("""e=>{
+                const r=e.__runtime,c=window._data.candles[60],
+                  rect=e.querySelector('#chart').getBoundingClientRect();
+                return {x:rect.left+r.chart.timeScale().timeToCoordinate(c.time),
+                        y:rect.top+r.candles.priceToCoordinate(c.close)};
+            }""")
             assert isinstance(at['x'],(float,int)) and isinstance(at['y'],(float,int)),at
             # A real browser pointer move exercises the chart hover path;
             # programmatic setCrosshairPosition does not simulate a mouse event.
