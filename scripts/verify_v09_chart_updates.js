@@ -63,6 +63,7 @@ assert.deepEqual(copy(markerPlan([
  {timestamp:1800,type:'BUY',strategy:'Two'}
 ],new Set([1800]))).map(m=>m.text),['BUY ×2']);
 assert.deepEqual(copy(markerPlan(candidates,new Set())),[]);
+assert.deepEqual(copy(markerPlan([null,undefined,{timestamp:1800,type:'SHORT',strategy:'Bad'}],new Set([1800]))),[]);
 
 // This catches O(n^2) marker filtering regressions in source: index candles once.
 assert.match(src,/const candleTimes=new Set\(d\.candles\.map\(/);
