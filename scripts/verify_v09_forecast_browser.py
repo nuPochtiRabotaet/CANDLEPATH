@@ -78,6 +78,14 @@ def verify():
                 line:e.__runtime.forecastLine.data().length,
                 canvases:e.querySelectorAll('#chart canvas').length})''')
             assert state['chart'] and state['canvases']>=4 and state['line']==5,state
+            status=page.locator('#forecastStatus').inner_text()
+            assert '2 ч.' in status and 'модельный диапазон' in status,status
+            assert 'USDT' in status and 'медиана' in status,status
+            # Synthetic last close 112.1, last horizon +/-3.2 USDT.
+            assert '108,90–115,30 USDT' in status,status
+            assert status.count('2,85%')==2,status
+            assert 'номинальные 80%' in status,status
+            assert 'Направление и доходность сделки не прогнозируются' in status,status
             assert not errors,errors
             # Causal timestamps must land at the CLOSE boundary, not one bar
             # before. Horizontal gaps 1/2/4/8 must also be proportional.
@@ -117,7 +125,10 @@ def verify():
                     'e=>e.__runtime.forecastGridKey')=='',snippet
                 assert page.locator('.terminal').evaluate(
                     'e=>e.__runtime.forecastProfile') is None,snippet
+                stale_status=page.locator('#forecastStatus').inner_text()
+                assert 'Forecast скрыт' in stale_status and 'модельный диапазон' not in stale_status,snippet
                 page.evaluate("() => window._invoke()")
+                assert 'модельный диапазон' in page.locator('#forecastStatus').inner_text(),snippet
                 assert page.locator('.terminal').evaluate(
                     'e=>e.__runtime.forecastLine.data().length')==5,snippet
             # A current still-forming candle may share the anchor timestamp,
