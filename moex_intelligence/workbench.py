@@ -400,7 +400,8 @@ def main():
     from .experience import apply_theme,overview_page
     apply_theme()
     if legacy_invest_enabled():
-        st.session_state.setdefault('workspace_mode','Trade')
+        # Legacy tests and maintenance start in Invest only when explicitly opted in.
+        st.session_state.setdefault('workspace_mode','Invest')
         workspace=st.sidebar.segmented_control('Рабочее пространство',['Trade','Invest'],key='workspace_mode')
     else:
         # Crypto-first by default; legacy investment storage and code are not touched.
