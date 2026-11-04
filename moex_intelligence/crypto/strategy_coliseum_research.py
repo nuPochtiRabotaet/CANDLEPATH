@@ -9,12 +9,14 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from decimal import Decimal, InvalidOperation
+import hashlib
 import json
 import re
 
 SCENARIOS = ("LOW", "PAPER", "STRESS")
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 COLISEUM_VERSION = "coliseum-research-0.1"
+TRUSTED_SOURCE_LABELS = frozenset({"VERIFIED_PUBLIC_ARCHIVE", "VERIFIED_LOCAL_ARCHIVE"})
 
 
 @dataclass(frozen=True)
@@ -132,13 +134,20 @@ def select_coliseum_candidates(study: dict, roster: list[dict], *,
             raise ValueError(f"{scenario}: scoring roster does not match frozen manifest")
 
     globally_blocked = []
-    # The source label alone is not independent proof of archive origin.
-    if "UNVERIFIED" in str(study.get("source", "")).upper():
+    # Even whitelisted provenance labels need external verification; a label itself is not proof.
+    if study.get("source") not in TRUSTED_SOURCE_LABELS:
         globally_blocked.append("UNVERIFIED_SOURCE")
     if rows < policy.min_days_5m * 24 * 12:
         globally_blocked.append("INSUFFICIENT_HISTORY_5M")
     if not study.get("source"):
         globally_blocked.append("MISSING_SOURCE_LABEL")
+
+    canonical_roster = [{"id": cid, **meta} for cid, meta in sorted(manifest.items())]
+    roster_digest = hashlib.sha256(json.dumps(canonical_roster, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    frozen_policy = {k: str(v) if isinstance(v, Decimal) else v for k, v in asdict(policy).items()}
+    run_identity = {"dataset": study["source_sha256"], "roster": roster_digest,
+                    "policy": frozen_policy, "version": COLISEUM_VERSION}
+    run_digest = hashlib.sha256(json.dumps(run_identity, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
     standings = []
     for cid, meta in manifest.items():
@@ -187,8 +196,9 @@ def select_coliseum_candidates(study: dict, roster: list[dict], *,
     return {
         "mode": "ISOLATED_RESEARCH_SELECTION_NOT_EXECUTION",
         "version": COLISEUM_VERSION,
-        "policy": {k: str(v) if isinstance(v, Decimal) else v
-                   for k, v in asdict(policy).items()},
+        "policy": frozen_policy,
+        "roster_sha256": roster_digest,
+        "selection_run_sha256": run_digest,
         "source_sha256": study["source_sha256"],
         "source_label": study.get("source"),
         "sealed_final_evaluated": False,
