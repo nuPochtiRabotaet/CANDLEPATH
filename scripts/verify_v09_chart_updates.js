@@ -8,7 +8,7 @@ const vm=require('node:vm');
 const src=fs.readFileSync(path.join(__dirname,'../moex_intelligence/components/trade.js'),'utf8')
  .replace('export default function(component){','function render(component){');
 const context={LightweightCharts:{}};
-vm.runInNewContext(src+'\nglobalThis.__plan=candleChangePlan;',context,{timeout:2500});
+vm.runInNewContext(src+'\nglobalThis.__plan=candleChangePlan;globalThis.__markers=markerPlan;',context,{timeout:2500});
 const plan=context.__plan;
 const copy=x=>JSON.parse(JSON.stringify(x));
 const bar=(t,price=100,volume=5,closed=true)=>({
@@ -38,7 +38,7 @@ assert.deepEqual(kind(old,[]),{mode:'empty',from:0});
 
 // Multiple strategies can signal the same candle/type; do not silently
 // discard the first hypothesis or draw overlapping duplicate arrows.
-vm.runInNewContext(src+'\\nglobalThis.__markers=markerPlan;',context,{timeout:2500});
+
 const markerPlan=context.__markers;
 const candidates=[
  {id:'A',timestamp:1800,type:'BUY',strategy:'Trend Following'},
