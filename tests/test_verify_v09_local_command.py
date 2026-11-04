@@ -15,7 +15,7 @@ SOURCE = Path(__file__).resolve().parents[1] / "scripts" / "verify_v09_local.com
 pytestmark = pytest.mark.skipif(shutil.which("bash") is None, reason="Bash unavailable")
 
 
-def run_launcher(tmp_path, *, browser=True, strict=False, fail_node=False, extra_args=()):
+def run_launcher(tmp_path, *, browser=True, strict=False, fail_node=False, node_available=True, extra_args=()):
     root = tmp_path / "isolated-checkout"
     (root / "scripts").mkdir(parents=True)
     (root / ".venv" / "bin").mkdir(parents=True)
@@ -37,19 +37,24 @@ def run_launcher(tmp_path, *, browser=True, strict=False, fail_node=False, extra
 
     bin_dir = tmp_path / "mock-bin"
     bin_dir.mkdir()
-    node = bin_dir / "node"
-    node.write_text(
-        "#!/bin/sh\n"
-        "printf 'NODE %s | DATA=%s\\n' \"$*\" \"$MOEX_DATA_DIR\" >> \"$MOCK_LOG\"\n"
-        "if [ \"$MOCK_NODE_FAIL\" = \"1\" ] && "
-        "[ \"$1\" = \"scripts/verify_v09_chart_updates.js\" ]; then exit 7; fi\n"
-        "exit 0\n"
-    )
-    node.chmod(0o755)
+    if node_available:
+        node = bin_dir / "node"
+        node.write_text(
+            "#!/bin/sh\n"
+            "printf 'NODE %s | DATA=%s\\n' \"$*\" \"$MOEX_DATA_DIR\" >> \"$MOCK_LOG\"\n"
+            "if [ \"$MOCK_NODE_FAIL\" = \"1\" ] && "
+            "[ \"$1\" = \"scripts/verify_v09_chart_updates.js\" ]; then exit 7; fi\n"
+            "exit 0\n"
+        )
+        node.chmod(0o755)
+    else:
+        # PATH must not expose the host's Node binary during this test.
+        for command in ("dirname", "mktemp", "rm"):
+            (bin_dir / command).symlink_to(shutil.which(command))
 
     env = dict(os.environ)
     env.update(
-        PATH=str(bin_dir) + os.pathsep + os.environ.get("PATH", ""),
+        PATH=(str(bin_dir) + os.pathsep + os.environ.get("PATH", "")) if node_available else str(bin_dir),
         TMPDIR=str(tmp_path),
         MOCK_LOG=str(mock_log),
         MOCK_BROWSER_AVAILABLE="1" if browser else "0",
@@ -57,7 +62,7 @@ def run_launcher(tmp_path, *, browser=True, strict=False, fail_node=False, extra
         MOEX_DATA_DIR="/should/not/be/reused",
     )
     proc = subprocess.run(
-        ["bash", str(launcher), *(["--strict"] if strict else []), *extra_args],
+        [shutil.which("bash"), str(launcher), *(["--strict"] if strict else []), *extra_args],
         cwd=root, env=env, text=True, capture_output=True, check=False,
     )
     return proc, mock_log.read_text() if mock_log.exists() else ""
@@ -88,6 +93,17 @@ def test_missing_browser_is_explicit_partial_coverage(tmp_path, strict, expected
     assert "PY -m pytest -q" in log
     assert "SKIP: Playwright missing" in result.stderr
     assert "PARTIAL COVERAGE" in result.stderr
+    assert "PASS: local Python, JS" not in result.stdout
+
+
+@pytest.mark.parametrize("strict,expected", [(False, 0), (True, 2)])
+def test_missing_node_is_explicit_partial_coverage(tmp_path, strict, expected):
+    result, log = run_launcher(tmp_path, strict=strict, node_available=False)
+    assert result.returncode == expected, result.stderr
+    assert "SKIP: Node.js missing" in result.stderr
+    assert "PARTIAL COVERAGE" in result.stderr
+    assert "NODE " not in log
+    assert "PY -m pytest -q" in log
     assert "PASS: local Python, JS" not in result.stdout
 
 
