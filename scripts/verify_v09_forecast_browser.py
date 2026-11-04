@@ -234,11 +234,13 @@ def verify():
             assert 'не исполненная сделка' in tooltip
             # Click the actual chart marker; selecting a signal may only
             # describe it, never post a Paper SELL or create a position.
+            rationale=page.locator('details.explain:has(#reasons)')
+            assert not rationale.evaluate('e=>e.open')
             page.mouse.click(at['x'],at['y'])
+            assert rationale.evaluate('e=>e.open'), 'chart click must reveal signal rationale'
             assert 'EXIT · технический сигнал' in page.locator('#signal').inner_text()
             assert 'EXIT = возможный выход' in page.locator('.chartFoot').inner_text()
             assert 'SELL = выход' not in page.locator('.chartFoot').inner_text()
-            page.locator('details.explain:has(#reasons) > summary').click()
             assert 'не является исполненной сделкой' in page.locator('#reasons').inner_text()
             assert 'undefined' not in page.locator('#reasons').inner_text()
             assert page.evaluate("""() => Object.keys(window._data.state.positions).length===0
