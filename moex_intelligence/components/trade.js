@@ -150,13 +150,13 @@ export default function(component){
  r.data=d;r.renderCount++;root.dataset.renders=r.renderCount;
  // Time-indexed signal lookup avoids rescanning the full list per mouse move.
  r.signalsByTime=new Map();
- const seenSignalIds=new Set();let lastSupportedSignal=null;
+ const seenSignalIds=new Set();
  for(const signal of d.signals){
   if(!signal||!Number.isSafeInteger(signal.timestamp)||
      (signal.type!=='BUY'&&signal.type!=='EXIT'))continue;
   const identity=signal.id||signal.timestamp+':'+signal.type+':'+signal.strategy;
   if(seenSignalIds.has(identity))continue;
-  seenSignalIds.add(identity);lastSupportedSignal=signal;
+  seenSignalIds.add(identity);
   const bucket=r.signalsByTime.get(signal.timestamp);
   if(bucket)bucket.push(signal);
   else r.signalsByTime.set(signal.timestamp,[signal]);
@@ -175,12 +175,14 @@ export default function(component){
  $('connectionError').hidden=!d.error&&!(!d.fresh&&d.candles.length);text('connectionError',d.error||'Stale Data · котировки устарели; действия с виртуальными позициями заблокированы.');
  const forecast=d.intelligence?.forecast;
  text('forecastStatus',forecast?.status==='EXPERIMENTAL'?'Forecast · эксперимент: Random Walk + EWMA, модельный 80% диапазон (НЕ проверенная вероятность).':('Forecast: '+(forecast?.status||'UNAVAILABLE')+' · '+(forecast?.reason||'нет доступного прогноза')));
- text('regime',d.analysis.regime);$('regime').className=d.analysis.regime==='Bullish'?'bull':d.analysis.regime==='Bearish'?'bear':'';showSignal(lastSupportedSignal);
+ text('regime',d.analysis.regime);$('regime').className=d.analysis.regime==='Bullish'?'bull':d.analysis.regime==='Bearish'?'bear':'';
  const life=d.lifecycle?.active||{state:'NO_SIGNAL',reason:'Подходящих условий нет'};
  text('lifecycleState',life.state+(life.type?' · '+life.type:'')+' — '+life.reason);
  root.dataset.signalState=life.state;
  text('signal',life.state==='POTENTIAL'?'Potential '+life.type+' — Awaiting Confirmation':life.state==='ACTIONABLE'?'Actionable '+life.type:life.state);
  if(life.strategy){text('strategy',life.strategy);text('reasons',(life.explanation||[]).join('\n')+'\n'+life.reason);}
+ else {text('strategy','Актуальной стратегии нет · историю см. на графике');
+  text('reasons',life.reason&&life.reason!=='none'?life.reason:'Актуальный сигнал отсутствует.');}
  text('entryZone',life.maximum_entry_price&&!['EXPIRED','INVALIDATED'].includes(life.state)?'Вход '+num(life.minimum_entry_price)+'–'+num(life.maximum_entry_price)+' · до '+local(life.expiration):'');
  text('quality',life.quality?('Net R/R '+num(life.quality.rr)+(life.quality.rr<1?' · Poor Entry Conditions — неблагоприятное соотношение после издержек':' · техническая оценка, не вероятность прибыли')):'');
  const lastBar=d.candles.at(-1),duration=d.interval==='D'?86400:+d.interval*60;
