@@ -1,6 +1,18 @@
 // Lightweight Charts 5.2.1 is vendored above. No exchange credentials enter this component.
 const LC=LightweightCharts;
 
+// Read-only summary of the validated projection: a movement *range*, not
+// a directional signal or a calibrated probability of a profitable trade.
+function forecastRange(projection){
+ const points=projection?.profile;
+ if(!Array.isArray(points)||points.length<2)return null;
+ const first=points[0],last=points.at(-1);
+ const minutes=(last.time-first.time)/60,reference=first.median;
+ if(!Number.isFinite(minutes)||minutes<=0||!Number.isFinite(reference)||reference<=0)return null;
+ return {minutes,lower:last.lower,median:last.median,upper:last.upper,
+  lowerPct:(last.lower/reference-1)*100,upperPct:(last.upper/reference-1)*100};
+}
+
 // ForecastPoint.target_time is an epoch-second candle CLOSE boundary, whereas
 // actual CandlestickSeries bars are plotted at their OPEN. Converting the
 // forecast target to an OPEN incorrectly shifts the outcome one candle early.
@@ -41,17 +53,6 @@ function forecastProjection(data){
  const steps=(prev-observedTime)/step;
  const grid=Array.from({length:steps},(_,i)=>({time:observedTime+(i+1)*step}));
  return {profile,grid,line:profile.map(p=>({time:p.time,value:p.median}))};
-}
-// Read-only summary of the validated projection: a movement *range*, not
-// a directional signal or a calibrated probability of a profitable trade.
-function forecastRange(projection){
- const points=projection?.profile;
- if(!Array.isArray(points)||points.length<2)return null;
- const first=points[0],last=points.at(-1);
- const minutes=(last.time-first.time)/60,reference=first.median;
- if(!Number.isFinite(minutes)||minutes<=0||!Number.isFinite(reference)||reference<=0)return null;
- return {minutes,lower:last.lower,median:last.median,upper:last.upper,
-  lowerPct:(last.lower/reference-1)*100,upperPct:(last.upper/reference-1)*100};
 }
 // Keep a faithful fallback for historical corrections while live ticks use
 // update() rather than repeatedly rebuilding entire chart series.
