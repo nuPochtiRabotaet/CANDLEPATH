@@ -27,6 +27,9 @@ fi
 TEST_DIR="$(mktemp -d "${TMPDIR:-/tmp}/candlepath-v09-XXXXXX")"
 trap 'rm -rf "$TEST_DIR"' EXIT
 export MOEX_DATA_DIR="$TEST_DIR"
+# Explicit compileall writes bytecode despite PYTHONDONTWRITEBYTECODE.
+# Keep compiled files out of the source checkout and remove them on exit.
+export PYTHONPYCACHEPREFIX="$TEST_DIR/pycache"
 export PYTHONDONTWRITEBYTECODE=1
 partial=0
 
