@@ -240,6 +240,9 @@ def verify():
             assert 'EXIT · Two' in tooltip,repr(tooltip)
             assert 'SELL / EXIT' not in tooltip
             assert 'не исполненная сделка' in tooltip
+            assert 'undefined' not in tooltip and 'Invalid Date' not in tooltip,tooltip
+            assert 'Фактически обнаружен нет данных' in tooltip,tooltip
+            assert 'цена неизвестна' in tooltip,tooltip
             # Click the actual chart marker; selecting a signal may only
             # describe it, never post a Paper SELL or create a position.
             rationale=page.locator('details.explain:has(#reasons)')
