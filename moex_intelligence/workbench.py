@@ -391,6 +391,11 @@ def scenarios_page(dataset):
 
 def main():
     st.set_page_config(page_title='MOEX Intelligence',page_icon='◈',layout='wide',initial_sidebar_state='expanded')
+    st.session_state.setdefault('workspace_mode','Invest')
+    workspace=st.sidebar.segmented_control('Рабочее пространство',['Invest','Trade','Strategy Coliseum'],key='workspace_mode')
+    if workspace=='Strategy Coliseum':
+        from .crypto.coliseum_ui import page
+        page();return
     configure_logging()
     from .upgrades import ensure_v081_backup
     try:ensure_v081_backup(Settings.from_env().data_dir)
@@ -398,8 +403,6 @@ def main():
         st.error('Не удалось создать резервную копию перед обновлением. Данные не изменены: '+str(exc));return
     from .experience import apply_theme,overview_page
     apply_theme()
-    st.session_state.setdefault('workspace_mode','Invest')
-    workspace=st.sidebar.segmented_control('Рабочее пространство',['Invest','Trade'],key='workspace_mode')
     if workspace=='Trade':
         st.markdown('<style>[data-testid="stSidebar"]{display:none!important}[data-testid="stMainBlockContainer"]{max-width:100%;padding:1rem 1.25rem}header[data-testid="stHeader"]{height:0}</style>',unsafe_allow_html=True)
         from .crypto.ui import page as trade_page
@@ -477,3 +480,4 @@ def main():
             b.button('AI Research / MCP',on_click=navigate,args=('AI Research',),key='deep_ai')
             helper(dataset)
             if section in RESEARCH[4:]:st.button('Вернуться к исследованию актива',on_click=navigate,args=('Market Explorer',),key='back_research')
+

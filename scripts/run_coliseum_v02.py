@@ -42,6 +42,7 @@ def run(source, destination):
     else:mpath.write_text(json.dumps(manifest,sort_keys=True,indent=2))
     f=features(rows[:dev]);shared=(f,hypotheses(f));results={k:{} for k in manifest['costs']};failures=[]; diagnostics={}
     for candidate in candidates:
+        if (out/'cancel.requested').exists():raise InterruptedError('Research paused; completed trials retained')
         provider=CandidateProvider(rows[:dev],candidate,shared)
         for scenario,(fee,slip,spread) in manifest['costs'].items():
             key=digest([digest(manifest),candidate['spec_sha256'],scenario]); path=out/(key+'.json')
