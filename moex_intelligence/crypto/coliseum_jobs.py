@@ -27,7 +27,7 @@ def _registered_source(folder):
         recorded=json.loads(receipt.read_text())
     except (OSError,ValueError) as exc:
         raise ValueError('Corrupt research registration') from exc
-    if recorded.get('sha256')!=folder.name or hashlib.sha256(source.read_bytes()).hexdigest()!=folder.name:
+    if not isinstance(recorded,dict) or recorded.get('sha256')!=folder.name or hashlib.sha256(source.read_bytes()).hexdigest()!=folder.name:
         raise ValueError('Research source changed after validation')
     return source
 
