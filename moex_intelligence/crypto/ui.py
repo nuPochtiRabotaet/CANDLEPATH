@@ -49,6 +49,8 @@ def page():
     cols=st.columns([.8,1.5,1.3,3])
     def back_to_invest():st.session_state.workspace_mode='Invest'
     cols[0].button('← Invest',key='return_invest',on_click=back_to_invest)
+    def to_coliseum():st.session_state.workspace_mode='Strategy Coliseum'
+    cols[0].button('Strategy Coliseum',key='open_coliseum',on_click=to_coliseum)
     symbol=cols[1].selectbox('Инструмент',SYMBOLS,key='crypto_symbol')
     tf=cols[2].selectbox('Таймфрейм',list(INTERVALS),index=2,key='crypto_tf')
     mode=cols[3].segmented_control('Режим',['Market Data','Paper Trading','Read Only'],default='Market Data',key='crypto_mode')
@@ -250,3 +252,4 @@ def terminal(store,symbol,interval,mode):
         st.json(snap.get('readiness',{}));st.write(protection['message'])
         st.json(paper.protection_status())
         st.dataframe(life['notifications'],hide_index=True,width='stretch')
+
