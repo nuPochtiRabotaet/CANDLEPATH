@@ -1,7 +1,53 @@
 from pathlib import Path
 from streamlit.testing.v1 import AppTest
-from moex_intelligence.crypto.coliseum_jobs import register_csv,start
+from moex_intelligence.crypto.coliseum_jobs import register_csv,registered_folders,start,pause,status
 import pytest
+import csv
+import io
+import hashlib
+
+
+def valid_csv():
+    stream=io.StringIO()
+    writer=csv.DictWriter(stream,fieldnames=['timestamp_ms','open','high','low','close','volume'])
+    writer.writeheader()
+    start_ms=1600000000000//300000*300000
+    for i in range(420):
+        writer.writerow(dict(timestamp_ms=start_ms+i*300000,open=100,high=101,low=99,close=100,volume=25))
+    return stream.getvalue().encode()
+
+
+def test_rejected_csv_is_not_runnable_or_listed(tmp_path,monkeypatch):
+    monkeypatch.setenv('MOEX_DATA_DIR',str(tmp_path))
+    invalid=b'timestamp_ms,open,high,low,close,volume\\nbroken\\n'
+    with pytest.raises(ValueError,match='Malformed research CSV'):
+        register_csv(invalid)
+    assert registered_folders()==[]
+    identity=hashlib.sha256(invalid).hexdigest()
+    with pytest.raises(ValueError,match='Unvalidated'):
+        start(tmp_path/'coliseum-research'/identity)
+    assert not list(tmp_path.rglob('source.csv'))
+
+
+def test_valid_registration_is_immutable_and_tamper_evident(tmp_path,monkeypatch):
+    monkeypatch.setenv('MOEX_DATA_DIR',str(tmp_path))
+    source=valid_csv()
+    folder,quality=register_csv(source)
+    assert folder.name==hashlib.sha256(source).hexdigest()
+    assert quality['source']=='USER_SUPPLIED_CSV_UNVERIFIED'
+    assert quality['sealed_evaluated'] is False
+    assert registered_folders()==[folder]
+    assert register_csv(source)[0]==folder
+    assert not list(folder.glob('.upload-*'))
+    with pytest.raises(ValueError,match='not started'):
+        pause(folder)
+    (folder/'source.csv').write_bytes(source+b'\\n')
+    assert registered_folders()==[]
+    with pytest.raises(ValueError,match='changed'):
+        start(folder)
+    with pytest.raises(ValueError,match='changed'):
+        status(folder)
+
 
 def test_saved_report_ui_and_filters(tmp_path,monkeypatch):
     monkeypatch.setenv('MOEX_DATA_DIR',str(tmp_path))
