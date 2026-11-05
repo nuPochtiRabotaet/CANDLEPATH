@@ -18,6 +18,7 @@ def fixture(days_per_fold=7, source='USER_SUPPLIED_CSV_UNVERIFIED'):
             for i in range(days_per_fold):
                 day = (date(2026, 1, 1) + timedelta(days=(f-1)*days_per_fold+i)).isoformat()
                 x = Decimal(str((i % 5 - 2) * 2))
+                if candidate in ('alpha', 'alpha_variant'): x += Decimal('3')
                 if candidate == 'cash': x = Decimal(0)
                 if candidate == 'opposite': x = -x
                 marks.append(dict(day=day, bars=288, pnl_usdt=str(x)))
@@ -45,6 +46,8 @@ def test_trusted_label_long_history_deterministic_only_exploratory():
     assert x == y and x['inference'] == 'COMPUTED_EXPLORATORY_ONLY'
     assert set(x['adjusted_p_values']) == set(study['results']['PAPER'])
     assert x['adjusted_p_values']['cash'] is None
+    assert x['adjusted_p_values']['alpha'] is not None
+    assert 'alpha' in x['exploratory_90pct_daily_pnl_interval_usdt']
     assert x['statistical_acceptance'] is False
     for name, p in x['adjusted_p_values'].items():
         if p is not None:
