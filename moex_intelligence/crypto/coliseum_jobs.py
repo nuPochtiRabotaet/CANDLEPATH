@@ -35,6 +35,7 @@ def start(folder):
 def pause(folder):
     folder=Path(folder).resolve()
     if folder.parent!=research_root().resolve():raise ValueError('Unknown experiment')
+    (folder/'study').mkdir(exist_ok=True)
     (folder/'study'/'cancel.requested').touch()
 
 def status(folder):

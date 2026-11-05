@@ -18,3 +18,11 @@ def test_job_rejects_unknown_source_and_path(tmp_path,monkeypatch):
     monkeypatch.setenv('MOEX_DATA_DIR',str(tmp_path))
     with pytest.raises(ValueError):register_csv(b'')
     with pytest.raises(ValueError):start(tmp_path/'not-registered')
+
+def test_compressed_saved_report_preserves_financial_results(tmp_path):
+    import gzip
+    from moex_intelligence.crypto.coliseum_ui import load_report
+    root=Path(__file__).resolve().parents[1]/'docs/research/coliseum_v02'
+    (tmp_path/'manifest.json').write_bytes((root/'manifest.json').read_bytes())
+    (tmp_path/'result.json.gz').write_bytes(gzip.compress((root/'result.json').read_bytes(),mtime=0))
+    assert load_report(tmp_path)==load_report(root)

@@ -22,7 +22,9 @@ def summary(report):
         turnover_quote=str(sum((D(t['entry_total_debit'])+D(t['exit_net_credit']) for t in trades),D(0))),
         folds=[{k:f[k] for k in ('fold','trade_count','net_return_pct')} for f in report['folds']])
 
-def run(source, destination):
+def run(source, destination, *, candidates=None, source_kind="USER_SUPPLIED_CSV_UNVERIFIED"):
+    if source_kind not in ("USER_SUPPLIED_CSV_UNVERIFIED", "SYNTHETIC_FIXTURE"):
+        raise ValueError("Unverified source label")
     started=time.perf_counter(); out=Path(destination);out.mkdir(parents=True,exist_ok=True)
     guard=json.loads((Path(__file__).resolve().parents[1]/'docs/research/original_holdout_guard.json').read_text())
     # The original full dataset keeps its established boundary; new/cropped inputs
@@ -30,7 +32,8 @@ def run(source, destination):
     rows,quality=load_history(source)
     if quality['sha256']!=guard['source_sha256']:
         rows,quality=load_history(source,protected_interval=guard['sealed_interval'])
-    dev=len(rows)*80//100; candidates=roster()
+    dev=len(rows)*80//100; candidates=roster() if candidates is None else candidates
+    quality["source"]=source_kind
     # Freeze before computing signals/outcomes. Changed source/code/config cannot resume into this directory.
     code={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (Path(__file__),*((Path(__file__).resolve().parents[1]/'moex_intelligence/crypto'/name) for name in ('coliseum_catalog.py','coliseum_statistics.py','coliseum_diagnostics.py','coliseum_data.py','strategy_coliseum_research.py','paper_path_research.py','paper_risk_research.py','paper_rules_research.py','costs.py','analysis.py','risk.py','forecast_walkforward.py','forecast_evaluation.py','forecast_baseline.py','signal_outcome_research.py','market.py')))}
     manifest=dict(source_sha256=hashlib.sha256(Path(source).read_bytes()).hexdigest(),roster=candidates,
@@ -52,16 +55,19 @@ def run(source, destination):
             else:
                 try:
                     report=simulate_paper_paths(rows,'BTCUSDT','5',strategy=candidate['id'],research_signal_provider=provider,
-                        cost_model=CostModel(FeeSchedule(taker=str(fee)),ExecutionAssumptions(str(slip))),assumed_spread_bps=spread,record_equity=True)
+                        max_hold_bars=candidate['spec']['max_hold_bars'],cost_model=CostModel(FeeSchedule(taker=str(fee)),ExecutionAssumptions(str(slip))),assumed_spread_bps=spread,record_equity=True)
                     result=dict(status='COMPLETED',metrics=summary(report),diagnostics=trade_diagnostics(report,rows[:dev],CostModel(FeeSchedule(taker=str(fee)),ExecutionAssumptions(str(slip))),spread))
                 except (ValueError,ArithmeticError) as exc:result=dict(status='FAILED',error=str(exc))
                 tmp=path.with_suffix('.tmp');tmp.write_text(json.dumps(dict(key=key,result=result,sha256=digest(result)),sort_keys=True));os.replace(tmp,path)
             if result['status']=='COMPLETED':
                 results[scenario][candidate['id']]=result['metrics']
-                if scenario=='PAPER':diagnostics[candidate['id']]=result['diagnostics']
+                if scenario=='PAPER':
+                    detail=result['diagnostics'].copy();detail['trade_count']=len(detail['trades']);detail['trades']=detail['trades'][:5]
+                    detail['trade_details']='FIRST_5_ONLY_IN_SUMMARY; full journal in hashed trial cache'
+                    diagnostics[candidate['id']]=detail
             else:failures.append(dict(candidate=candidate['id'],scenario=scenario,**result))
         print(candidate['id'],flush=True)
-    study=dict(source_sha256=manifest['source_sha256'],source='USER_SUPPLIED_CSV_UNVERIFIED',rows=len(rows),
+    study=dict(source_sha256=manifest['source_sha256'],source=source_kind,rows=len(rows),
         development_end_exclusive=dev,sealed_final_evaluated=False,results=results)
     # Errors invalidate the entire tournament, not just losing participants.
     judged=select_coliseum_candidates(study,candidates) if not failures else dict(status='INVALID_INCOMPLETE_TOURNAMENT',qualified_count=0)

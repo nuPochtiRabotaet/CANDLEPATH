@@ -1,5 +1,6 @@
 """Read-only saved research display plus explicit isolated offline job controls."""
 import json
+import gzip
 from pathlib import Path
 import pandas as pd
 import plotly.express as px
@@ -10,9 +11,15 @@ from .coliseum_jobs import research_root,register_csv,start,pause,status,ROOT
 
 def load_report(folder):
     folder=Path(folder)
-    for name in ('manifest.json','result.json'):
-        if (folder/name).stat().st_size>100*1024*1024:raise ValueError('Report too large')
-    m=json.loads((folder/'manifest.json').read_text());r=json.loads((folder/'result.json').read_text())
+    limit=100*1024*1024
+    mpath=folder/'manifest.json';rpath=folder/'result.json'
+    if not rpath.exists():rpath=folder/'result.json.gz'
+    if mpath.stat().st_size>limit or rpath.stat().st_size>limit:raise ValueError('Report too large')
+    m=json.loads(mpath.read_text())
+    opener=gzip.open if rpath.suffix=='.gz' else open
+    with opener(rpath,'rb') as stream:payload=stream.read(limit+1)
+    if len(payload)>limit:raise ValueError('Expanded report too large')
+    r=json.loads(payload)
     return m,r,cost_audit(m,r)
 
 def page():
@@ -21,7 +28,7 @@ def page():
     committed=ROOT/'docs/research/coliseum_v02'
     saved=[committed]
     enriched=ROOT/'docs/research/coliseum_completed'
-    if (enriched/'result.json').exists():saved.insert(0,enriched)
+    if (enriched/'result.json').exists() or (enriched/'result.json.gz').exists():saved.insert(0,enriched)
     saved+=sorted(p.parent for p in research_root().glob('*/study/result.json'))
     selected=st.selectbox('Сохранённое исследование',saved,format_func=lambda p:'Архив '+p.name if 'docs' in p.parts else p.parent.name[:12])
     with st.expander('Запуск и возобновление офлайн-исследования'):
@@ -59,8 +66,13 @@ def page():
     family=x.multiselect('Семейства',sorted(table.family.unique()))
     mintrades=y.number_input('Минимум сделок',min_value=0,value=0)
     sort=z.selectbox('Сортировка',['net','gross','drawdown','trades','group'])
+    maxdd=st.number_input('Максимальная просадка, %',min_value=0.,max_value=100.,value=100.)
+    group_filter=st.multiselect('Корреляционная группа',sorted(table.group.unique()))
+    status_filter=st.multiselect('Статистический статус',sorted(table.statistical_status.unique()))
     sign=st.selectbox('Прибыльность',['Все','Валовой > 0','Чистый > 0','Чистый ≤ 0'])
-    view=table[table.trades>=mintrades]
+    view=table[(table.trades>=mintrades)&(table.drawdown<=maxdd)]
+    if group_filter:view=view[view.group.isin(group_filter)]
+    if status_filter:view=view[view.statistical_status.isin(status_filter)]
     if family:view=view[view.family.isin(family)]
     if sign=='Валовой > 0':view=view[view.gross>0]
     if sign=='Чистый > 0':view=view[view.net>0]
@@ -82,7 +94,15 @@ def page():
         regimes=pd.DataFrame([dict(regime=k,**v) for k,v in details['regimes'].items()]);regimes['net_pnl']=regimes.net_pnl.astype(float)
         st.plotly_chart(px.bar(regimes,x='regime',y='net_pnl',title='P&L сделок по режиму при входе; тренд и волатильность перекрываются'),width='stretch')
         st.caption(details['limitations'])
-        st.dataframe(pd.DataFrame(details['trades']),hide_index=True)
+        st.caption(details.get('trade_details','Полный журнал сохранённого исследования'))
+        trades=details['trades']
+        key=digest([digest(m),spec['spec_sha256'],'PAPER']);trial=selected/(key+'.json')
+        if trial.exists() and st.checkbox('Открыть полный журнал сделок'):
+            envelope=json.loads(trial.read_text())
+            if envelope.get('key')!=key or envelope.get('sha256')!=digest(envelope['result']):
+                st.error('Повреждён журнал испытания');return
+            trades=envelope['result']['diagnostics']['trades']
+        st.dataframe(pd.DataFrame(trades),hide_index=True)
     else:st.info('Временные ряды, MFE/MAE и режимы отсутствуют в этом архиве; графики не восстановлены из сумм.')
     if groups:
         st.plotly_chart(px.imshow(stats['dependence']['correlation'],x=ids,y=ids,zmin=-1,zmax=1,color_continuous_scale='RdBu',title='Корреляции синхронных дневных результатов'),width='stretch')
