@@ -52,3 +52,13 @@ Forecast отображается как UNAVAILABLE. Есть типизиро�
 - [FORECAST_REPORT.md](FORECAST_REPORT.md), [ROADMAP.md](ROADMAP.md), [DEVELOPMENT_CHECKPOINT.md](DEVELOPMENT_CHECKPOINT.md).
 
 Для pytest установите `requirements-dev.txt` в окружение проекта и выполните `python -m pytest -q`. Сетевые smoke scripts запускаются отдельно; мок-тесты не подтверждают доступность Bybit.
+
+## Бренд CandlePath
+
+Официальное название продукта — **CandlePath**. GitHub-репозиторий: [nuPochtiRabotaet/CANDLEPATH](https://github.com/nuPochtiRabotaet/CANDLEPATH).
+
+Внутренний Python-пакет `moex_intelligence`, переменная `MOEX_DATA_DIR` и каталог `~/.moex-intelligence` пока сохранены для совместимости существующих установок и пользовательских данных. Переименовывать их без отдельной миграции нельзя.
+
+Рекомендуемое описание репозитория (GitHub **About → Edit**): **CandlePath — crypto trading research terminal with explainable signals, offline strategy testing and risk-aware paper trading.**
+
+Для локальных клонов проверьте `git remote -v`; при необходимости обновите адрес командой `git remote set-url origin https://github.com/nuPochtiRabotaet/CANDLEPATH.git`. Смена имени не делает репозиторий публичным. Перед публикацией проверьте код, историю и вложения на секреты и личные данные.
