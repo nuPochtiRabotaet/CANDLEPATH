@@ -318,7 +318,7 @@ def ai_research(dataset):
 
 
 def legacy_main():
-    st.set_page_config(page_title='MOEX Intelligence',page_icon='◈',layout='wide')
+    st.set_page_config(page_title='CandlePath',page_icon='◈',layout='wide')
     configure_logging()
     st.markdown('''<style>
     .block-container{max-width:1440px;padding-top:2.1rem;padding-bottom:3rem}
@@ -328,7 +328,7 @@ def legacy_main():
     [data-testid="stMetricValue"]{font-size:1.65rem} .stCaption{color:#96a8be}
     </style>''',unsafe_allow_html=True)
     with st.sidebar:
-        st.markdown('### ◈ MOEX Intelligence')
+        st.markdown('### ◈ CandlePath')
         st.caption('RESEARCH TERMINAL / 0.3.0')
         page=st.radio('Раздел',PAGES,key='page',label_visibility='collapsed')
         st.divider()

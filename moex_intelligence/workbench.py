@@ -43,7 +43,7 @@ def toggle_settings():st.session_state.show_settings=not st.session_state.get('s
 
 def header(dataset,laboratory=False):
     left,right=st.columns([3,2])
-    with left:st.markdown('**MOEX Intelligence**  /  исследовательское пространство')
+    with left:st.markdown('**CandlePath**  /  исследовательское пространство')
     with right:
         if laboratory:st.caption('Песочница · журнал не меняется')
         elif dataset:
@@ -390,7 +390,7 @@ def scenarios_page(dataset):
 
 
 def main():
-    st.set_page_config(page_title='MOEX Intelligence',page_icon='◈',layout='wide',initial_sidebar_state='expanded')
+    st.set_page_config(page_title='CandlePath',page_icon='◈',layout='wide',initial_sidebar_state='expanded')
     configure_logging()
     from .upgrades import ensure_v081_backup
     try:ensure_v081_backup(Settings.from_env().data_dir)
@@ -419,7 +419,7 @@ def main():
     st.session_state.setdefault('page','Overview')
     st.html('<style>.st-key-nav_'+st.session_state.page+' button{background:var(--accent)!important;color:var(--bg)!important}</style>')
     with st.sidebar:
-        st.markdown('**MOEX Intelligence**')
+        st.markdown('**CandlePath**')
         with st.container(key='app_navigation'):
             for target in PAGES:
                 st.button(LABELS[target],key='nav_'+target,width='stretch',type='primary' if st.session_state.page==target else 'secondary',on_click=navigate,args=(target,))
@@ -450,7 +450,7 @@ def main():
     if context and context[1]['symbol']==symbol and mode=='MOEX ISS':dataset=context
     from .experience import refresh_market
     with st.container(key='workspace_header',horizontal=True,vertical_alignment='center'):
-        st.markdown('**MOEX Intelligence** / '+LABELS[page],width='stretch')
+        st.markdown('**CandlePath** / '+LABELS[page],width='stretch')
         st.button('Обновить цены',icon=':material/refresh:',help='Обновить котировки; историю заново не загружаем',key='header_refresh',on_click=refresh_market,width=44)
         st.button('Настройки',icon=':material/settings:',help='Профиль и настройки приложения',key='open_settings',on_click=toggle_settings,width=44)
     if st.session_state.get('show_settings'):settings_page();return
