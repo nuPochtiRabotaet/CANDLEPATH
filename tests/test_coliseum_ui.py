@@ -19,7 +19,7 @@ def valid_csv():
 
 def test_rejected_csv_is_not_runnable_or_listed(tmp_path,monkeypatch):
     monkeypatch.setenv('MOEX_DATA_DIR',str(tmp_path))
-    invalid=b'timestamp_ms,open,high,low,close,volume\\nbroken\\n'
+    invalid=b'timestamp_ms,open,high,low,close,volume\nbroken\n'
     with pytest.raises(ValueError):
         register_csv(invalid)
     assert registered_folders()==[]
@@ -41,7 +41,7 @@ def test_valid_registration_is_immutable_and_tamper_evident(tmp_path,monkeypatch
     assert not list(folder.glob('.upload-*'))
     with pytest.raises(ValueError,match='not started'):
         pause(folder)
-    (folder/'source.csv').write_bytes(source+b'\\n')
+    (folder/'source.csv').write_bytes(source+b'\n')
     assert registered_folders()==[]
     with pytest.raises(ValueError,match='changed'):
         start(folder)
