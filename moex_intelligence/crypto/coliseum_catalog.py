@@ -119,5 +119,5 @@ class CandidateProvider:
             r=f.iloc[i]; kind='EXIT' if sell.iloc[i] else 'BUY'
             result.append(dict(id=digest([s['spec_sha256'],int(r.time),kind]),strategy=cid,type=kind,
                 candle_time=int(r.time),timestamp=int(r.time)+300,reference_price=float(r.close),status='confirmed',
-                risk_estimates=dict(stop=max(float(r.close-2*r.atr),.01),target=float(r.close+4*r.atr))))
+                risk_estimates=dict(stop=max(float(r.close-s["spec"]["stop_atr"]*r.atr),.01),target=float(r.close+s["spec"]["target_atr"]*r.atr))))
         return result

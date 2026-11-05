@@ -41,3 +41,14 @@ explicitly listed in measured results. No nominal top-20 requirement.
 
 References: White (2000), Econometrica, doi:10.1111/1468-0262.00152;
 Romano & Wolf (2005), Econometrica, doi:10.1111/j.1468-0262.2005.00615.x.
+
+## Preregistered performance-only universe (not selection experiments)
+
+450 synthetic 5m bars, fixed seed135, same chronology for100/500/2000, three cost
+scenarios. 500=100 base variants x holding8/16/24/32/64; 2000 additionally x stop
+2/2.5/3/4 ATR with target twice stop. Economic axes are holding-time/turnover and
+volatility-normalized risk width, NOT 2000 independent ideas. No parameters will
+be selected from these fixtures. This measures execution/cache throughput, not
+long-history inference. Daily-bootstrap throughput is measured separately.
+Synthetic close=100*exp(cumulative N(0,.002)), open=previous close; wick .2%;
+volume U(100,200); start1500000000 floored to5m. Not externally observed prices.
