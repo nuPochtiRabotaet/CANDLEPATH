@@ -24,7 +24,7 @@ from .paper_risk_research import ResearchEquityGuards
 from .paper_rules_research import ResearchSpotRules
 from .signal_outcome_research import STRATEGIES
 
-VERSION = "single-long-ohlcv-path-v09-research-4"
+VERSION = "single-long-ohlcv-path-v09-research-5"
 MAX_HOLD_BARS = 16
 QTY_STEP = Decimal("0.000001")
 CAP_FRACTION = Decimal(str(PROFILE["symbol"]))
@@ -116,7 +116,8 @@ def _closed_exit(position, price, cash, spread_bps, model, reason, i, rows, assu
 def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
                          initial_cash="10000", max_hold_bars=MAX_HOLD_BARS,
                          cost_model=None, min_required_origins=30,
-                         assumed_rules=None, strategy=None, research_signal_provider=None):
+                         assumed_rules=None, strategy=None, research_signal_provider=None,
+                         collect_daily_equity=False):
     """Evaluate isolated development-fold virtual paths, never live/Paper orders.
 
     Rules: one SPOT long at a time, deterministic strategy priority, max 25%
@@ -133,6 +134,8 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
     at a fold end are force-liquidated at that last close, explicitly tagged
     optimistic. No execution/portfolio claims or actual time-of-day liquidity.
     """
+    if type(collect_daily_equity) is not bool:
+        raise ValueError("collect_daily_equity must be bool")
     names = (strategy,) if research_signal_provider is not None else STRATEGIES
     if research_signal_provider is not None and (not callable(research_signal_provider) or not isinstance(strategy,str) or not strategy):
         raise ValueError('Research adapter requires candidate ID')
@@ -194,6 +197,9 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
         risk_ledger=ResearchEquityGuards(cash_start, assumed_rules)
         pos=None
         trades=[]
+        daily_equity=[]
+        daily_bars=0
+        previous_daily_equity=cash_start
         counts={"buys":0,"exits":0,"rejected_entry":0,
                 "ignored_while_open":0,"blocked_drawdown":0,
                 "blocked_day_loss":0,"blocked_week_loss":0,
@@ -287,18 +293,33 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
                 max_drawdown=max(max_drawdown,(high_water-cash)/high_water)
             # CLOSE mark uses this bar's fully observed outcome; it cannot
             # retroactively affect an entry already made at its OPEN.
-            risk_ledger.at_close(bar["time"],cash,pos,bar["close"],
-                                 assumed_spread_bps,model)
+            close_equity=risk_ledger.at_close(bar["time"],cash,pos,bar["close"],
+                                  assumed_spread_bps,model)
+            if collect_daily_equity:
+                daily_bars += 1
+                current_day=datetime.fromtimestamp(bar["time"],timezone.utc).date().isoformat()
+                next_day=(datetime.fromtimestamp(rows[i+1]["time"],timezone.utc).date().isoformat()
+                          if i+1<end else None)
+                if i==end-1 or next_day!=current_day:
+                    daily_equity.append({"day":current_day,"bars":daily_bars,
+                        "pnl_usdt":str(close_equity-previous_daily_equity)})
+                    previous_daily_equity=close_equity
+                    daily_bars=0
         if counts["buys"]!=len(trades) or counts["exits"]!=len(trades):
             raise ValueError("Unbalanced hypothetical virtual positions")
-        reports.append({
+        fold_report={
             "fold":fold.number,"start_index":start,"end_exclusive":end,
             "starting_cash":str(cash_start),"ending_cash":str(cash),
             "net_return_pct":str(Decimal(100)*(cash/cash_start-1)),
             "max_realized_drawdown_pct":str(Decimal(100)*max_drawdown),
             "marked_equity_guards":risk_ledger.snapshot(),
             "trade_count":len(trades),"events":counts,
-            "trades":trades})
+            "trades":trades}
+        if collect_daily_equity:
+            if sum(d["bars"] for d in daily_equity)!=end-start-1 or previous_daily_equity!=cash:
+                raise ValueError("Daily marked equity does not reconcile with completed fold")
+            fold_report["daily_equity"]=daily_equity
+        reports.append(fold_report)
     sufficient=split.status=="EVALUATED_DEVELOPMENT_ONLY" and all(
         f["trade_count"]>=30 for f in reports)
     return {
