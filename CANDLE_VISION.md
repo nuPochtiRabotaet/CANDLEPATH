@@ -80,7 +80,7 @@ CandlePath — собственный TradingView-подобный крипто�
 
 ## 7. Текущее техническое наследие и состояние на 30.10.2026
 
-Репозиторий: **nuPochtiRabotaet/FUCKBINANCEANDMOEX**.
+Репозиторий GitHub: `nuPochtiRabotaet` / **CandlePath** (целевое имя; slug ещё нужно изменить в настройках GitHub).
 
 - Базовый код: **MOEX Intelligence v0.8.2-rc3** на ветке main.
 - Сохранены Invest и Crypto; доступны Bybit public market connector, Lightweight Charts, Indicator/Ribbon, Signal Lifecycle, SQLite, Decimal Cost Engine, Paper Trading, Risk Manager, локальные Stop/Target и Trading Performance.
