@@ -9,6 +9,7 @@ from moex_intelligence.crypto.paper_path_research import simulate_paper_paths
 from moex_intelligence.crypto.costs import CostModel, FeeSchedule, ExecutionAssumptions
 from moex_intelligence.crypto.forecast_evaluation import _closed_rows
 from moex_intelligence.crypto.strategy_coliseum_research import select_coliseum_candidates
+from moex_intelligence.crypto.coliseum_statistics import evaluate_statistics
 
 def summary(report):
     trades=[t for f in report['folds'] for t in f['trades']]; pnl=[D(t['net_pnl_quote']) for t in trades]
@@ -17,7 +18,9 @@ def summary(report):
         profit_factor=str(gain/loss) if loss else None,win_rate=sum(x>0 for x in pnl)/len(pnl) if pnl else None,
         max_drawdown=max(float(f['marked_equity_guards']['max_marked_drawdown_pct']) for f in report['folds']),
         turnover_quote=str(sum((D(t['entry_total_debit'])+D(t['exit_net_credit']) for t in trades),D(0))),
-        folds=[{k:f[k] for k in ('fold','trade_count','net_return_pct')} for f in report['folds']])
+        folds=[dict({k:f[k] for k in ('fold','trade_count','net_return_pct')},
+                    **({'daily':f['daily_equity']} if 'daily_equity' in f else {}))
+               for f in report['folds']])
 
 def run(source, destination):
     started=time.perf_counter(); out=Path(destination);out.mkdir(parents=True,exist_ok=True)
@@ -48,7 +51,8 @@ def run(source, destination):
             else:
                 try:
                     report=simulate_paper_paths(rows,'BTCUSDT','5',strategy=candidate['id'],research_signal_provider=provider,
-                        cost_model=CostModel(FeeSchedule(taker=str(fee)),ExecutionAssumptions(str(slip))),assumed_spread_bps=spread)
+                        cost_model=CostModel(FeeSchedule(taker=str(fee)),ExecutionAssumptions(str(slip))),
+                        assumed_spread_bps=spread,collect_daily_equity=True)
                     result=dict(status='COMPLETED',metrics=summary(report))
                 except (ValueError,ArithmeticError) as exc:result=dict(status='FAILED',error=str(exc))
                 tmp=path.with_suffix('.tmp');tmp.write_text(json.dumps(dict(key=key,result=result,sha256=digest(result)),sort_keys=True));os.replace(tmp,path)
@@ -59,8 +63,10 @@ def run(source, destination):
         development_end_exclusive=dev,sealed_final_evaluated=False,results=results)
     # Errors invalidate the entire tournament, not just losing participants.
     judged=select_coliseum_candidates(study,candidates) if not failures else dict(status='INVALID_INCOMPLETE_TOURNAMENT',qualified_count=0)
-    result=dict(study=study,judge=judged,failures=failures,manifest_sha256=digest(manifest),
-        independent_validation=False,multiple_testing_correction='NOT_IMPLEMENTED_NO_PROMOTION',production_integrations=0)
+    statistical=(evaluate_statistics(study) if not failures else
+        dict(inference='NOT_COMPUTED_INCOMPLETE_TOURNAMENT',statistical_acceptance=False))
+    result=dict(study=study,judge=judged,statistics=statistical,failures=failures,manifest_sha256=digest(manifest),
+        independent_validation=False,multiple_testing_correction=statistical['inference']+'__NO_PROMOTION',production_integrations=0)
     target=out/'result.json'
     if target.exists() and json.loads(target.read_text())!=result:raise ValueError('Nondeterministic replay')
     target.write_text(json.dumps(result,indent=2,sort_keys=True))
