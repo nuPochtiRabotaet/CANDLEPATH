@@ -116,7 +116,7 @@ def _closed_exit(position, price, cash, spread_bps, model, reason, i, rows, assu
 def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
                          initial_cash="10000", max_hold_bars=MAX_HOLD_BARS,
                          cost_model=None, min_required_origins=30,
-                         assumed_rules=None, strategy=None, research_signal_provider=None):
+                         assumed_rules=None, strategy=None, research_signal_provider=None, record_equity=False):
     """Evaluate isolated development-fold virtual paths, never live/Paper orders.
 
     Rules: one SPOT long at a time, deterministic strategy priority, max 25%
@@ -194,6 +194,7 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
         risk_ledger=ResearchEquityGuards(cash_start, assumed_rules)
         pos=None
         trades=[]
+        equity_marks=[]
         counts={"buys":0,"exits":0,"rejected_entry":0,
                 "ignored_while_open":0,"blocked_drawdown":0,
                 "blocked_day_loss":0,"blocked_week_loss":0,
@@ -287,8 +288,10 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
                 max_drawdown=max(max_drawdown,(high_water-cash)/high_water)
             # CLOSE mark uses this bar's fully observed outcome; it cannot
             # retroactively affect an entry already made at its OPEN.
-            risk_ledger.at_close(bar["time"],cash,pos,bar["close"],
+            equity=risk_ledger.at_close(bar["time"],cash,pos,bar["close"],
                                  assumed_spread_bps,model)
+            if record_equity:
+                equity_marks.append([bar['time']+step,str(equity)])
         if counts["buys"]!=len(trades) or counts["exits"]!=len(trades):
             raise ValueError("Unbalanced hypothetical virtual positions")
         reports.append({
@@ -298,7 +301,7 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
             "max_realized_drawdown_pct":str(Decimal(100)*max_drawdown),
             "marked_equity_guards":risk_ledger.snapshot(),
             "trade_count":len(trades),"events":counts,
-            "trades":trades})
+            "trades":trades,**({"equity_marks":equity_marks} if record_equity else {})})
     sufficient=split.status=="EVALUATED_DEVELOPMENT_ONLY" and all(
         f["trade_count"]>=30 for f in reports)
     return {
@@ -340,4 +343,5 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
                "gating, ongoing intrabar equity drawdown, "
                "min notional, partial fills or protective worker operations. "
                "Last 20% strictly sealed. No automatic trading-model promotion."}
+
 
