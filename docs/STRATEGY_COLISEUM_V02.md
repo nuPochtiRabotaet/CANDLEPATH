@@ -70,7 +70,9 @@ Mac/Safari and live connectivity are not validated by these offline tests.
 
 ## Actually executed checks — 2026-11-05
 
-- 103 focused tests passed; 823 full Python tests passed, no skips (56.98 s).
+- 104 focused tests passed; 824 full Python tests passed, no skips (55.94 s).
+- Non-flat deterministic fixture: >=40 candidates emit signals before the prefix
+  boundary; all feature columns and 100 candidate outputs match prefix-only computation.
 - JS syntax, 32 geometry checks, chart contract and synthetic Chromium passed.
 - Full available historical experiment: 100 candidates x 3 cost scenarios,
   75.56 s; peak Linux process RSS 131,088 KiB (~128 MiB), including dependencies.

@@ -5,8 +5,16 @@ from moex_intelligence.crypto.paper_path_research import simulate_paper_paths
 from .test_paper_path_research_v09 import history
 
 def rows():
-    from dataclasses import asdict
-    return [asdict(x) for x in history(420)]
+    import numpy as np
+    rng=np.random.default_rng(42);result=[];price=100.
+    for i in range(420):
+        opening=price
+        price=max(10.,price*(1+float(rng.normal(0,.006))+.003*np.sin(i/17)))
+        result.append(dict(time=1500000000//300*300+i*300,open=opening,
+            high=max(opening,price)+float(rng.uniform(.01,1)),
+            low=min(opening,price)-float(rng.uniform(.01,1)),close=price,
+            volume=float(rng.lognormal(3,1)),closed=True))
+    return result
 
 def test_roster_frozen_and_distinct():
     a=roster();assert a==roster() and len(a)==100
@@ -40,3 +48,12 @@ def test_batch_resume_and_corrupt_cache(tmp_path,monkeypatch):
     cache=next(p for p in out.glob('*.json') if len(p.stem)==64)
     envelope=json.loads(cache.read_text());envelope['key']='corrupt';cache.write_text(json.dumps(envelope))
     with pytest.raises(ValueError,match='Corrupt'):runner.run(source,out)
+
+
+def test_nonvacuous_causality_fixture():
+    import numpy as np
+    data=rows();f=features(data);short=features(data[:200])
+    for column in f.columns:
+        np.testing.assert_allclose(f[column].iloc[:200],short[column],equal_nan=True)
+    active=sum(bool(CandidateProvider(data,c)(data[:200],'BTCUSDT','5')) for c in roster())
+    assert active>=40, active
