@@ -5,7 +5,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 from scripts.coliseum_v02_cost_audit import analyze as cost_audit
-from .coliseum_jobs import research_root,register_csv,start,pause,status,ROOT
+from .coliseum_jobs import research_root,registered_folders,register_csv,start,pause,status,ROOT
 
 
 def load_report(folder):
@@ -31,14 +31,16 @@ def page():
             try:
                 folder,quality=register_csv(uploaded.getvalue());st.session_state.coliseum_job=str(folder);st.json(quality)
             except (ValueError,OSError,KeyError) as exc:st.error(str(exc))
-        folders=sorted(p.parent for p in research_root().glob('*/source.csv'))
+        folders=registered_folders()
         if folders:
             job=st.selectbox('Локальное исследование',folders,format_func=lambda p:p.name[:12])
             a,b=st.columns(2)
             if a.button('Запустить / возобновить'):
                 try:start(job)
                 except (ValueError,OSError) as exc:st.error(str(exc))
-            if b.button('Приостановить после текущего кандидата'):pause(job)
+            if b.button('Приостановить после текущего кандидата'):
+                try:pause(job)
+                except (ValueError,OSError) as exc:st.error(str(exc))
             state=status(job);st.progress(min(state['completed']/300,1.0),text=f"Завершено испытаний: {state['completed']}/300 · {'Выполняется' if state['running'] else 'Остановлено / завершено'}")
             st.button('Обновить прогресс')
             if state['log']:st.code(state['log'],language=None)
