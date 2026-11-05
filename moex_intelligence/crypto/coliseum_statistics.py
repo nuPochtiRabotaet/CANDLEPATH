@@ -98,7 +98,7 @@ def _correlation_clusters(names, values, threshold):
             parent[i] = parent[parent[i]]
             i = parent[i]
         return i
-    std = values.std(axis=1)
+    std = values.std(axis=1) if values.shape[1] else np.zeros(n)
     valid = np.flatnonzero(std > 1e-12)
     linked = 0
     if values.shape[1] >= 3 and len(valid) >= 2:
@@ -174,7 +174,8 @@ def evaluate_statistics(study, *, seed=20261105, replicates=999,
     observed[valid] = values[valid].mean(axis=1) / denom[valid]
     above = np.zeros(n, dtype=int)
     max_above = np.zeros(n, dtype=int)
-    for _ in range(replicates):
+    sampled_raw_means = np.empty((replicates, n), dtype=float)
+    for iteration in range(replicates):
         picks = []
         for fi, length in enumerate(fold_lengths):
             a = int(offsets[fi]); b = int(offsets[fi + 1])
@@ -183,6 +184,7 @@ def evaluate_statistics(study, *, seed=20261105, replicates=999,
                 start = int(rng.integers(a, b))
                 selected.extend(a + (start - a + j) % length for j in range(block_days))
             picks.extend(selected[:length])
+        sampled_raw_means[iteration] = values[:, picks].mean(axis=1)
         null = centered[:, picks].mean(axis=1)
         sampled = np.full(n, -np.inf)
         sampled[valid] = null[valid] / denom[valid]
@@ -194,7 +196,12 @@ def evaluate_statistics(study, *, seed=20261105, replicates=999,
     for idx, name in enumerate(names):
         p_individual[name] = round((above[idx] + 1) / (replicates + 1), 6) if valid[idx] and observed[idx] > 0 else None
         p_adjusted[name] = round((max_above[idx] + 1) / (replicates + 1), 6) if valid[idx] and observed[idx] > 0 else None
+    lower, upper = np.quantile(sampled_raw_means, [.05, .95], axis=0)
+    descriptive_intervals = {name: [round(float(lower[i]), 6), round(float(upper[i]), 6)]
+                             for i, name in enumerate(names)}
     result.update(inference="COMPUTED_EXPLORATORY_ONLY", blockers=["SOURCE_PROVENANCE_REQUIRES_EXTERNAL_ATTESTATION", "INDEPENDENT_OUT_OF_SAMPLE_NOT_EVALUATED", "REGIME_STRATIFICATION_NOT_EVALUATED"],
                   unadjusted_p_values=p_individual, adjusted_p_values=p_adjusted,
+                  exploratory_90pct_daily_pnl_interval_usdt=descriptive_intervals,
+                  interval_caveat="Percentile blocks are descriptive and not simultaneous post-selection confidence intervals",
                   method="Within-fold synchronized circular-day-block centered max-T bootstrap; one-sided positive mean daily net P&L; shared draws preserve candidate dependence")
     return result
