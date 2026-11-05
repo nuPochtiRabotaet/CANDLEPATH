@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 import plotly.express as px
 import streamlit as st
-from scripts.coliseum_v02_cost_audit import analyze as cost_audit
+from scripts.coliseum_v02_cost_audit import analyze as cost_audit, digest
 from .coliseum_jobs import research_root,register_csv,start,pause,status,ROOT
 
 
@@ -56,12 +56,16 @@ def page():
     for col,label,value in zip(cols,['Кандидатов','Испытаний','Отклонено','Для независимой проверки','Независимо подтверждено'],
             [len(roster),sum(len(x) for x in r['study']['results'].values()),sum(not x['shortlisted'] for x in judged['standings']),judged['qualified_count'],0]):col.metric(label,value)
     st.info('Статистика: '+stats.get('status','NOT EXECUTED')+' · Источник: '+r['study']['source']+' · Holdout: SEALED, не оценивался')
+    with st.expander('Источник и проверка качества истории'):
+        st.json(m.get('quality',{'source_sha256':m['source_sha256'],'provenance':'UNVERIFIED'}))
     rows=[];ids=stats.get('candidate_ids',[]);groups=stats.get('dependence',{}).get('groups',[])
     for row in judged['standings']:
         cid=row['candidate_id'];metric=paper[cid];cost=audit['candidates']['PAPER'][cid]
         rows.append(dict(candidate=cid,family=roster[cid]['family'],net=float(metric['net_pnl']),gross=float(cost['gross_pnl']),
             drawdown=float(metric['max_drawdown']),trades=metric['trades'],group=str(groups[ids.index(cid)]) if groups else 'UNAVAILABLE',
-            reasons=', '.join(row['rejection_reasons']),statistical_status=stats.get('status','NOT EXECUTED')))
+            reasons=', '.join(row['rejection_reasons']),
+            statistical_status=('PRELIMINARY_ONLY' if cid in ids and ids.index(cid) in stats.get('stable_candidates',[]) else
+                'NOT_PASSED' if stats.get('status')=='EXPERIMENTAL' else stats.get('status','NOT EXECUTED'))))
     table=pd.DataFrame(rows);x,y,z=st.columns(3)
     family=x.multiselect('Семейства',sorted(table.family.unique()))
     mintrades=y.number_input('Минимум сделок',min_value=0,value=0)
