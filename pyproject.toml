@@ -1,7 +1,7 @@
 [project]
-name = "moex-intelligence"
+name = "candlepath"
 version = "0.8.2rc3"
-description = "Local read-only MOEX research platform integrating Reader and Time Machine"
+description = "CandlePath: local research-first trading workbench with offline strategy evaluation"
 requires-python = ">=3.12,<3.14"
 
 [tool.pytest.ini_options]

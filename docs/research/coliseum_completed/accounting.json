@@ -1,0 +1,1760 @@
+{
+  "baselines": {
+    "LOW": {
+      "control_cash__low_volatility": {
+        "expectancy": null,
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "0",
+            "trade_count": 0
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "0",
+            "trade_count": 0
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "0",
+            "trade_count": 0
+          }
+        ],
+        "max_drawdown": 0.0,
+        "net_pnl": "0",
+        "profit_factor": null,
+        "trades": 0,
+        "turnover_quote": "0",
+        "win_rate": null
+      },
+      "control_cash__unfiltered": {
+        "expectancy": null,
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "0",
+            "trade_count": 0
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "0",
+            "trade_count": 0
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "0",
+            "trade_count": 0
+          }
+        ],
+        "max_drawdown": 0.0,
+        "net_pnl": "0",
+        "profit_factor": null,
+        "trades": 0,
+        "turnover_quote": "0",
+        "win_rate": null
+      },
+      "control_negative_bar__low_volatility": {
+        "expectancy": "-4.216878361813117720360084650",
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "-7.355193567080371541063585190",
+            "trade_count": 177
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "-9.029690029644001413711757510",
+            "trade_count": 216
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "-10.22361886631639986069679144",
+            "trade_count": 238
+          }
+        ],
+        "max_drawdown": 10.228630592904198,
+        "net_pnl": "-2660.850246304077281547213414",
+        "profit_factor": "0.008004996440316991195816625757",
+        "trades": 631,
+        "turnover_quote": "3009180.468877808206001096788",
+        "win_rate": 0.020602218700475437
+      },
+      "control_negative_bar__unfiltered": {
+        "expectancy": "-4.131829350228286240026132700",
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "-9.088418015981160786770217800",
+            "trade_count": 223
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "-11.34806150276064177999215422",
+            "trade_count": 277
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "-11.66783453253198151824067906",
+            "trade_count": 277
+          }
+        ],
+        "max_drawdown": 11.672420330698273,
+        "net_pnl": "-3210.431405127378408500305108",
+        "profit_factor": "0.02387975296948400608216935048",
+        "trades": 777,
+        "turnover_quote": "3671814.324725650596140499695",
+        "win_rate": 0.047619047619047616
+      },
+      "control_periodic__low_volatility": {
+        "expectancy": "-3.700873059391215846282176177",
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "-0.8401638856874944454121954200",
+            "trade_count": 24
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "-0.6248504034156492578460489300",
+            "trade_count": 27
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "-1.458675427815916815304674870",
+            "trade_count": 28
+          }
+        ],
+        "max_drawdown": 1.4975657006603507,
+        "net_pnl": "-292.368971691906051856291918",
+        "profit_factor": "0.2009280388774685720561646467",
+        "trades": 79,
+        "turnover_quote": "392898.5488671159410282837078",
+        "win_rate": 0.25316455696202533
+      },
+      "control_periodic__unfiltered": {
+        "expectancy": "-4.161592496808248760785364156",
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "-2.350397136708261808516549670",
+            "trade_count": 47
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "-1.400589853026116475549520130",
+            "trade_count": 47
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "-2.116858430765252468641293610",
+            "trade_count": 47
+          }
+        ],
+        "max_drawdown": 2.3678889183441676,
+        "net_pnl": "-586.784542049963075270736346",
+        "profit_factor": "0.2074668689336309217567788628",
+        "trades": 141,
+        "turnover_quote": "697476.7156701158266194692635",
+        "win_rate": 0.24113475177304963
+      },
+      "control_positive_bar__low_volatility": {
+        "expectancy": "-4.325554694270423518884124084",
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "-7.384281898452759585028579390",
+            "trade_count": 167
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "-9.113264686381822596799061460",
+            "trade_count": 214
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "-10.19112587881393092968740477",
+            "trade_count": 236
+          }
+        ],
+        "max_drawdown": 10.191855683165288,
+        "net_pnl": "-2668.867246364851311151504560",
+        "profit_factor": "0.04329934554813285445611936506",
+        "trades": 617,
+        "turnover_quote": "2942315.829589780542583192495",
+        "win_rate": 0.06482982171799027
+      },
+      "control_positive_bar__unfiltered": {
+        "expectancy": "-4.379114744789915912758356911",
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "-8.855379864224617204218538600",
+            "trade_count": 203
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "-11.60244086574596836289267043",
+            "trade_count": 268
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "-11.68488149678739723253513074",
+            "trade_count": 263
+          }
+        ],
+        "max_drawdown": 11.684881496787398,
+        "net_pnl": "-3214.270222675798279964633973",
+        "profit_factor": "0.06894565005678297391284249990",
+        "trades": 734,
+        "turnover_quote": "3461922.879798039159572355367",
+        "win_rate": 0.08174386920980926
+      }
+    },
+    "PAPER": {
+      "control_cash__low_volatility": {
+        "expectancy": null,
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "0",
+            "trade_count": 0
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "0",
+            "trade_count": 0
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "0",
+            "trade_count": 0
+          }
+        ],
+        "max_drawdown": 0.0,
+        "net_pnl": "0",
+        "profit_factor": null,
+        "trades": 0,
+        "turnover_quote": "0",
+        "win_rate": null
+      },
+      "control_cash__unfiltered": {
+        "expectancy": null,
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "0",
+            "trade_count": 0
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "0",
+            "trade_count": 0
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "0",
+            "trade_count": 0
+          }
+        ],
+        "max_drawdown": 0.0,
+        "net_pnl": "0",
+        "profit_factor": null,
+        "trades": 0,
+        "turnover_quote": "0",
+        "win_rate": null
+      },
+      "control_negative_bar__low_volatility": {
+        "expectancy": "-7.865920019236546244852854738",
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "-8.673266858275798597469765610",
+            "trade_count": 112
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "-11.70197898984827057562399391",
+            "trade_count": 149
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "-11.71770783036103950590588781",
+            "trade_count": 147
+          }
+        ],
+        "max_drawdown": 11.71770783036104,
+        "net_pnl": "-3209.295367848510867899964733",
+        "profit_factor": "0.001560309737766877088458937545",
+        "trades": 408,
+        "turnover_quote": "1925085.869476457425210500037",
+        "win_rate": 0.004901960784313725
+      },
+      "control_negative_bar__unfiltered": {
+        "expectancy": "-7.880047054469406927853580684",
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "-9.280969151555299408903992760",
+            "trade_count": 119
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "-11.64491224395390272967396040",
+            "trade_count": 150
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "-11.69751340999414254273587087",
+            "trade_count": 145
+          }
+        ],
+        "max_drawdown": 11.698228830282781,
+        "net_pnl": "-3262.339480550334468131382403",
+        "profit_factor": "0.001876896276771603376631672021",
+        "trades": 414,
+        "turnover_quote": "1952293.429658236556948208619",
+        "win_rate": 0.007246376811594203
+      },
+      "control_periodic__low_volatility": {
+        "expectancy": "-7.633785613417841457362486937",
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "-1.785975536970163317240260530",
+            "trade_count": 24
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "-1.690933105192251577096588050",
+            "trade_count": 27
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "-2.553781992437679856979516140",
+            "trade_count": 28
+          }
+        ],
+        "max_drawdown": 2.55378199243768,
+        "net_pnl": "-603.069063460009475131636468",
+        "profit_factor": "0.03143053838013137183685390974",
+        "trades": 79,
+        "turnover_quote": "390601.5436313764485223483635",
+        "win_rate": 0.10126582278481013
+      },
+      "control_periodic__unfiltered": {
+        "expectancy": "-8.039496938556478679066147986",
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "-4.165215912561632709909991920",
+            "trade_count": 47
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "-3.234183909343468939968021160",
+            "trade_count": 47
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "-3.936290861459533287605255580",
+            "trade_count": 47
+          }
+        ],
+        "max_drawdown": 4.165215912561632,
+        "net_pnl": "-1133.569068336463493748326866",
+        "profit_factor": "0.04531941470724032571717999241",
+        "trades": 141,
+        "turnover_quote": "690583.1199663931314229316732",
+        "win_rate": 0.1276595744680851
+      },
+      "control_positive_bar__low_volatility": {
+        "expectancy": "-7.979788847632239057989160035",
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "-8.621958351659942475002280100",
+            "trade_count": 106
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "-11.65619190361907305312581792",
+            "trade_count": 148
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "-11.72080302372626309440843375",
+            "trade_count": 147
+          }
+        ],
+        "max_drawdown": 11.732451125170934,
+        "net_pnl": "-3199.895327900527862253653174",
+        "profit_factor": "0.008284280187244981128622319861",
+        "trades": 401,
+        "turnover_quote": "1893080.932993347300237386347",
+        "win_rate": 0.022443890274314215
+      },
+      "control_positive_bar__unfiltered": {
+        "expectancy": "-7.989430071508897754922622709",
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "-9.233963716860526733422410260",
+            "trade_count": 117
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "-11.66043396995280732516932640",
+            "trade_count": 148
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "-11.78237130565805775904179022",
+            "trade_count": 144
+          }
+        ],
+        "max_drawdown": 11.782371305658058,
+        "net_pnl": "-3267.676899247139181763352688",
+        "profit_factor": "0.01361730812818078747638458175",
+        "trades": 409,
+        "turnover_quote": "1927697.346290157117252616647",
+        "win_rate": 0.02444987775061125
+      }
+    },
+    "STRESS": {
+      "control_cash__low_volatility": {
+        "expectancy": null,
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "0",
+            "trade_count": 0
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "0",
+            "trade_count": 0
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "0",
+            "trade_count": 0
+          }
+        ],
+        "max_drawdown": 0.0,
+        "net_pnl": "0",
+        "profit_factor": null,
+        "trades": 0,
+        "turnover_quote": "0",
+        "win_rate": null
+      },
+      "control_cash__unfiltered": {
+        "expectancy": null,
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "0",
+            "trade_count": 0
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "0",
+            "trade_count": 0
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "0",
+            "trade_count": 0
+          }
+        ],
+        "max_drawdown": 0.0,
+        "net_pnl": "0",
+        "profit_factor": null,
+        "trades": 0,
+        "turnover_quote": "0",
+        "win_rate": null
+      },
+      "control_negative_bar__low_volatility": {
+        "expectancy": "-15.570474311637391358528237",
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "-8.893499831583943804614216710",
+            "trade_count": 58
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "-11.79940330174077456706046054",
+            "trade_count": 75
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "-11.84938817799742956764933808",
+            "trade_count": 76
+          }
+        ],
+        "max_drawdown": 11.852814284529988,
+        "net_pnl": "-3254.229131132214793932401533",
+        "profit_factor": "0E+24",
+        "trades": 209,
+        "turnover_quote": "983745.4077729364032763075984",
+        "win_rate": 0.0
+      },
+      "control_negative_bar__unfiltered": {
+        "expectancy": "-15.95534305622495828048594879",
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "-9.724385240934757340540760830",
+            "trade_count": 61
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "-11.73486524459764429320881425",
+            "trade_count": 75
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "-11.72786307141551158966119840",
+            "trade_count": 72
+          }
+        ],
+        "max_drawdown": 11.734865244597644,
+        "net_pnl": "-3318.711355694791322341077348",
+        "profit_factor": "0E+24",
+        "trades": 208,
+        "turnover_quote": "978531.0918360903777590989228",
+        "win_rate": 0.0
+      },
+      "control_periodic__low_volatility": {
+        "expectancy": "-15.83941004832876249382438224",
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "-3.762288954660174955743489540",
+            "trade_count": 24
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "-3.914409582728837400508995700",
+            "trade_count": 27
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "-4.836435400790710013868776730",
+            "trade_count": 28
+          }
+        ],
+        "max_drawdown": 4.83643540079071,
+        "net_pnl": "-1251.313393817972237012126197",
+        "profit_factor": "0E+24",
+        "trades": 79,
+        "turnover_quote": "385785.3573126096637370678738",
+        "win_rate": 0.0
+      },
+      "control_periodic__unfiltered": {
+        "expectancy": "-16.11396979255805547089377911",
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "-7.058494118890878042804451850",
+            "trade_count": 41
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "-7.011174884183453684974003410",
+            "trade_count": 47
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "-7.684190216879043157928146540",
+            "trade_count": 47
+          }
+        ],
+        "max_drawdown": 7.684190216879043,
+        "net_pnl": "-2175.385921995337488570660180",
+        "profit_factor": "0.002219902220528540160422344086",
+        "trades": 135,
+        "turnover_quote": "648547.7805541211913464693400",
+        "win_rate": 0.007407407407407408
+      },
+      "control_positive_bar__low_volatility": {
+        "expectancy": "-15.80034071763347860069190561",
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "-8.985263357102301155421811450",
+            "trade_count": 56
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "-11.78248540770520816188616099",
+            "trade_count": 76
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "-11.78095311351745660011735311",
+            "trade_count": 74
+          }
+        ],
+        "max_drawdown": 11.78501084572567,
+        "net_pnl": "-3254.870187832496591742532555",
+        "profit_factor": "0.00003829922501303796024798515078",
+        "trades": 206,
+        "turnover_quote": "970398.6896192009079074574674",
+        "win_rate": 0.0048543689320388345
+      },
+      "control_positive_bar__unfiltered": {
+        "expectancy": "-15.65542629249333358875938054",
+        "folds": [
+          {
+            "fold": 1,
+            "net_return_pct": "-9.905428107375126929229339610",
+            "trade_count": 64
+          },
+          {
+            "fold": 2,
+            "net_return_pct": "-11.73272049482717750831573475",
+            "trade_count": 76
+          },
+          {
+            "fold": 3,
+            "net_return_pct": "-11.864463663733429442400",
+            "trade_count": 74
+          }
+        ],
+        "max_drawdown": 11.86446366373343,
+        "net_pnl": "-3350.261226593573387994507436",
+        "profit_factor": "0.002005708555573523209437250394",
+        "trades": 214,
+        "turnover_quote": "1006013.903943121193344325492",
+        "win_rate": 0.009345794392523364
+      }
+    }
+  },
+  "complete_daily_observations": 20,
+  "dependence_groups": 92,
+  "duplicate_pairs": 10,
+  "hypothesis_B_descriptive_pairs": [
+    {
+      "idea": "trend_ema",
+      "net_change": "-74.592565842354718023448014",
+      "scenario": "LOW",
+      "trade_change": 19,
+      "turnover_change": "94391.1428268718318189045519"
+    },
+    {
+      "idea": "trend_ema",
+      "net_change": "-148.010597149260727533795708",
+      "scenario": "PAPER",
+      "trade_change": 19,
+      "turnover_change": "93391.3130791757766833662043"
+    },
+    {
+      "idea": "trend_ema",
+      "net_change": "-298.867490228041568995474094",
+      "scenario": "STRESS",
+      "trade_change": 19,
+      "turnover_change": "91308.2079942033340998045261"
+    },
+    {
+      "idea": "trend_supertrend",
+      "net_change": "136.697528210223508636385908",
+      "scenario": "LOW",
+      "trade_change": -11,
+      "turnover_change": "-53101.8569142797473168156142"
+    },
+    {
+      "idea": "trend_supertrend",
+      "net_change": "177.516043523844757416818672",
+      "scenario": "PAPER",
+      "trade_change": -11,
+      "turnover_change": "-52363.8632423310178658031815"
+    },
+    {
+      "idea": "trend_supertrend",
+      "net_change": "260.468449430837015375955540",
+      "scenario": "STRESS",
+      "trade_change": -11,
+      "turnover_change": "-50833.9813702774216283040445"
+    },
+    {
+      "idea": "trend_macd",
+      "net_change": "688.790372818752026841582973",
+      "scenario": "LOW",
+      "trade_change": -104,
+      "turnover_change": "-492022.4272231310345929464168"
+    },
+    {
+      "idea": "trend_macd",
+      "net_change": "765.509236481307582171596429",
+      "scenario": "PAPER",
+      "trade_change": -67,
+      "turnover_change": "-306376.8532848094617907284031"
+    },
+    {
+      "idea": "trend_macd",
+      "net_change": "449.339655905700615750231104",
+      "scenario": "STRESS",
+      "trade_change": -20,
+      "turnover_change": "-87101.9056536263043452097688"
+    },
+    {
+      "idea": "trend_stack",
+      "net_change": "251.006519903470974290438579",
+      "scenario": "LOW",
+      "trade_change": -37,
+      "turnover_change": "-179883.6079752846317769455615"
+    },
+    {
+      "idea": "trend_stack",
+      "net_change": "389.582452017422223404929972",
+      "scenario": "PAPER",
+      "trade_change": -37,
+      "turnover_change": "-177006.2700758923064495550700"
+    },
+    {
+      "idea": "trend_stack",
+      "net_change": "527.651461537281316719611240",
+      "scenario": "STRESS",
+      "trade_change": -27,
+      "turnover_change": "-125008.5619591823240271203883"
+    },
+    {
+      "idea": "trend_pullback",
+      "net_change": "283.176742078943321799718019",
+      "scenario": "LOW",
+      "trade_change": -56,
+      "turnover_change": "-274364.4304825046499430042821"
+    },
+    {
+      "idea": "trend_pullback",
+      "net_change": "494.989443921178228591233061",
+      "scenario": "PAPER",
+      "trade_change": -56,
+      "turnover_change": "-270143.4366310218243479087670"
+    },
+    {
+      "idea": "trend_pullback",
+      "net_change": "642.993427193019118709244082",
+      "scenario": "STRESS",
+      "trade_change": -39,
+      "turnover_change": "-183507.1380300672166688107560"
+    },
+    {
+      "idea": "trend_adx_rise",
+      "net_change": "234.043060880476259517373556",
+      "scenario": "LOW",
+      "trade_change": -42,
+      "turnover_change": "-207156.3511827222895051946267"
+    },
+    {
+      "idea": "trend_adx_rise",
+      "net_change": "395.536847837430912280330655",
+      "scenario": "PAPER",
+      "trade_change": -42,
+      "turnover_change": "-204962.1775245663007462396692"
+    },
+    {
+      "idea": "trend_adx_rise",
+      "net_change": "727.354369499807256274728867",
+      "scenario": "STRESS",
+      "trade_change": -42,
+      "turnover_change": "-200383.8949147128562998852714"
+    },
+    {
+      "idea": "trend_slope",
+      "net_change": "269.058520730017686254983105",
+      "scenario": "LOW",
+      "trade_change": -37,
+      "turnover_change": "-180582.1072568049938568690172"
+    },
+    {
+      "idea": "trend_slope",
+      "net_change": "408.911904570098474094491213",
+      "scenario": "PAPER",
+      "trade_change": -37,
+      "turnover_change": "-178025.8859599960072087255087"
+    },
+    {
+      "idea": "trend_slope",
+      "net_change": "650.395600353707815317996659",
+      "scenario": "STRESS",
+      "trade_change": -34,
+      "turnover_change": "-158839.1956117600270770020031"
+    },
+    {
+      "idea": "trend_vwap",
+      "net_change": "778.161928968078208277095106",
+      "scenario": "LOW",
+      "trade_change": -131,
+      "turnover_change": "-617285.954254274085059310902"
+    },
+    {
+      "idea": "trend_vwap",
+      "net_change": "654.643634425265870418993200",
+      "scenario": "PAPER",
+      "trade_change": -58,
+      "turnover_change": "-262717.362893860765645721007"
+    },
+    {
+      "idea": "trend_vwap",
+      "net_change": "405.293369032510449229218405",
+      "scenario": "STRESS",
+      "trade_change": -22,
+      "turnover_change": "-97409.9859888299184733307816"
+    },
+    {
+      "idea": "trend_price_accel",
+      "net_change": "915.289719904823116327396543",
+      "scenario": "LOW",
+      "trade_change": -197,
+      "turnover_change": "-921872.486417957013380392602"
+    },
+    {
+      "idea": "trend_price_accel",
+      "net_change": "479.640132887424345618030349",
+      "scenario": "PAPER",
+      "trade_change": -60,
+      "turnover_change": "-272275.804980099721003421968"
+    },
+    {
+      "idea": "trend_price_accel",
+      "net_change": "445.914339828191794622308960",
+      "scenario": "STRESS",
+      "trade_change": -27,
+      "turnover_change": "-120044.5926728442318724176912"
+    },
+    {
+      "idea": "trend_volume",
+      "net_change": "509.400359616647389292809285",
+      "scenario": "LOW",
+      "trade_change": -113,
+      "turnover_change": "-546482.8007993772866545111901"
+    },
+    {
+      "idea": "trend_volume",
+      "net_change": "891.797046320617546354410991",
+      "scenario": "PAPER",
+      "trade_change": -109,
+      "turnover_change": "-514575.7964753290672895655898"
+    },
+    {
+      "idea": "trend_volume",
+      "net_change": "715.610089314227455056889598",
+      "scenario": "STRESS",
+      "trade_change": -47,
+      "turnover_change": "-214802.5722117252047593431101"
+    },
+    {
+      "idea": "momentum_rsi",
+      "net_change": "343.619973968231467259262717",
+      "scenario": "LOW",
+      "trade_change": -70,
+      "turnover_change": "-340404.0911800353329073847376"
+    },
+    {
+      "idea": "momentum_rsi",
+      "net_change": "604.200543017041119513033476",
+      "scenario": "PAPER",
+      "trade_change": -70,
+      "turnover_change": "-333667.1051873796307176869667"
+    },
+    {
+      "idea": "momentum_rsi",
+      "net_change": "783.192511815201115047943198",
+      "scenario": "STRESS",
+      "trade_change": -48,
+      "turnover_change": "-221131.5462328142716671920563"
+    },
+    {
+      "idea": "momentum_streak",
+      "net_change": "739.442253208344918806141729",
+      "scenario": "LOW",
+      "trade_change": -160,
+      "turnover_change": "-762776.8870101285941277818571"
+    },
+    {
+      "idea": "momentum_streak",
+      "net_change": "818.748032247414195389175585",
+      "scenario": "PAPER",
+      "trade_change": -95,
+      "turnover_change": "-438789.9620260181162272508239"
+    },
+    {
+      "idea": "momentum_streak",
+      "net_change": "528.647393931784958667749028",
+      "scenario": "STRESS",
+      "trade_change": -33,
+      "turnover_change": "-147764.6979242025207707722513"
+    },
+    {
+      "idea": "momentum_impulse",
+      "net_change": "1046.271496123001355986303367",
+      "scenario": "LOW",
+      "trade_change": -208,
+      "turnover_change": "-990087.4493106066455938176954"
+    },
+    {
+      "idea": "momentum_impulse",
+      "net_change": "1062.856057382098652160887677",
+      "scenario": "PAPER",
+      "trade_change": -123,
+      "turnover_change": "-569949.3610887967778762991138"
+    },
+    {
+      "idea": "momentum_impulse",
+      "net_change": "754.391391275662791730501930",
+      "scenario": "STRESS",
+      "trade_change": -44,
+      "turnover_change": "-197284.7176485607622089094981"
+    },
+    {
+      "idea": "momentum_relative",
+      "net_change": "635.562979626491887071199742",
+      "scenario": "LOW",
+      "trade_change": -130,
+      "turnover_change": "-620214.8238553107095684247984"
+    },
+    {
+      "idea": "momentum_relative",
+      "net_change": "721.551709370436245294727650",
+      "scenario": "PAPER",
+      "trade_change": -83,
+      "turnover_change": "-384387.7139335911322234652720"
+    },
+    {
+      "idea": "momentum_relative",
+      "net_change": "548.356011900803802745370276",
+      "scenario": "STRESS",
+      "trade_change": -35,
+      "turnover_change": "-157597.3880749488836855746296"
+    },
+    {
+      "idea": "momentum_close_location",
+      "net_change": "1044.749387241814147071712093",
+      "scenario": "LOW",
+      "trade_change": -229,
+      "turnover_change": "-1082615.020261312995380900289"
+    },
+    {
+      "idea": "momentum_close_location",
+      "net_change": "793.087446080923702298754423",
+      "scenario": "PAPER",
+      "trade_change": -95,
+      "turnover_change": "-435897.809324541823530681245"
+    },
+    {
+      "idea": "momentum_close_location",
+      "net_change": "611.336131216996337191086979",
+      "scenario": "STRESS",
+      "trade_change": -35,
+      "turnover_change": "-156710.1139662773219784889130"
+    },
+    {
+      "idea": "momentum_volume_expand",
+      "net_change": "800.451887984463756866732912",
+      "scenario": "LOW",
+      "trade_change": -168,
+      "turnover_change": "-800381.4215460796618384892648"
+    },
+    {
+      "idea": "momentum_volume_expand",
+      "net_change": "903.507555248303779672907161",
+      "scenario": "PAPER",
+      "trade_change": -106,
+      "turnover_change": "-489603.8982739425139079470924"
+    },
+    {
+      "idea": "momentum_volume_expand",
+      "net_change": "587.152809581397425529414959",
+      "scenario": "STRESS",
+      "trade_change": -35,
+      "turnover_change": "-156993.1589636655251344705851"
+    },
+    {
+      "idea": "revert_rsi",
+      "net_change": "209.141068893301419667413481",
+      "scenario": "LOW",
+      "trade_change": -50,
+      "turnover_change": "-248207.9319836292007564485862"
+    },
+    {
+      "idea": "revert_rsi",
+      "net_change": "405.314483774403867520651225",
+      "scenario": "PAPER",
+      "trade_change": -50,
+      "turnover_change": "-246650.9876619105093938593484"
+    },
+    {
+      "idea": "revert_rsi",
+      "net_change": "814.051081577268330492405614",
+      "scenario": "STRESS",
+      "trade_change": -50,
+      "turnover_change": "-243385.0111547104971563875945"
+    },
+    {
+      "idea": "revert_bollinger",
+      "net_change": "394.579988204143935268782198",
+      "scenario": "LOW",
+      "trade_change": -85,
+      "turnover_change": "-415952.2022608667816033472178"
+    },
+    {
+      "idea": "revert_bollinger",
+      "net_change": "715.037098104639189147650276",
+      "scenario": "PAPER",
+      "trade_change": -85,
+      "turnover_change": "-408386.6640291472856829323495"
+    },
+    {
+      "idea": "revert_bollinger",
+      "net_change": "1089.174621937215303845442800",
+      "scenario": "STRESS",
+      "trade_change": -66,
+      "turnover_change": "-306266.8022367947114217545574"
+    },
+    {
+      "idea": "revert_z_reentry",
+      "net_change": "464.951597544767140421469552",
+      "scenario": "LOW",
+      "trade_change": -95,
+      "turnover_change": "-464466.1722638957230898465305"
+    },
+    {
+      "idea": "revert_z_reentry",
+      "net_change": "822.623278611024748975799790",
+      "scenario": "PAPER",
+      "trade_change": -95,
+      "turnover_change": "-456249.4864802419041916242000"
+    },
+    {
+      "idea": "revert_z_reentry",
+      "net_change": "1206.160820608331604809358534",
+      "scenario": "STRESS",
+      "trade_change": -73,
+      "turnover_change": "-339518.4996691122674871906414"
+    },
+    {
+      "idea": "revert_stoch",
+      "net_change": "675.142024893541655907862067",
+      "scenario": "LOW",
+      "trade_change": -139,
+      "turnover_change": "-669982.0447038526153625481374"
+    },
+    {
+      "idea": "revert_stoch",
+      "net_change": "1032.453241712056363729680735",
+      "scenario": "PAPER",
+      "trade_change": -122,
+      "turnover_change": "-570600.8406977876099106703182"
+    },
+    {
+      "idea": "revert_stoch",
+      "net_change": "519.250219982398386326853215",
+      "scenario": "STRESS",
+      "trade_change": -32,
+      "turnover_change": "-144957.5749050456725279131468"
+    },
+    {
+      "idea": "revert_vwap",
+      "net_change": "596.125933764333279937350939",
+      "scenario": "LOW",
+      "trade_change": -116,
+      "turnover_change": "-559192.2035830126848265066488"
+    },
+    {
+      "idea": "revert_vwap",
+      "net_change": "923.125818652095429732814244",
+      "scenario": "PAPER",
+      "trade_change": -106,
+      "turnover_change": "-497244.7577011615464650271852"
+    },
+    {
+      "idea": "revert_vwap",
+      "net_change": "487.462603104600095419700141",
+      "scenario": "STRESS",
+      "trade_change": -30,
+      "turnover_change": "-136390.2989401046035417003001"
+    },
+    {
+      "idea": "revert_atr_ema",
+      "net_change": "373.917221406438724318574135",
+      "scenario": "LOW",
+      "trade_change": -88,
+      "turnover_change": "-433474.3325799701097703334260"
+    },
+    {
+      "idea": "revert_atr_ema",
+      "net_change": "711.548235026324194912942934",
+      "scenario": "PAPER",
+      "trade_change": -88,
+      "turnover_change": "-427442.9121643637280129670573"
+    },
+    {
+      "idea": "revert_atr_ema",
+      "net_change": "1375.253068261405304388546120",
+      "scenario": "STRESS",
+      "trade_change": -86,
+      "turnover_change": "-405724.7698435144986458514540"
+    },
+    {
+      "idea": "revert_streak",
+      "net_change": "470.450624763210275081583851",
+      "scenario": "LOW",
+      "trade_change": -97,
+      "turnover_change": "-474263.4884110354139676904164"
+    },
+    {
+      "idea": "revert_streak",
+      "net_change": "833.336552949722943608594230",
+      "scenario": "PAPER",
+      "trade_change": -97,
+      "turnover_change": "-464911.0142713954062730714057"
+    },
+    {
+      "idea": "revert_streak",
+      "net_change": "1077.107214702357715765917736",
+      "scenario": "STRESS",
+      "trade_change": -65,
+      "turnover_change": "-301256.2954361010498479140826"
+    },
+    {
+      "idea": "revert_lower_wick",
+      "net_change": "342.085742201332007984277689",
+      "scenario": "LOW",
+      "trade_change": -60,
+      "turnover_change": "-295732.1981950065877550197221"
+    },
+    {
+      "idea": "revert_lower_wick",
+      "net_change": "573.395569777796769237017088",
+      "scenario": "PAPER",
+      "trade_change": -60,
+      "turnover_change": "-292766.6912377402203776429831"
+    },
+    {
+      "idea": "revert_lower_wick",
+      "net_change": "1049.586224110759500460312064",
+      "scenario": "STRESS",
+      "trade_change": -60,
+      "turnover_change": "-286585.1871660778825171396879"
+    },
+    {
+      "idea": "revert_false_break",
+      "net_change": "509.090435472898593381465178",
+      "scenario": "LOW",
+      "trade_change": -117,
+      "turnover_change": "-569848.8352056950835112465331"
+    },
+    {
+      "idea": "revert_false_break",
+      "net_change": "944.916815616532828554535227",
+      "scenario": "PAPER",
+      "trade_change": -117,
+      "turnover_change": "-557361.6265649152168353054632"
+    },
+    {
+      "idea": "revert_false_break",
+      "net_change": "979.684925651644933427435871",
+      "scenario": "STRESS",
+      "trade_change": -62,
+      "turnover_change": "-286098.3430631722755552125643"
+    },
+    {
+      "idea": "revert_climax",
+      "net_change": "197.956210283951585296671892",
+      "scenario": "LOW",
+      "trade_change": -47,
+      "turnover_change": "-233237.5277740362668353633282"
+    },
+    {
+      "idea": "revert_climax",
+      "net_change": "381.759720024583811471024389",
+      "scenario": "PAPER",
+      "trade_change": -47,
+      "turnover_change": "-231461.5918595176890988689758"
+    },
+    {
+      "idea": "revert_climax",
+      "net_change": "763.089897503910708234688813",
+      "scenario": "STRESS",
+      "trade_change": -47,
+      "turnover_change": "-227744.3382661507669293653111"
+    },
+    {
+      "idea": "revert_quiet_dip",
+      "net_change": "309.050773494518417156357799",
+      "scenario": "LOW",
+      "trade_change": -70,
+      "turnover_change": "-346325.4172513064695683516422"
+    },
+    {
+      "idea": "revert_quiet_dip",
+      "net_change": "581.269699744504503382537778",
+      "scenario": "PAPER",
+      "trade_change": -70,
+      "turnover_change": "-343270.3111280874926768774624"
+    },
+    {
+      "idea": "revert_quiet_dip",
+      "net_change": "1143.868952299459831672788288",
+      "scenario": "STRESS",
+      "trade_change": -70,
+      "turnover_change": "-336891.4554814499770627272116"
+    },
+    {
+      "idea": "revert_gap",
+      "net_change": "0",
+      "scenario": "LOW",
+      "trade_change": 0,
+      "turnover_change": "0"
+    },
+    {
+      "idea": "revert_gap",
+      "net_change": "0",
+      "scenario": "PAPER",
+      "trade_change": 0,
+      "turnover_change": "0"
+    },
+    {
+      "idea": "revert_gap",
+      "net_change": "0",
+      "scenario": "STRESS",
+      "trade_change": 0,
+      "turnover_change": "0"
+    },
+    {
+      "idea": "break_donchian",
+      "net_change": "365.277476685315794183224020",
+      "scenario": "LOW",
+      "trade_change": -75,
+      "turnover_change": "-366338.5966233806096121847760"
+    },
+    {
+      "idea": "break_donchian",
+      "net_change": "647.564067762872688489927124",
+      "scenario": "PAPER",
+      "trade_change": -75,
+      "turnover_change": "-360205.7302453571626984700729"
+    },
+    {
+      "idea": "break_donchian",
+      "net_change": "947.445423850173137555981537",
+      "scenario": "STRESS",
+      "trade_change": -57,
+      "turnover_change": "-265122.5438543936889338040185"
+    },
+    {
+      "idea": "break_bollinger",
+      "net_change": "368.297207441176925344190195",
+      "scenario": "LOW",
+      "trade_change": -75,
+      "turnover_change": "-367156.3740985156991001438104"
+    },
+    {
+      "idea": "break_bollinger",
+      "net_change": "652.873209288403080693658065",
+      "scenario": "PAPER",
+      "trade_change": -75,
+      "turnover_change": "-361673.2483539214998381263423"
+    },
+    {
+      "idea": "break_bollinger",
+      "net_change": "1148.331953207457773838399309",
+      "scenario": "STRESS",
+      "trade_change": -69,
+      "turnover_change": "-322587.4024976076752327216006"
+    },
+    {
+      "idea": "break_squeeze",
+      "net_change": "191.779684261524531737264441",
+      "scenario": "LOW",
+      "trade_change": -37,
+      "turnover_change": "-181366.6837792552852818067358"
+    },
+    {
+      "idea": "break_squeeze",
+      "net_change": "332.529087011658328115765728",
+      "scenario": "PAPER",
+      "trade_change": -37,
+      "turnover_change": "-178966.8257037854237731442343"
+    },
+    {
+      "idea": "break_squeeze",
+      "net_change": "619.261206886254612732696789",
+      "scenario": "STRESS",
+      "trade_change": -37,
+      "turnover_change": "-173979.2396741969246075873035"
+    },
+    {
+      "idea": "break_inside",
+      "net_change": "615.597778281859021236583597",
+      "scenario": "LOW",
+      "trade_change": -114,
+      "turnover_change": "-550382.6898102987008472474176"
+    },
+    {
+      "idea": "break_inside",
+      "net_change": "935.642128962973824028678007",
+      "scenario": "PAPER",
+      "trade_change": -103,
+      "turnover_change": "-485491.1235383434384643113215"
+    },
+    {
+      "idea": "break_inside",
+      "net_change": "796.233851110199080911416193",
+      "scenario": "STRESS",
+      "trade_change": -46,
+      "turnover_change": "-209577.8409772940478392485840"
+    },
+    {
+      "idea": "break_narrow_range",
+      "net_change": "595.895513611571321099197381",
+      "scenario": "LOW",
+      "trade_change": -121,
+      "turnover_change": "-582562.0167900156921988568018"
+    },
+    {
+      "idea": "break_narrow_range",
+      "net_change": "835.818061363010720877136053",
+      "scenario": "PAPER",
+      "trade_change": -96,
+      "turnover_change": "-450025.7316486514466334628638"
+    },
+    {
+      "idea": "break_narrow_range",
+      "net_change": "738.603087787297358532890307",
+      "scenario": "STRESS",
+      "trade_change": -43,
+      "turnover_change": "-194316.8718165521783077071098"
+    },
+    {
+      "idea": "break_keltner",
+      "net_change": "212.057921031029369892499262",
+      "scenario": "LOW",
+      "trade_change": -54,
+      "turnover_change": "-266304.2475296217678262195007"
+    },
+    {
+      "idea": "break_keltner",
+      "net_change": "420.514741512420022528727781",
+      "scenario": "PAPER",
+      "trade_change": -54,
+      "turnover_change": "-263301.3489283141896450912721"
+    },
+    {
+      "idea": "break_keltner",
+      "net_change": "847.930950774547749324953536",
+      "scenario": "STRESS",
+      "trade_change": -54,
+      "turnover_change": "-257047.0148206596527599550465"
+    },
+    {
+      "idea": "break_volume",
+      "net_change": "224.453291862454037628798528",
+      "scenario": "LOW",
+      "trade_change": -48,
+      "turnover_change": "-236650.9317201289588605592014"
+    },
+    {
+      "idea": "break_volume",
+      "net_change": "410.372426337276911903539815",
+      "scenario": "PAPER",
+      "trade_change": -48,
+      "turnover_change": "-234514.5859268207339259964601"
+    },
+    {
+      "idea": "break_volume",
+      "net_change": "794.334119972650884642445542",
+      "scenario": "STRESS",
+      "trade_change": -48,
+      "turnover_change": "-230048.3016870813910865575545"
+    },
+    {
+      "idea": "break_vol_expansion",
+      "net_change": "349.003702371604206813407520",
+      "scenario": "LOW",
+      "trade_change": -71,
+      "turnover_change": "-352374.7641010585709082505926"
+    },
+    {
+      "idea": "break_vol_expansion",
+      "net_change": "627.796449037166597522786342",
+      "scenario": "PAPER",
+      "trade_change": -71,
+      "turnover_change": "-350499.8795760578853253172138"
+    },
+    {
+      "idea": "break_vol_expansion",
+      "net_change": "1210.433057946010183707018874",
+      "scenario": "STRESS",
+      "trade_change": -71,
+      "turnover_change": "-346565.3167578518977406129812"
+    },
+    {
+      "idea": "break_compression",
+      "net_change": "341.260087862765147682722567",
+      "scenario": "LOW",
+      "trade_change": -81,
+      "turnover_change": "-392895.2675716005247804132789"
+    },
+    {
+      "idea": "break_compression",
+      "net_change": "487.815407590273217158847427",
+      "scenario": "PAPER",
+      "trade_change": -62,
+      "turnover_change": "-294092.3107916517882010811528"
+    },
+    {
+      "idea": "break_compression",
+      "net_change": "376.534881188935660969164142",
+      "scenario": "STRESS",
+      "trade_change": -25,
+      "turnover_change": "-114862.6370476301098063908358"
+    },
+    {
+      "idea": "break_retest",
+      "net_change": "164.631045054559349462204305",
+      "scenario": "LOW",
+      "trade_change": -42,
+      "turnover_change": "-207266.3415335328982760017957"
+    },
+    {
+      "idea": "break_retest",
+      "net_change": "327.303878571324179984951405",
+      "scenario": "PAPER",
+      "trade_change": -42,
+      "turnover_change": "-205243.4092652643057503550487"
+    },
+    {
+      "idea": "break_retest",
+      "net_change": "662.491055599899900010683605",
+      "scenario": "STRESS",
+      "trade_change": -42,
+      "turnover_change": "-201023.9451768029464646293164"
+    },
+    {
+      "idea": "stat_mean_cross",
+      "net_change": "769.176416170037928410547311",
+      "scenario": "LOW",
+      "trade_change": -144,
+      "turnover_change": "-672370.869409520336776809454"
+    },
+    {
+      "idea": "stat_mean_cross",
+      "net_change": "507.076509907744791620105858",
+      "scenario": "PAPER",
+      "trade_change": -46,
+      "turnover_change": "-203116.173457665405803259893"
+    },
+    {
+      "idea": "stat_mean_cross",
+      "net_change": "231.756236290918220716602947",
+      "scenario": "STRESS",
+      "trade_change": -12,
+      "turnover_change": "-51850.8931809901778327233970"
+    },
+    {
+      "idea": "stat_median_cross",
+      "net_change": "857.458902489111349120403295",
+      "scenario": "LOW",
+      "trade_change": -166,
+      "turnover_change": "-772921.058924759272562275597"
+    },
+    {
+      "idea": "stat_median_cross",
+      "net_change": "532.513853560970869187778981",
+      "scenario": "PAPER",
+      "trade_change": -54,
+      "turnover_change": "-239721.258693511244442192222"
+    },
+    {
+      "idea": "stat_median_cross",
+      "net_change": "254.258372891251558577857378",
+      "scenario": "STRESS",
+      "trade_change": -13,
+      "turnover_change": "-56233.1502045802913126221428"
+    },
+    {
+      "idea": "stat_return_quantile",
+      "net_change": "1729.728733312730451714066131",
+      "scenario": "LOW",
+      "trade_change": -388,
+      "turnover_change": "-1833255.947120105199574397935"
+    },
+    {
+      "idea": "stat_return_quantile",
+      "net_change": "1667.351748162644544732507208",
+      "scenario": "PAPER",
+      "trade_change": -206,
+      "turnover_change": "-951331.1532784515167704674937"
+    },
+    {
+      "idea": "stat_return_quantile",
+      "net_change": "1043.861378830957479230791189",
+      "scenario": "STRESS",
+      "trade_change": -64,
+      "turnover_change": "-288218.1444873000853858892086"
+    },
+    {
+      "idea": "stat_down_quantile",
+      "net_change": "1638.858228025824159237715852",
+      "scenario": "LOW",
+      "trade_change": -386,
+      "turnover_change": "-1828049.979512209750051346283"
+    },
+    {
+      "idea": "stat_down_quantile",
+      "net_change": "1569.893694222045010118192787",
+      "scenario": "PAPER",
+      "trade_change": -199,
+      "turnover_change": "-919552.9965951591356711618031"
+    },
+    {
+      "idea": "stat_down_quantile",
+      "net_change": "887.514450179304383796951048",
+      "scenario": "STRESS",
+      "trade_change": -55,
+      "turnover_change": "-247818.2093676928036034030493"
+    },
+    {
+      "idea": "stat_autocorr_trend",
+      "net_change": "334.246378507538193184018631",
+      "scenario": "LOW",
+      "trade_change": -68,
+      "turnover_change": "-335283.6204788149553662759814"
+    },
+    {
+      "idea": "stat_autocorr_trend",
+      "net_change": "595.663606059680080250303741",
+      "scenario": "PAPER",
+      "trade_change": -68,
+      "turnover_change": "-331554.5236023286410120696962"
+    },
+    {
+      "idea": "stat_autocorr_trend",
+      "net_change": "1131.964760754966987411631794",
+      "scenario": "STRESS",
+      "trade_change": -68,
+      "turnover_change": "-323800.3478438940845548283682"
+    },
+    {
+      "idea": "stat_autocorr_revert",
+      "net_change": "804.617882159676604681821304",
+      "scenario": "LOW",
+      "trade_change": -186,
+      "turnover_change": "-894885.2264082750936691181781"
+    },
+    {
+      "idea": "stat_autocorr_revert",
+      "net_change": "946.587275594432364572993314",
+      "scenario": "PAPER",
+      "trade_change": -119,
+      "turnover_change": "-560262.2388933545862359670076"
+    },
+    {
+      "idea": "stat_autocorr_revert",
+      "net_change": "815.851722921667849873810536",
+      "scenario": "STRESS",
+      "trade_change": -55,
+      "turnover_change": "-252761.4125208978556776461895"
+    },
+    {
+      "idea": "stat_skew_recovery",
+      "net_change": "239.548824625162367264785710",
+      "scenario": "LOW",
+      "trade_change": -46,
+      "turnover_change": "-227783.6113031339433204272141"
+    },
+    {
+      "idea": "stat_skew_recovery",
+      "net_change": "419.105117091441941176565675",
+      "scenario": "PAPER",
+      "trade_change": -46,
+      "turnover_change": "-226176.7631115746260907234346"
+    },
+    {
+      "idea": "stat_skew_recovery",
+      "net_change": "792.279773454239774087195554",
+      "scenario": "STRESS",
+      "trade_change": -46,
+      "turnover_change": "-222808.9429405374186017528044"
+    },
+    {
+      "idea": "stat_range_position",
+      "net_change": "413.282281798095931107550029",
+      "scenario": "LOW",
+      "trade_change": -72,
+      "turnover_change": "-349328.1530215666422299604504"
+    },
+    {
+      "idea": "stat_range_position",
+      "net_change": "681.517180440987560997968211",
+      "scenario": "PAPER",
+      "trade_change": -72,
+      "turnover_change": "-342840.6480616192103925620313"
+    },
+    {
+      "idea": "stat_range_position",
+      "net_change": "839.355899816097450729022096",
+      "scenario": "STRESS",
+      "trade_change": -46,
+      "turnover_change": "-210733.0128970791006412709780"
+    },
+    {
+      "idea": "control_cash",
+      "net_change": "0",
+      "scenario": "LOW",
+      "trade_change": 0,
+      "turnover_change": "0"
+    },
+    {
+      "idea": "control_cash",
+      "net_change": "0",
+      "scenario": "PAPER",
+      "trade_change": 0,
+      "turnover_change": "0"
+    },
+    {
+      "idea": "control_cash",
+      "net_change": "0",
+      "scenario": "STRESS",
+      "trade_change": 0,
+      "turnover_change": "0"
+    },
+    {
+      "idea": "control_periodic",
+      "net_change": "294.415570358057023414444428",
+      "scenario": "LOW",
+      "trade_change": -62,
+      "turnover_change": "-304578.1668029998855911855557"
+    },
+    {
+      "idea": "control_periodic",
+      "net_change": "530.500004876454018616690398",
+      "scenario": "PAPER",
+      "trade_change": -62,
+      "turnover_change": "-299981.5763350166829005833097"
+    },
+    {
+      "idea": "control_periodic",
+      "net_change": "924.072528177365251558533983",
+      "scenario": "STRESS",
+      "trade_change": -56,
+      "turnover_change": "-262762.4232415115276094014662"
+    },
+    {
+      "idea": "control_positive_bar",
+      "net_change": "545.402976310946968813129413",
+      "scenario": "LOW",
+      "trade_change": -117,
+      "turnover_change": "-519607.050208258616989162872"
+    },
+    {
+      "idea": "control_positive_bar",
+      "net_change": "67.781571346611319509699514",
+      "scenario": "PAPER",
+      "trade_change": -8,
+      "turnover_change": "-34616.413296809817015230300"
+    },
+    {
+      "idea": "control_positive_bar",
+      "net_change": "95.391038761076796251974881",
+      "scenario": "STRESS",
+      "trade_change": -8,
+      "turnover_change": "-35615.2143239202854368680246"
+    },
+    {
+      "idea": "control_negative_bar",
+      "net_change": "549.581158823301126953091694",
+      "scenario": "LOW",
+      "trade_change": -146,
+      "turnover_change": "-662633.855847842390139402907"
+    },
+    {
+      "idea": "control_negative_bar",
+      "net_change": "53.044112701823600231417670",
+      "scenario": "PAPER",
+      "trade_change": -6,
+      "turnover_change": "-27207.560181779131737708582"
+    },
+    {
+      "idea": "control_negative_bar",
+      "net_change": "64.482224562576528408675815",
+      "scenario": "STRESS",
+      "trade_change": 1,
+      "turnover_change": "5214.3159368460255172086756"
+    }
+  ],
+  "independent_validation": false,
+  "limitations": [
+    "Costs and fills modeled, not observed exchange executions.",
+    "Sums across independent candidate bankroll experiments are not a portfolio.",
+    "Cost share is an accounting ratio, not causal proof of alpha without costs.",
+    "Short already-examined unverified history: paired comparisons are diagnostic only.",
+    "A longer holding and C timeframe comparison: NOT EXECUTED on historical data."
+  ],
+  "manifest_sha256": "57da3b70effd1d3bdd7714b081d4af73e7086193ce2813b4e7a326f1e24aab3b",
+  "max_aggregate_rounding_difference": "4.997955766087777988E-7",
+  "sealed_final_evaluated": false,
+  "source_sha256": "3e93db2c4e06acd8f60134e398fb5ae93a9eac0a85fc65471f16cf3ee7c1d7d6",
+  "statistical_status": "INSUFFICIENT_SAMPLE",
+  "status": "TRADE_JOURNALS_RECONCILED_MODELED_EXECUTION",
+  "summary": {
+    "LOW": {
+      "active_candidates": 95,
+      "average_gross_per_trade": "-0.186969",
+      "average_net_per_trade": "-4.569930",
+      "candidates": 100,
+      "cost_share_of_abs_net_loss_pct": "95.908706",
+      "fee_cost": "45025.186558",
+      "gross_pnl": "-3457.249288",
+      "gross_positive_candidates": 31,
+      "net_pnl": "-84502.583236",
+      "net_positive_candidates": 0,
+      "slippage_cost": "18010.073764",
+      "spread_cost": "18010.073626",
+      "total_cost": "81045.333948",
+      "total_trades": 18491,
+      "turnover_quote": "90050392.854087",
+      "zero_trade_candidates": 5
+    },
+    "PAPER": {
+      "active_candidates": 95,
+      "average_gross_per_trade": "-0.197934",
+      "average_net_per_trade": "-8.407589",
+      "candidates": 100,
+      "cost_share_of_abs_net_loss_pct": "97.645774",
+      "fee_cost": "76504.336975",
+      "gross_pnl": "-3135.664743",
+      "gross_positive_candidates": 33,
+      "net_pnl": "-133193.031023",
+      "net_positive_candidates": 0,
+      "slippage_cost": "38252.163879",
+      "spread_cost": "15300.865426",
+      "total_cost": "130057.366280",
+      "total_trades": 15842,
+      "turnover_quote": "76504393.664096",
+      "zero_trade_candidates": 5
+    },
+    "STRESS": {
+      "active_candidates": 95,
+      "average_gross_per_trade": "-0.204444",
+      "average_net_per_trade": "-16.455924",
+      "candidates": 100,
+      "cost_share_of_abs_net_loss_pct": "98.757627",
+      "fee_cost": "114419.998696",
+      "gross_pnl": "-2446.989172",
+      "gross_positive_candidates": 32,
+      "net_pnl": "-196960.951100",
+      "net_positive_candidates": 0,
+      "slippage_cost": "57209.974017",
+      "spread_cost": "22883.989215",
+      "total_cost": "194513.961928",
+      "total_trades": 11969,
+      "turnover_quote": "57210164.429702",
+      "zero_trade_candidates": 5
+    }
+  },
+  "trades_checked_all_scenarios": 46302
+}

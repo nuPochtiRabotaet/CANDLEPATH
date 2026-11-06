@@ -10,6 +10,7 @@ from .design import TOKENS
 from . import dashboard as legacy
 from .advisor import evaluate, investigate, render_investment_report
 from .config import Settings, configure_logging
+from .workspace_mode import legacy_invest_enabled
 from .data import get_engine, market_today
 from .education import ASSETS, TERMS, NETWORK_HELP, network_message
 from .persistence import ResearchStore
@@ -43,7 +44,7 @@ def toggle_settings():st.session_state.show_settings=not st.session_state.get('s
 
 def header(dataset,laboratory=False):
     left,right=st.columns([3,2])
-    with left:st.markdown('**MOEX Intelligence**  /  исследовательское пространство')
+    with left:st.markdown('**CandlePath**  /  исследовательское пространство')
     with right:
         if laboratory:st.caption('Песочница · журнал не меняется')
         elif dataset:
@@ -390,7 +391,19 @@ def scenarios_page(dataset):
 
 
 def main():
-    st.set_page_config(page_title='MOEX Intelligence',page_icon='◈',layout='wide',initial_sidebar_state='expanded')
+    st.set_page_config(page_title='CandlePath',page_icon='◈',layout='wide',initial_sidebar_state='expanded')
+    legacy_invest = legacy_invest_enabled()
+    workspaces = ['Invest', 'Trade', 'Strategy Coliseum'] if legacy_invest else ['Trade', 'Strategy Coliseum']
+    if st.session_state.get('workspace_mode') not in workspaces:
+        st.session_state.workspace_mode = workspaces[0]
+    workspace = st.session_state.workspace_mode
+    if workspace != 'Trade':
+        workspace = st.sidebar.segmented_control('Рабочее пространство', workspaces, default=workspace) or workspace
+        st.session_state.workspace_mode = workspace
+    if workspace == 'Strategy Coliseum':
+        from .crypto.coliseum_ui import page
+        page()
+        return
     configure_logging()
     from .upgrades import ensure_v081_backup
     try:ensure_v081_backup(Settings.from_env().data_dir)
@@ -398,8 +411,6 @@ def main():
         st.error('Не удалось создать резервную копию перед обновлением. Данные не изменены: '+str(exc));return
     from .experience import apply_theme,overview_page
     apply_theme()
-    st.session_state.setdefault('workspace_mode','Invest')
-    workspace=st.sidebar.segmented_control('Рабочее пространство',['Invest','Trade'],key='workspace_mode')
     if workspace=='Trade':
         st.markdown('<style>[data-testid="stSidebar"]{display:none!important}[data-testid="stMainBlockContainer"]{max-width:100%;padding:1rem 1.25rem}header[data-testid="stHeader"]{height:0}</style>',unsafe_allow_html=True)
         from .crypto.ui import page as trade_page
@@ -419,7 +430,7 @@ def main():
     st.session_state.setdefault('page','Overview')
     st.html('<style>.st-key-nav_'+st.session_state.page+' button{background:var(--accent)!important;color:var(--bg)!important}</style>')
     with st.sidebar:
-        st.markdown('**MOEX Intelligence**')
+        st.markdown('**CandlePath**')
         with st.container(key='app_navigation'):
             for target in PAGES:
                 st.button(LABELS[target],key='nav_'+target,width='stretch',type='primary' if st.session_state.page==target else 'secondary',on_click=navigate,args=(target,))
@@ -450,7 +461,7 @@ def main():
     if context and context[1]['symbol']==symbol and mode=='MOEX ISS':dataset=context
     from .experience import refresh_market
     with st.container(key='workspace_header',horizontal=True,vertical_alignment='center'):
-        st.markdown('**MOEX Intelligence** / '+LABELS[page],width='stretch')
+        st.markdown('**CandlePath** / '+LABELS[page],width='stretch')
         st.button('Обновить цены',icon=':material/refresh:',help='Обновить котировки; историю заново не загружаем',key='header_refresh',on_click=refresh_market,width=44)
         st.button('Настройки',icon=':material/settings:',help='Профиль и настройки приложения',key='open_settings',on_click=toggle_settings,width=44)
     if st.session_state.get('show_settings'):settings_page();return
@@ -477,3 +488,4 @@ def main():
             b.button('AI Research / MCP',on_click=navigate,args=('AI Research',),key='deep_ai')
             helper(dataset)
             if section in RESEARCH[4:]:st.button('Вернуться к исследованию актива',on_click=navigate,args=('Market Explorer',),key='back_research')
+

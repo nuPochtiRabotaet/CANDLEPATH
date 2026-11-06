@@ -96,7 +96,7 @@ def start(open_browser=True):
         if process.poll() is not None:
             raise RuntimeError(f'Ошибка запуска. Подробности: {logpath}')
         if process_owned(info) and healthy(info['url']):
-            print('MOEX Intelligence: ' + info['url'])
+            print('CandlePath: ' + info['url'])
             if open_browser:
                 webbrowser.open(info['url'])
             return info
@@ -118,7 +118,7 @@ def stop():
     for _ in range(80):
         if not process_owned(info):
             PIDFILE.unlink(missing_ok=True)
-            print('MOEX Intelligence остановлен.')
+            print('CandlePath остановлен.')
             return
         time.sleep(.1)
     raise RuntimeError('Остановка ещё не завершена. Повторите stop.command.')
