@@ -1,8 +1,10 @@
 > **Рабочая ветка `develop/v0.9`:** активная разработка CandlePath v0.9 Alpha, **не выпущенный релиз**. Код новых исследовательских функций собран здесь; `main` по-прежнему v0.8.2-rc3. Реальные ордера и автономная торговля выключены. Последние интеграционные факты и критерии выпуска: [docs/V09_INTEGRATION_CHECKPOINT.md](docs/V09_INTEGRATION_CHECKPOINT.md). Продуктовое направление: [CANDLE_VISION.md](CANDLE_VISION.md).
 
-# MOEX Intelligence v0.8.2-rc3
+> **Проверка v0.9 Alpha на Mac/Linux:** `bash scripts/verify_v09_local.command --strict` — полный pytest, контракты JavaScript и Chromium. Для полной проверки нужны Node.js и Playwright/Chromium. Safari проверяется отдельно.
 
-Рабочий промежуточный релиз на пути к v0.9, **не FINAL и не готов к реальным средствам**. Существующие Invest и Crypto сохранены. Добавлены безопасная работа с дробными остатками, изменение активных Stop/Target через подтверждение, статистика полного журнала и сохраняемые настройки оверлея.
+# CandlePath — v0.9 Alpha (в разработке)
+
+CandlePath — исследовательская платформа для криптовалютного трейдинга с оценкой сигналов, локальной виртуальной торговлей и контролем рисков. Текущая ветка — **не финальный релиз и не готова к реальным средствам**. Программа выросла из прежнего MOEX Intelligence v0.8.2-rc3; ниже сохранены инструкции и ограничения совместимого наследия. Существующие Invest и Crypto сохранены. Добавлены безопасная работа с дробными остатками, изменение активных Stop/Target через подтверждение, статистика полного журнала и сохраняемые настройки оверлея.
 
 ## Запуск на macOS / Apple Silicon
 
@@ -11,7 +13,7 @@
 3. В Terminal выполните:
 
 ```bash
-cd ~/Desktop/moex-intelligence-v0.8.2-rc3
+cd ~/Desktop/CandlePath
 chmod u+x *.command
 bash setup.command
 bash start.command
@@ -21,7 +23,7 @@ bash start.command
 
 ## Данные и обновление
 
-Прежнее расположение данных сохранено. Только Crypto SQLite мигрирует 4→5 с резервной копией `crypto-v08.sqlite3.before-rc3`. Добавлены таблицы снимков equity, UI-настроек и исследовательского журнала. Портфель MOEX не мигрирует. Для отката остановите процесс, сохраните новые данные отдельно и восстановите копию базы вместе со старой версией. rc2 не открывает schema 5.
+**Совместимость:** внутренний Python-пакет `moex_intelligence`, переменная `MOEX_DATA_DIR` и каталог `~/.moex-intelligence` пока сознательно не переименованы — это технические идентификаторы существующих данных, а не название продукта. Прежнее расположение данных сохранено. Только Crypto SQLite мигрирует 4→5 с резервной копией `crypto-v08.sqlite3.before-rc3`. Добавлены таблицы снимков equity, UI-настроек и исследовательского журнала. Портфель MOEX не мигрирует. Для отката остановите процесс, сохраните новые данные отдельно и восстановите копию базы вместе со старой версией. rc2 не открывает schema 5.
 
 ## Что проверить первым
 
@@ -35,7 +37,7 @@ Trade → BTCUSDT → 15m → Paper Trading. Количество либо су�
 
 ## Проверки и ограничения
 
-343 pytest-проверки; 32 браузерных сценариев Crypto; отдельная регрессия Invest и launcher. Подробные фактические результаты — [TEST_REPORT_FINAL.md](TEST_REPORT_FINAL.md). Скриншоты `docs/rc3/browser` получены из настоящего Chromium на явно помеченных **искусственных QA-свечах**. Это проверка UI, не доказательство получения рынка.
+Для базового релиз-кандидата rc3 исторически выполнены 343 pytest-проверки и 32 браузерных сценария Crypto; текущий объём проверок ветки v0.9 следует смотреть в GitHub Actions. Подробные фактические результаты — [TEST_REPORT_FINAL.md](TEST_REPORT_FINAL.md). Скриншоты `docs/rc3/browser` получены из настоящего Chromium на явно помеченных **искусственных QA-свечах**. Это проверка UI, не доказательство получения рынка.
 
 В текущей среде реальный Bybit REST дал HTTP 200 с HTML Site Unavailable вместо JSON; WS handshake отвергнут. Production UI показывает Connection Lost и блокирует торговые действия. Работавшее подключение на Mac не заменено имитацией; повторная сетевая проверка требуется на Mac.
 
@@ -52,3 +54,13 @@ Forecast отображается как UNAVAILABLE. Есть типизиро�
 - [FORECAST_REPORT.md](FORECAST_REPORT.md), [ROADMAP.md](ROADMAP.md), [DEVELOPMENT_CHECKPOINT.md](DEVELOPMENT_CHECKPOINT.md).
 
 Для pytest установите `requirements-dev.txt` в окружение проекта и выполните `python -m pytest -q`. Сетевые smoke scripts запускаются отдельно; мок-тесты не подтверждают доступность Bybit.
+
+## Бренд CandlePath
+
+Официальное название продукта — **CandlePath**. GitHub-репозиторий: [nuPochtiRabotaet/CANDLEPATH](https://github.com/nuPochtiRabotaet/CANDLEPATH).
+
+Внутренний Python-пакет `moex_intelligence`, переменная `MOEX_DATA_DIR` и каталог `~/.moex-intelligence` пока сохранены для совместимости существующих установок и пользовательских данных. Переименовывать их без отдельной миграции нельзя.
+
+Рекомендуемое описание репозитория (GitHub **About → Edit**): **CandlePath — crypto trading research terminal with explainable signals, offline strategy testing and risk-aware paper trading.**
+
+Для локальных клонов проверьте `git remote -v`; при необходимости обновите адрес командой `git remote set-url origin https://github.com/nuPochtiRabotaet/CANDLEPATH.git`. Смена имени не делает репозиторий публичным. Перед публикацией проверьте код, историю и вложения на секреты и личные данные.

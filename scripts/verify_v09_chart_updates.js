@@ -8,7 +8,7 @@ const vm=require('node:vm');
 const src=fs.readFileSync(path.join(__dirname,'../moex_intelligence/components/trade.js'),'utf8')
  .replace('export default function(component){','function render(component){');
 const context={LightweightCharts:{}};
-vm.runInNewContext(src+'\nglobalThis.__plan=candleChangePlan;',context,{timeout:2500});
+vm.runInNewContext(src+'\nglobalThis.__plan=candleChangePlan;globalThis.__markers=markerPlan;globalThis.__tooltip=chartSignalTooltip;',context,{timeout:2500});
 const plan=context.__plan;
 const copy=x=>JSON.parse(JSON.stringify(x));
 const bar=(t,price=100,volume=5,closed=true)=>({
@@ -36,9 +36,55 @@ assert.deepEqual(kind(old,[bar(900),bar(1800),bar(2600)]),{mode:'reset',from:0})
 assert.deepEqual(kind(old,[...copy(old),bar(2700)]),{mode:'reset',from:0});
 assert.deepEqual(kind(old,[]),{mode:'empty',from:0});
 
+// Multiple strategies can signal the same candle/type; do not silently
+// discard the first hypothesis or draw overlapping duplicate arrows.
+
+const markerPlan=context.__markers;
+const tooltip=context.__tooltip;
+const minimal=tooltip({type:'BUY',timestamp:1800,strategy:'One'},
+ t=>'T'+t,x=>String(x));
+assert.match(minimal,/BUY · One/);
+assert.match(minimal,/Фактически обнаружен нет данных/);
+assert.match(minimal,/цена неизвестна/);
+assert.doesNotMatch(minimal,/undefined|Invalid Date/);
+const full=tooltip({type:'EXIT',timestamp:1800,detected_at:1810,
+ reference_price:102.5,strategy:'Range',explanation:['cross below'],
+ regime:'Bearish',status:'confirmed',parameters:{window:20},
+ cost_assumption:'round trip estimated'},t=>'T'+t,x=>String(x));
+assert.match(full,/Фактически обнаружен T1810/);
+assert.match(full,/102.5 USDT/);
+assert.match(full,/cross below/);
+assert.match(full,/round trip estimated/);
+assert.doesNotMatch(full,/undefined|Invalid Date/);
+const candidates=[
+ {id:'A',timestamp:1800,type:'BUY',strategy:'Trend Following'},
+ {id:'B',timestamp:1800,type:'BUY',strategy:'Breakout Detection'},
+ {id:'C',timestamp:1800,type:'EXIT',strategy:'Mean Reversion'},
+ {id:'A',timestamp:1800,type:'BUY',strategy:'Trend Following'},
+ {id:'D',timestamp:2700,type:'BUY',strategy:'Trend Following'},
+ {id:'E',timestamp:1800,type:'SHORT',strategy:'Unsupported'},
+ {id:'F',timestamp:3600,type:'EXIT',strategy:'Out of view'},
+];
+const sourceBefore=JSON.stringify(candidates);
+const grouped=copy(markerPlan(candidates,new Set([1800,2700])));
+assert.deepEqual(grouped.map(m=>({time:m.time,text:m.text,position:m.position})),[
+ {time:1800,text:'BUY ×2',position:'belowBar'},
+ {time:1800,text:'EXIT',position:'aboveBar'},
+ {time:2700,text:'BUY',position:'belowBar'}
+]);
+assert.equal(JSON.stringify(candidates),sourceBefore);
+assert.deepEqual(copy(markerPlan([
+ {timestamp:1800,type:'BUY',strategy:'One'},
+ {timestamp:1800,type:'BUY',strategy:'One'},
+ {timestamp:1800,type:'BUY',strategy:'Two'}
+],new Set([1800]))).map(m=>m.text),['BUY ×2']);
+assert.deepEqual(copy(markerPlan(candidates,new Set())),[]);
+assert.deepEqual(copy(markerPlan([null,undefined,{timestamp:1800,type:'SHORT',strategy:'Bad'}],new Set([1800]))),[]);
+
 // This catches O(n^2) marker filtering regressions in source: index candles once.
 assert.match(src,/const candleTimes=new Set\(d\.candles\.map\(/);
 assert.match(src,/r\.signalsByTime=new Map\(\)/);
+assert.match(src,/function markerPlan\(/);
 assert.doesNotMatch(src,/d\.candles\.some\(c=>c\.time===s\.timestamp\)/);
 assert.doesNotMatch(src,/r\.data\?\.signals\.filter\(s=>s\.timestamp===p\.time\)/);
 

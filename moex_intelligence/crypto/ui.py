@@ -21,6 +21,7 @@ from .costs import CostModel,FeeSchedule,ExecutionAssumptions,budget_quantity,es
 from .quality import assess,QualityPolicy
 from .risk import metrics,plan,protection_plan,RiskError,floor_step
 from ..config import Settings
+from ..workspace_mode import legacy_invest_enabled
 from .runtime import hub, monitor
 ASSETS=Path(__file__).resolve().parents[1]/'components'
 
@@ -46,12 +47,17 @@ def collect(store,symbol,interval):
     return snapshots[symbol],quotes,rules
 
 def page():
-    cols=st.columns([.8,1.5,1.3,3])
-    def back_to_invest():st.session_state.workspace_mode='Invest'
-    cols[0].button('← Invest',key='return_invest',on_click=back_to_invest)
-    symbol=cols[1].selectbox('Инструмент',SYMBOLS,key='crypto_symbol')
-    tf=cols[2].selectbox('Таймфрейм',list(INTERVALS),index=2,key='crypto_tf')
-    mode=cols[3].segmented_control('Режим',['Market Data','Paper Trading','Read Only'],default='Market Data',key='crypto_mode')
+    nav_col, symbol_col, tf_col, mode_col = st.columns([1.1,1.5,1.3,3])
+
+    def navigate_workspace(workspace):
+        st.session_state.workspace_mode = workspace
+
+    if legacy_invest_enabled():
+        nav_col.button('← Invest',key='return_invest',on_click=navigate_workspace,args=('Invest',))
+    nav_col.button('Strategy Coliseum',key='open_coliseum',on_click=navigate_workspace,args=('Strategy Coliseum',))
+    symbol=symbol_col.selectbox('Инструмент',SYMBOLS,key='crypto_symbol')
+    tf=tf_col.selectbox('Таймфрейм',list(INTERVALS),index=2,key='crypto_tf')
+    mode=mode_col.segmented_control('Режим',['Market Data','Paper Trading','Read Only'],default='Market Data',key='crypto_mode')
     dbpath=Settings.from_env().data_dir/'crypto-v08.sqlite3'
     try:
         monitor(dbpath)
@@ -250,3 +256,4 @@ def terminal(store,symbol,interval,mode):
         st.json(snap.get('readiness',{}));st.write(protection['message'])
         st.json(paper.protection_status())
         st.dataframe(life['notifications'],hide_index=True,width='stretch')
+

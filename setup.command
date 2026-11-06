@@ -18,4 +18,5 @@ if [ ! -x .venv/bin/python ]; then "$PYTHON_BIN" -m venv .venv; fi
 .venv/bin/python -m pip install --require-hashes -r requirements.txt
 .venv/bin/python -c 'import numpy, pandas, streamlit, mcp, websockets; print("Зависимости готовы.")'
 echo 'Настройка завершена. Откройте start.command.'
-read -r -p 'Нажмите Enter для закрытия.' _unused
+# Finder/Terminal keeps its confirmation; non-interactive QA can exit cleanly.
+if [ -t 0 ]; then read -r -p 'Нажмите Enter для закрытия.' _unused || true; fi

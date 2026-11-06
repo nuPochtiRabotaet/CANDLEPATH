@@ -1,5 +1,10 @@
 from pathlib import Path
 from streamlit.testing.v1 import AppTest
+import pytest
+
+@pytest.fixture(autouse=True)
+def legacy_invest_workspace(monkeypatch):
+    monkeypatch.setenv('CANDLEPATH_ENABLE_LEGACY_INVEST','1')
 
 ROOT=Path(__file__).resolve().parents[1]
 
