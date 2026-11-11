@@ -157,3 +157,64 @@ async def test_sync_store_failure_does_not_publish_uncommitted_memory(tmp_path,m
     assert f.quote["price"] == 90
     assert f.version == 0
     assert f.backfills == 0
+
+
+@pytest.mark.parametrize('start,closed', [(2700, True), (3600, True), (3600, False)])
+def test_ws_rejects_future_or_prematurely_closed_candle_atomically(tmp_path, monkeypatch, start, closed):
+    monkeypatch.setattr('moex_intelligence.crypto.market.time.time', lambda: 2800)
+    f = new_feed(tmp_path)
+    original = Candle(1800, 100, 101, 99, 100, 2, True)
+    f.rows = [original]
+    f.store.save_candles('BTCUSDT', '15', f.rows)
+    message = {'topic': 'kline.15.BTCUSDT', 'ts': 2800000,
+               'data': [{'start': start*1000, 'open': '100', 'high': '101',
+                         'low': '99', 'close': '100', 'volume': '2', 'confirm': closed}]}
+    with pytest.raises(MarketError, match='будущ|закрыт'):
+        f.receive(message)
+    assert f.rows == [original] and f.version == 0
+    assert not hasattr(f, 'last_candle_ts')
+    assert f.store.candles('BTCUSDT', '15') == [original]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('start,closed', [(2700, True), (3600, True), (3600, False)])
+async def test_rest_rejects_future_or_prematurely_closed_candle_atomically(tmp_path, monkeypatch, start, closed):
+    monkeypatch.setattr('moex_intelligence.crypto.market.time.time', lambda: 2800)
+    f = new_feed(tmp_path)
+    original = Candle(1800, 100, 101, 99, 100, 2, True)
+    f.rows = [original]
+    f.backfills = 0
+    f.store.save_candles('BTCUSDT', '15', f.rows)
+    class FakeAPI:
+        async def rules(self, symbol): return {'step': '.001'}
+        async def history(self, symbol, interval, end=None):
+            return [original, Candle(start, 100, 101, 99, 100, 2, closed)]
+        async def ticker(self, symbol):
+            return {'price': 100, 'bid': 99, 'ask': 101, 'ts': 2800}
+    f.api = FakeAPI()
+    with pytest.raises(MarketError, match='будущ|закрыт'):
+        await f.sync()
+    assert f.rows == [original] and f.version == 0 and f.backfills == 0
+    assert f.rules is None and f.quote == {}
+    assert f.store.candles('BTCUSDT', '15') == [original]
+
+
+def test_restart_rejects_future_cached_candle_without_rewriting_it(tmp_path, monkeypatch):
+    monkeypatch.setattr('moex_intelligence.crypto.market.time.time', lambda: 2800)
+    store = Store(tmp_path / 'cached.sqlite3')
+    original = Candle(2700, 100, 101, 99, 100, 2, True)
+    store.save_candles('BTCUSDT', '15', [original])
+    with pytest.raises(MarketError, match='будущ|закрыт'):
+        Feed('BTCUSDT', '15', store)
+    assert store.candles('BTCUSDT', '15') == [original]
+
+
+def test_live_feed_accepts_closed_boundary_and_current_forming_bar(tmp_path, monkeypatch):
+    monkeypatch.setattr('moex_intelligence.crypto.market.time.time', lambda: 2700)
+    f = new_feed(tmp_path)
+    data = [{'start': start*1000, 'open': '100', 'high': '101', 'low': '99',
+             'close': '100', 'volume': '2', 'confirm': closed}
+            for start, closed in [(1800, True), (2700, False)]]
+    f.receive({'topic': 'kline.15.BTCUSDT', 'ts': 2700000, 'data': data})
+    assert [c.closed for c in f.rows] == [True, False]
+    assert f.store.candles('BTCUSDT', '15') == f.rows

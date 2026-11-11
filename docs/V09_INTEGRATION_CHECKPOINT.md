@@ -214,3 +214,19 @@ failed with `Post https://api.github.com/graphql: Forbidden`. No PR number or
 remote CI success is claimed. Reviewable PR text is saved in
 `docs/research/day_trader_integration/PR_DESCRIPTION.md`; applying the pending
 api.github.com network setting is required before retrying API creation.
+
+### Final PR / exact-head acceptance follow-up
+
+Created Draft PR #51 against `integration/v0.9-final-stabilization`; #50 remains
+open/draft/unmerged. Initial feature SHA `8071985230a08a53d5a8f1674a38bab6beabd9e6`
+remote run `43073682338` passed 919 Python tests and Forecast/Coliseum checks but
+failed the Day Trader browser's premature dataframe count. It now awaits visible
+rendering without weakening the assertion. CI pins the actual feature SHA,
+installs existing hash locks and rejects skipped/expected-failure reports.
+Live-feed audit additionally reproduced premature/future candle acceptance
+(7 failing new adversarial cases); live WS/REST/cache time guards and eight
+regression cases fix the boundary without changing historical analyzer or
+strategy thresholds. See `ACCEPTANCE_SAFETY.md` and `MAC_ACCEPTANCE.md` under
+`docs/research/day_trader_integration/`; final SHA/CI/readiness evidence is in
+PR #51's acceptance section. Mac/Safari remain NOT RUN; sealed holdout unopened,
+Invest/user files untouched, real execution disabled. No merge authorized.

@@ -1,0 +1,15 @@
+Final acceptance candidate, 2026-11-11. Linux x86_64 / Python 3.12.14 / Node 24.22.1.
+App dependencies: existing requirements-dev.txt installed with --require-hashes.
+QA tooling: playwright==1.56.0; pip check: No broken requirements found.
+Before new live-time guard: 7 failed, 1 passed (8 new cases); reproduced WS/REST/cache defect.
+After guard, affected feed/crypto/lifecycle/scan/preview/runtime selection: 93 passed in 8.02s.
+Full local pytest: 927 passed in 118.30s, zero skips/xfails/failures/errors.
+New risk/scan modules: 10 + 12 cases, unchanged; live-feed time boundary: 8 new cases.
+compileall moex_intelligence tests scripts: PASS.
+Node JS syntax: PASS. Forecast geometry: 41 passed. Chart contract: PASS.
+Local Chromium: BLOCKED by process-singleton socket Operation not permitted.
+Remote initial run 43073682338 (8071985230a08a53d5a8f1674a38bab6beabd9e6):
+919 Python passed; Day Trader browser failed; Forecast/Coliseum passed.
+Final exact-HEAD CI: see PR #51 acceptance section (recorded after commit/run).
+Physical Mac/Safari/Retina/sleep-wake: NOT RUN. No physical Mac connection.
+No user financial data, sealed holdout, live keys or real orders used.

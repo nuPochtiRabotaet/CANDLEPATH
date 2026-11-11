@@ -40,7 +40,10 @@ def main():
                     panel=page.get_by_text('Что ограничивает размер Paper-заявки',exact=True)
                     panel.click()
                     expect(page.get_by_text('Расчётное количество:',exact=False)).to_be_visible()
-                    assert page.get_by_test_id('stDataFrame').count()>=1
+                    # Streamlit sends elements incrementally; seeing the preceding
+                    # caption does not mean the dataframe has reached the DOM yet.
+                    # Require the actual table to become visible within the timeout.
+                    expect(page.get_by_test_id('stDataFrame').first).to_be_visible(timeout=30000)
                     checks.append('Backend Decimal sizing limits visible in Streamlit')
                     page.get_by_text('Signal scan · полнота текущего инструмента',exact=True).click()
                     page.get_by_role('button',name='Проверить закрытые свечи',exact=True).click()
