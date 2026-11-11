@@ -167,3 +167,17 @@ dust), and verify the assistant agrees with Preview. Cancel must leave the
 ledger unchanged; explicit confirm must post one fill, including after retry.
 Also inspect stale-network status, stop/target and restart recovery separately;
 none of these manual Mac steps is claimed as executed by this report.
+
+## Selective Day Trader integration — risk explanations
+
+Base: PR #50 head `a0ca13d26cee204bf152ee20ef5bc8b1e7969e42`.
+Branch: `feat/selective-day-trader-integration`, targeting the integration head
+per explicit owner instruction. Reuses existing Decimal sizing bounds, exposes
+all tied limiting caps and exchange/cost constraints, and caps recommendation at
+exchange maximum (the execution gate already rejected larger requests).
+New regression reproduced that recommendation defect; no risk thresholds,
+Cost Engine, UUID/revision/atomic confirmation, Invest or ledger schema changed.
+Focused financial suite: 86 passed. Full integrated suite: 919 passed, including
+22 new risk/scan tests. Actual methodology, limitations and source mapping are
+in `docs/research/day_trader_integration/AUDIT.md`; complete evidence follows in
+the documentation commit. Development-only, not a release or proven alpha.

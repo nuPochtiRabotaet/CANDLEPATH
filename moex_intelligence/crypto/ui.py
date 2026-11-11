@@ -246,6 +246,20 @@ def terminal(store,symbol,interval,mode):
                         paper.write_off_dust(symbol,str(uuid.uuid4()),confirmed=True,expected_position=expected,quotes=fresh_quotes,rules=fresh_rules)
                         st.rerun(scope='fragment')
                     except (ValueError,ArithmeticError) as exc:st.error(str(exc))
+    with st.expander('Что ограничивает размер Paper-заявки'):
+        if preview and preview.get('sizing_diagnostics'):
+            diagnostics=preview['sizing_diagnostics']
+            st.caption(diagnostics['note'])
+            st.dataframe([{'Ограничение':row['label'],'Количество, не более':row['quantity_cap'],
+                           'Определяет размер':row['code'] in diagnostics['binding_limits']}
+                          for row in diagnostics['limits']],hide_index=True,width='stretch')
+            st.write('Расчётное количество:',preview['recommended'])
+            st.write('Minimum notional / quantity step / tick size:',
+                     diagnostics['rules']['minimum_notional'],diagnostics['rules']['quantity_step'],diagnostics['rules']['price_tick'])
+            st.write('Издержки полного круга:',diagnostics['costs']['round_trip_cost'])
+            if not preview['allowed']:st.warning('; '.join(preview['errors']))
+        else:
+            st.info(error or 'Для расчёта нужны свежая котировка и правила инструмента.')
     with st.expander('Security Center Preview · данные и защита'):
         from .risk import PROFILE
         st.write('Режим: '+mode+' · Live / Autonomous: технически отключены · withdraw API отсутствует')
