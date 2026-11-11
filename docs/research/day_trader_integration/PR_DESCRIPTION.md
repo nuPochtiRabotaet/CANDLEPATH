@@ -1,0 +1,7 @@
+Paper sizing could recommend more than the exchange maximum and did not expose which existing limit bound the quantity. This adds Decimal sizing explanations, caps the recommendation at exchange maximum, and adds a read-only closed-bar scan completeness diagnostic using the existing analyzer. OrderPreview, atomic confirmation, Cost Engine and strategy thresholds are preserved.
+
+The pinned Day Trader Skill review now covers all 11 modules against PR #50 head a0ca13d26cee204bf152ee20ef5bc8b1e7969e42. The audit documents accepted/rejected transfers, isolated source/test evidence, Mac acceptance and rollback. No seasonal challenger was admitted without development-data evidence; no sealed holdout was scored. No upstream runtime code, broker credentials or real execution added. Invest and user data are unchanged.
+
+Validation: original baseline 897 passed; modified full suite 919 passed, including 22 new tests; compileall, JavaScript syntax, 41 forecast geometry checks, chart contracts, Forecast/Coliseum/new-panel Chromium scripts passed. New browser check registered in CI; screenshots use explicitly synthetic data. Pinned upstream offline unittest: 315 passed. Sizing microbenchmark: 86.43 to 98.08 microseconds per call (diagnostic overhead, no speedup claim). Physical Mac/Safari and real Bybit were not verified; remote CI must be checked separately.
+
+Code commits: 21bf30e (sizing), e14efe0 (scan). Audit/evidence: eb74129.

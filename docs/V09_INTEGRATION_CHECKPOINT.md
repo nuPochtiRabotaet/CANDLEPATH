@@ -206,3 +206,11 @@ microbenchmark median 98.08 µs vs base 86.43 µs; no speedup or alpha claim.
 Physical Mac/Safari and real Bybit remain unverified. PR/remote CI require GitHub
 API access; proxy denied api.github.com CONNECT with 403, domain requirement
 saved in environment draft without claiming applied access/publication.
+
+Delivery: code commits `21bf30e` and `e14efe0`; audit/CI/evidence commit `eb74129`.
+Feature branch successfully pushed. `gh pr create --draft --base
+integration/v0.9-final-stabilization --head feat/selective-day-trader-integration`
+failed with `Post https://api.github.com/graphql: Forbidden`. No PR number or
+remote CI success is claimed. Reviewable PR text is saved in
+`docs/research/day_trader_integration/PR_DESCRIPTION.md`; applying the pending
+api.github.com network setting is required before retrying API creation.
