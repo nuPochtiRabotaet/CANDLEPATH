@@ -181,3 +181,14 @@ Focused financial suite: 86 passed. Full integrated suite: 919 passed, including
 22 new risk/scan tests. Actual methodology, limitations and source mapping are
 in `docs/research/day_trader_integration/AUDIT.md`; complete evidence follows in
 the documentation commit. Development-only, not a release or proven alpha.
+
+### Selective integration — scan completeness
+
+Added a read-only scan audit using existing OHLCV validation and analysis.
+Explicit universe counts, COMPLETE/PARTIAL/INCOMPLETE, stale/short/invalid history
+and excluded candidates are visible. Future, forming and not-yet-available bars
+are excluded before analysis. Trade's opt-in manual panel scopes itself to the
+selected symbol; it neither subscribes to a new universe nor authorizes orders.
+12 new scan tests pass, including causal prefix, delayed receipt, malformed
+OHLCV, duplicate/gap, insufficient sample and stale-history cases. No alternate
+strategy algorithm, backtester, news feature or seasonal challenger admitted.
