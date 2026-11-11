@@ -1,0 +1,1 @@
+PASS: forecast geometry, same-version volume, historical correction, append/truncate, indexed signals

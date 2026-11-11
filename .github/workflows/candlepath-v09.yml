@@ -59,6 +59,8 @@ jobs:
         run: python scripts/verify_v09_forecast_browser.py
       - name: Strategy Coliseum Streamlit browser smoke
         run: python scripts/verify_coliseum_browser.py
+      - name: Risk explanations and scan completeness browser smoke
+        run: python scripts/verify_day_trader_integration_browser.py
       - name: Public Bybit SPOT historical probe (diagnostic; no secrets or trades)
         id: bybit_public
         continue-on-error: true

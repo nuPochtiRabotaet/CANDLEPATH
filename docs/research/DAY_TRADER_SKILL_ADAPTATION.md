@@ -61,3 +61,11 @@ Bybit immutable closed bars + data cutoff → отдельный Crypto Research
 Upstream data CLI обращаются к Yahoo Finance и Nasdaq Trader; read/write путей `trader/*.json`, polling с backoff и вывод в stdout/stderr. Risk/budget читают локальные portfolio/config/state и могут писать JSON; нет SQLite isolation. Это не Bybit V5. Скрипты не выполнялись, реальные brokerage keys не запрашивались. Дополнительные broker/news/SEC/другие skills не подключаются.
 
 Итог: установить весь пакет вместо MOEX — нецелесообразно. Ценность — в объяснимом плане, barrier outcomes и дисциплине replay. Торговый шлюз, сетевой источник, рыночный календарь, sizing и вероятностные заявления переносить нельзя. Следующий шаг — самостоятельный 24/7 исследовательский прототип на закрытых Bybit OHLC с указанными тестами, после завершения P0/P1 текущего релиза.
+
+## Current integration follow-up
+
+The six-module rc3 review above is historical. For the complete eleven-module
+review against CandlePath PR #50, actual selective changes, rejected transfers,
+and challenger admission criteria, see [day_trader_integration/AUDIT.md](day_trader_integration/AUDIT.md).
+The expanded [SOURCE_REVIEW.json](SOURCE_REVIEW.json) records the pinned source
+hashes and separately identifies the isolated upstream offline test execution.

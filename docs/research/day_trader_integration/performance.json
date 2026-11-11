@@ -1,0 +1,19 @@
+{
+  "mode": "SYNTHETIC_MICROBENCHMARK",
+  "base_sha": "a0ca13d26cee204bf152ee20ef5bc8b1e7969e42",
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "results": {
+    "base": {
+      "median_microseconds_per_plan": 86.43218499997829,
+      "samples": 7,
+      "calls_per_sample": 1000
+    },
+    "explainable": {
+      "median_microseconds_per_plan": 98.07985199995528,
+      "samples": 7,
+      "calls_per_sample": 1000
+    }
+  },
+  "note": "Same fixture and clock, sequential in one process; no market history or holdout read. Added diagnostics incur overhead; not an application throughput or financial result."
+}

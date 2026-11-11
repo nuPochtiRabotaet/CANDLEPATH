@@ -192,3 +192,17 @@ selected symbol; it neither subscribes to a new universe nor authorizes orders.
 12 new scan tests pass, including causal prefix, delayed receipt, malformed
 OHLCV, duplicate/gap, insufficient sample and stale-history cases. No alternate
 strategy algorithm, backtester, news feature or seasonal challenger admitted.
+
+### Eleven-module audit / delivery evidence
+
+Full upstream audit, source SHA-256 inventory, accepted/rejected transfer list,
+challenger admission protocol, measured performance, test evidence and Mac/rollback
+instructions are under `docs/research/day_trader_integration/`. New Chromium QA
+is registered in CI. Local checks: baseline 897 passed; modified full suite 919
+passed (50.31s), compile and JS/Forecast contracts passed, three browser scripts
+passed on synthetic data (new panels, Forecast, Coliseum), 315 isolated upstream
+offline tests passed. Four actual synthetic QA screenshots retained. New risk
+microbenchmark median 98.08 µs vs base 86.43 µs; no speedup or alpha claim.
+Physical Mac/Safari and real Bybit remain unverified. PR/remote CI require GitHub
+API access; proxy denied api.github.com CONNECT with 403, domain requirement
+saved in environment draft without claiming applied access/publication.
