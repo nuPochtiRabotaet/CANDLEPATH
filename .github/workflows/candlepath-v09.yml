@@ -13,6 +13,7 @@ name: CandlePath v0.9 verification
       - 'tests/**'
       - 'scripts/**'
       - '.github/workflows/candlepath-v09.yml'
+      - 'docs/research/day_trader_integration/**'
   workflow_dispatch:
 
 permissions:
@@ -31,18 +32,22 @@ jobs:
       MOEX_DATA_DIR: /tmp/candlepath-v09-test-db
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Record exact tested revision
+        run: git rev-parse HEAD
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
           cache: pip
-          cache-dependency-path: requirements.in
+          cache-dependency-path: requirements-dev.txt
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Install exact project dependencies and test tools
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.in -r requirements-dev.in
+          python -m pip install --require-hashes -r requirements-dev.txt
           python -m pip install playwright==1.56.0
           python -m playwright install --with-deps chromium
       - name: Python source compilation
@@ -55,10 +60,28 @@ jobs:
         run: node scripts/verify_v09_chart_updates.js
       - name: Full Python tests (not selectively skipped)
         run: python -m pytest -q --disable-warnings --junitxml=pytest-candlepath-v09.xml
+      - name: Reject skipped or expected-failure tests
+        run: |
+          python - <<'PY'
+          import xml.etree.ElementTree as ET
+          root = ET.parse('pytest-candlepath-v09.xml').getroot()
+          cases = root.findall('.//testcase')
+          assert cases, 'Empty test report'
+          for tag in ('skipped', 'failure', 'error'):
+              affected = [c.attrib for c in cases if c.find(tag) is not None]
+              assert not affected, f'{tag}: {affected}'
+          for module in ('test_risk_explainability_v09', 'test_signal_scan_v09'):
+              selected = [c for c in cases if c.get('classname', '').endswith(module)]
+              assert selected, f'Missing integration tests: {module}'
+              print(f'{module}: {len(selected)} passed')
+          print(f'PASS: {len(cases)} tests; zero skipped, xfailed, failed or errored')
+          PY
       - name: Browser integration smoke on synthetic candles
         run: python scripts/verify_v09_forecast_browser.py
       - name: Strategy Coliseum Streamlit browser smoke
         run: python scripts/verify_coliseum_browser.py
+      - name: Risk explanations and scan completeness browser smoke
+        run: python scripts/verify_day_trader_integration_browser.py
       - name: Public Bybit SPOT historical probe (diagnostic; no secrets or trades)
         id: bybit_public
         continue-on-error: true

@@ -246,6 +246,35 @@ def terminal(store,symbol,interval,mode):
                         paper.write_off_dust(symbol,str(uuid.uuid4()),confirmed=True,expected_position=expected,quotes=fresh_quotes,rules=fresh_rules)
                         st.rerun(scope='fragment')
                     except (ValueError,ArithmeticError) as exc:st.error(str(exc))
+    with st.expander('Что ограничивает размер Paper-заявки'):
+        if preview and preview.get('sizing_diagnostics'):
+            diagnostics=preview['sizing_diagnostics']
+            st.caption(diagnostics['note'])
+            st.dataframe([{'Ограничение':row['label'],'Количество, не более':row['quantity_cap'],
+                           'Определяет размер':row['code'] in diagnostics['binding_limits']}
+                          for row in diagnostics['limits']],hide_index=True,width='stretch')
+            st.write('Расчётное количество:',preview['recommended'])
+            st.write('Minimum notional / quantity step / tick size:',
+                     diagnostics['rules']['minimum_notional'],diagnostics['rules']['quantity_step'],diagnostics['rules']['price_tick'])
+            st.write('Издержки полного круга:',diagnostics['costs']['round_trip_cost'])
+            if not preview['allowed']:st.warning('; '.join(preview['errors']))
+        else:
+            st.info(error or 'Для расчёта нужны свежая котировка и правила инструмента.')
+    with st.expander('Signal scan · полнота текущего инструмента'):
+        st.caption('Проверяется только выбранный инструмент, не весь рынок. Сигнал отделён от разрешения на сделку.')
+        if st.button('Проверить закрытые свечи',key='signal_scan_refresh'):
+            from .signal_scan import scan_candidates
+            report=scan_candidates({symbol:snap},[symbol],interval,now=time.time())
+            st.session_state.signal_scan_report=(context,report)
+        scanned=st.session_state.get('signal_scan_report')
+        if scanned and scanned[0]==context:
+            report=scanned[1]
+            st.write(f"{report['status']} · проверено {report['scanned']} из {report['requested']} · исключено {report['excluded']}")
+            st.caption('Срез UTC: '+str(report['cutoff'])+'. Результат последней ручной проверки; не обновляется автоматически.')
+            if report['exclusions']:st.dataframe(report['exclusions'],hide_index=True,width='stretch')
+            for candidate in report['candidates']:
+                st.write(candidate['symbol'], '· закрытых свечей:',candidate['closed_bars'], '· исторических BUY/EXIT:',len(candidate['signals']))
+            st.caption(report['note'])
     with st.expander('Security Center Preview · данные и защита'):
         from .risk import PROFILE
         st.write('Режим: '+mode+' · Live / Autonomous: технически отключены · withdraw API отсутствует')

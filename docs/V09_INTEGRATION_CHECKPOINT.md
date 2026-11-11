@@ -167,3 +167,66 @@ dust), and verify the assistant agrees with Preview. Cancel must leave the
 ledger unchanged; explicit confirm must post one fill, including after retry.
 Also inspect stale-network status, stop/target and restart recovery separately;
 none of these manual Mac steps is claimed as executed by this report.
+
+## Selective Day Trader integration — risk explanations
+
+Base: PR #50 head `a0ca13d26cee204bf152ee20ef5bc8b1e7969e42`.
+Branch: `feat/selective-day-trader-integration`, targeting the integration head
+per explicit owner instruction. Reuses existing Decimal sizing bounds, exposes
+all tied limiting caps and exchange/cost constraints, and caps recommendation at
+exchange maximum (the execution gate already rejected larger requests).
+New regression reproduced that recommendation defect; no risk thresholds,
+Cost Engine, UUID/revision/atomic confirmation, Invest or ledger schema changed.
+Focused financial suite: 86 passed. Full integrated suite: 919 passed, including
+22 new risk/scan tests. Actual methodology, limitations and source mapping are
+in `docs/research/day_trader_integration/AUDIT.md`; complete evidence follows in
+the documentation commit. Development-only, not a release or proven alpha.
+
+### Selective integration — scan completeness
+
+Added a read-only scan audit using existing OHLCV validation and analysis.
+Explicit universe counts, COMPLETE/PARTIAL/INCOMPLETE, stale/short/invalid history
+and excluded candidates are visible. Future, forming and not-yet-available bars
+are excluded before analysis. Trade's opt-in manual panel scopes itself to the
+selected symbol; it neither subscribes to a new universe nor authorizes orders.
+12 new scan tests pass, including causal prefix, delayed receipt, malformed
+OHLCV, duplicate/gap, insufficient sample and stale-history cases. No alternate
+strategy algorithm, backtester, news feature or seasonal challenger admitted.
+
+### Eleven-module audit / delivery evidence
+
+Full upstream audit, source SHA-256 inventory, accepted/rejected transfer list,
+challenger admission protocol, measured performance, test evidence and Mac/rollback
+instructions are under `docs/research/day_trader_integration/`. New Chromium QA
+is registered in CI. Local checks: baseline 897 passed; modified full suite 919
+passed (50.31s), compile and JS/Forecast contracts passed, three browser scripts
+passed on synthetic data (new panels, Forecast, Coliseum), 315 isolated upstream
+offline tests passed. Four actual synthetic QA screenshots retained. New risk
+microbenchmark median 98.08 µs vs base 86.43 µs; no speedup or alpha claim.
+Physical Mac/Safari and real Bybit remain unverified. PR/remote CI require GitHub
+API access; proxy denied api.github.com CONNECT with 403, domain requirement
+saved in environment draft without claiming applied access/publication.
+
+Delivery: code commits `21bf30e` and `e14efe0`; audit/CI/evidence commit `eb74129`.
+Feature branch successfully pushed. `gh pr create --draft --base
+integration/v0.9-final-stabilization --head feat/selective-day-trader-integration`
+failed with `Post https://api.github.com/graphql: Forbidden`. No PR number or
+remote CI success is claimed. Reviewable PR text is saved in
+`docs/research/day_trader_integration/PR_DESCRIPTION.md`; applying the pending
+api.github.com network setting is required before retrying API creation.
+
+### Final PR / exact-head acceptance follow-up
+
+Created Draft PR #51 against `integration/v0.9-final-stabilization`; #50 remains
+open/draft/unmerged. Initial feature SHA `8071985230a08a53d5a8f1674a38bab6beabd9e6`
+remote run `43073682338` passed 919 Python tests and Forecast/Coliseum checks but
+failed the Day Trader browser's premature dataframe count. It now awaits visible
+rendering without weakening the assertion. CI pins the actual feature SHA,
+installs existing hash locks and rejects skipped/expected-failure reports.
+Live-feed audit additionally reproduced premature/future candle acceptance
+(7 failing new adversarial cases); live WS/REST/cache time guards and eight
+regression cases fix the boundary without changing historical analyzer or
+strategy thresholds. See `ACCEPTANCE_SAFETY.md` and `MAC_ACCEPTANCE.md` under
+`docs/research/day_trader_integration/`; final SHA/CI/readiness evidence is in
+PR #51's acceptance section. Mac/Safari remain NOT RUN; sealed holdout unopened,
+Invest/user files untouched, real execution disabled. No merge authorized.

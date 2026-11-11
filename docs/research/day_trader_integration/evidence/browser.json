@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "data": "SYNTHETIC_QA",
+  "checks": [
+    "Backend Decimal sizing limits visible in Streamlit",
+    "Closed-bar scan completeness with explicit selected-symbol scope",
+    "Four widths 1024/1280/1440/1920 without Streamlit exceptions",
+    "25 USDT preview requires consent; cancel sends no fill"
+  ],
+  "javascript_errors": []
+}

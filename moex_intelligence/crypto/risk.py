@@ -78,9 +78,34 @@ def plan(state,quotes,symbol,quantity,stop,target,rules,risk_pct=.75,now=None,po
     for name,limit in [('day',.03),('week',.06)]:
         base=D(state[name+'_equity'])
         if base>0 and (base-eq)/base>=D(limit):errors.append('Лимит убытка: '+('день 3%' if name=='day' else 'неделя 6%'))
-    budget=min(eq*D(risk_pct)/100*factor,max(D(0),eq*D('.015')-D(m['risk_decimal'])))
-    recommended=floor_step(max(D(0),min(budget/per_unit,eq*D('.25')*factor/entry,max(D(0),eq*D('.75')-D(m['occupied_decimal']))/entry,D(state['cash'])/(cost['total']/qty))),rules['step'])
-    return {'inventory':allocation,'stop_inventory':stop_allocation,'residue_risk_assumption':'zero recovery','exit_closeable':stop_allocation['fully_sellable'],'quantity':str(qty),'entry':float(entry),'amount':float(amount),'fee':float(fee),'cash_after':float(D(state['cash'])-cost['total']),'loss':float(loss),'gain':float(gain),'rr':float(gain/loss),'risk_pct':float(loss/eq*100),'recommended':str(recommended),'spread':float(D(q['ask'])-D(q['bid'])),'slippage_bps':float(model.execution.slippage_bps),'cost_model':model.snapshot(),'costs':{k:str(v) for k,v in cost.items()},'fill':fill.strings(),'total':float(cost['total']),'stop':str(sl),'target':str(tp),'allowed':not errors,'errors':errors}
+    # Explain the same sizing bounds used by this gate. These are local estimates
+    # for the selected levels/quantity, not permission to execute a resized order:
+    # lot rounding, base fees and residue can change its per-unit stop loss.
+    caps = [
+        ('trade_risk', 'Риск на сделку', eq*D(risk_pct)/100*factor/per_unit),
+        ('portfolio_risk', 'Оставшийся совокупный риск', max(D(0),eq*D('.015')-D(m['risk_decimal']))/per_unit),
+        ('symbol_notional', 'Лимит инструмента', eq*D('.25')*factor/entry),
+        ('occupied_notional', 'Занятость капитала', max(D(0),eq*D('.75')-D(m['occupied_decimal']))/entry),
+        ('cash', 'Свободный баланс с издержками', D(state['cash'])/(cost['total']/qty)),
+    ]
+    if rules.get('maximum'):
+        caps.append(('exchange_quantity', 'Биржевой максимум количества', D(rules['maximum'])))
+    limits = [{'code':code,'label':label,'quantity_cap':str(floor_step(max(D(0),cap),rules['step']))}
+              for code,label,cap in caps]
+    recommended=min(D(row['quantity_cap']) for row in limits)
+    sizing_diagnostics = {
+        'limits':limits,
+        'binding_limits':[row['code'] for row in limits if D(row['quantity_cap'])==recommended],
+        'authorization':'USE_NEW_PREVIEW',
+        'market_data_fresh':True,
+        'rules':{'minimum_notional':str(rules['minimum']),'quantity_step':str(rules['step']),
+                 'price_tick':str(rules['tick']),'maximum_quantity':str(rules['maximum']) if rules.get('maximum') else None},
+        'costs':{k:str(v) for k,v in cost.items()},
+        'note':'Оценка для выбранных уровней и издержек; новый размер требует нового Preview → Confirm. '
+               'Округление, комиссия в base и остатки могут изменить риск. Лимиты дня/недели, просадка, '
+               'число позиций и свежесть данных проверяются отдельно и могут запретить вход.',
+    }
+    return {'sizing_diagnostics':sizing_diagnostics,'inventory':allocation,'stop_inventory':stop_allocation,'residue_risk_assumption':'zero recovery','exit_closeable':stop_allocation['fully_sellable'],'quantity':str(qty),'entry':float(entry),'amount':float(amount),'fee':float(fee),'cash_after':float(D(state['cash'])-cost['total']),'loss':float(loss),'gain':float(gain),'rr':float(gain/loss),'risk_pct':float(loss/eq*100),'recommended':str(recommended),'spread':float(D(q['ask'])-D(q['bid'])),'slippage_bps':float(model.execution.slippage_bps),'cost_model':model.snapshot(),'costs':{k:str(v) for k,v in cost.items()},'fill':fill.strings(),'total':float(cost['total']),'stop':str(sl),'target':str(tp),'allowed':not errors,'errors':errors}
 
 
 def protection_plan(state, quotes, symbol, stop, target, rules, portfolio_rules=None):

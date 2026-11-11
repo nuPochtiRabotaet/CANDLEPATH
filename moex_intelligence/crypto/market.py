@@ -40,6 +40,16 @@ def merge_candles(existing,incoming,interval):
     gaps=[(a.time+seconds(interval),b.time) for a,b in zip(out,out[1:]) if b.time-a.time!=seconds(interval)]
     return out,gaps
 
+def validate_live_candle_times(rows,interval):
+    """Reject source clock/confirmation errors before live analysis or persistence.
+
+    Historical research uses explicit cutoffs separately; never add wall-clock
+    filtering to the pure analyzer. Persisted data is retained on rejection.
+    """
+    now=time.time();step=seconds(interval)
+    if any(c.time>now or (c.closed and c.time+step>now) for c in rows):
+        raise MarketError('Свеча из будущего или закрыта до конца интервала; проверьте часы и источник')
+
 def validate_quote(q):
     try:
         if not isinstance(q,dict) or not all(math.isfinite(float(v)) for v in q.values()):
@@ -102,6 +112,7 @@ class Bybit:
 class Feed:
     def __init__(self,symbol,interval,store,connector=None):
         self.symbol=symbol;self.interval=interval;self.store=store;self.api=connector or Bybit();self.lock=threading.RLock();self.stop=threading.Event();self.touched=time.monotonic();self.rows=store.candles(symbol,interval);self.rules=None;self.quote={};self.status='Connecting';self.error='';self.events=[];self.last_ws=0;self.version=0;self.backfills=0
+        validate_live_candle_times(self.rows,self.interval)
         self.thread=threading.Thread(target=lambda:asyncio.run(self.run()),daemon=True);self.thread.start()
     def event(self,message):
         self.events=(self.events+[{'time':int(time.time()),'message':message}])[-50:]
@@ -121,6 +132,7 @@ class Feed:
                     except (KeyError,TypeError,ValueError,OverflowError) as exc:
                         raise MarketError('Некорректная свеча в kline WebSocket') from exc
                     incoming.append(candle)
+                validate_live_candle_times(incoming,self.interval)
                 merged,gaps=merge_candles(self.rows,incoming,self.interval)
                 if gaps:raise MarketError('Обнаружен пропуск свечей; backfill')
                 if any(not c.closed for c in merged[:-1]):raise MarketError('Пропущено подтверждение закрытия свечи; backfill')
@@ -206,6 +218,7 @@ class Feed:
         quote=await self.api.ticker(self.symbol)
         with self.lock:
             rows,gaps=merge_candles(self.rows,recent,self.interval)
+            validate_live_candle_times(rows,self.interval)
             if gaps:raise MarketError('История содержит пропуски')
             # Persist before exposing the synchronized candles/quotes. If a
             # disk error occurs the previous in-memory view remains intact.
