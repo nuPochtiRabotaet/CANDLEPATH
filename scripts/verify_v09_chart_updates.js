@@ -89,3 +89,31 @@ assert.doesNotMatch(src,/d\.candles\.some\(c=>c\.time===s\.timestamp\)/);
 assert.doesNotMatch(src,/r\.data\?\.signals\.filter\(s=>s\.timestamp===p\.time\)/);
 
 console.log('PASS: chart update-plan, immutable-history fallback, volume correction and indexed signal contract');
+
+// Intrabar rendering is sourced from the live lifecycle, never backdated.
+vm.runInNewContext('globalThis.__chartSignals=chartSignals;',context);
+const chartSignals=context.__chartSignals;
+const early={id:'early',symbol:'BTCUSDT',timeframe:'15',candle_time:1800,
+ timestamp:2700,type:'BUY',strategy:'Trend Following',state:'POTENTIAL',
+ confirmed_at:null,potential_detected_at:1830.25,reference_price:101};
+const data={symbol:'BTCUSDT',interval:'15',signals:[],candles:[bar(1800,101,5,false)],
+ lifecycle:{records:[early]},readiness:{forecast_feed_ready:true},signal_timing:{received_at:1830}};
+assert.equal(chartSignals(data,1831).length,1);
+const preliminary=copy(markerPlan(chartSignals(data,1831),new Set([1800])));
+assert.equal(preliminary[0].time,1800);
+assert.equal(preliminary[0].text,'POTENTIAL BUY');
+assert.match(preliminary[0].color,/rgba/);
+for(const now of [1799,2700,1896])assert.equal(chartSignals(data,now).length,0);
+assert.equal(chartSignals({...data,readiness:{forecast_feed_ready:false}},1831).length,0);
+assert.equal(chartSignals({...data,symbol:'ETHUSDT'},1831).length,0);
+assert.equal(chartSignals({...data,interval:'5'},1831).length,0);
+for(const state of ['INVALIDATED','EXPIRED'])assert.equal(chartSignals({...data,lifecycle:{records:[{...early,state}]}},1831).length,0);
+const confirmed={...early,status:'confirmed',state:'CONFIRMED',confirmed_at:2702.5,available_at:2702.5};
+const history={...data,signals:[confirmed],lifecycle:{records:[confirmed]},candles:[bar(1800)]};
+const solid=copy(markerPlan(chartSignals(history,2800),new Set([1800])));
+assert.equal(solid[0].text,'BUY · close');
+assert.notEqual(solid[0].color,preliminary[0].color);
+assert.match(tooltip(early,t=>'T'+t,String),/Фактически обнаружен T1830.25/);
+assert.match(tooltip(early,t=>'T'+t,String),/Предварительное условие может исчезнуть/);
+assert.match(tooltip(confirmed,t=>'T'+t,String),/Подтверждён T2702.5/);
+console.log('PASS: intrabar source candle, status styling, fractional timestamps, invalidation, freshness and context');

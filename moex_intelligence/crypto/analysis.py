@@ -47,17 +47,17 @@ def regime(row):
     if row['adx']<20:return 'Range'
     return 'Bullish' if row['ema_fast']>row['ema_slow'] and row['direction']>0 else 'Bearish' if row['ema_fast']<row['ema_slow'] and row['direction']<0 else 'Uncertain'
 
-def analyze(rows,symbol,interval):
+def analyze(rows,symbol,interval,*,include_forming=False,latest_only=False):
     if not rows:return {'overlay':[],'signals':[],'regime':'Uncertain'}
     f=indicators(rows);signals=[];overlay=[]
     from .market import seconds
-    for i,r in f.iterrows():
+    for i,r in (f.iloc[-1:] if latest_only else f).iterrows():
         if i<55:continue
         mode=regime(r);d=1 if mode=='Bullish' else -1 if mode=='Bearish' else 0
         # ATR-offset EMA ribbon; always on the relevant side of the actual price.
         edge=min(r.ema_fast,r.close)-.25*r.atr if d>0 else max(r.ema_fast,r.close)+.25*r.atr
         overlay.append({'time':int(r.time),'fast':r.ema_fast,'slow':r.ema_slow,'supertrend':r.supertrend,'upper':edge if d>0 else edge+r.atr,'lower':edge-r.atr if d>0 else edge,'direction':d})
-        if not r.closed:continue
+        if not r.closed and not include_forming:continue
         prev=f.iloc[i-1];conditions=[]
         if mode=='Bullish' and r.close>r.ema_fast and (prev.close<=prev.ema_fast or regime(prev)!='Bullish') and r.volume_ratio>=1:
             conditions.append(('Trend Following','BUY',['EMA21 > EMA55; ADX ≥ 20','Supertrend восходящий','Закрытие выше EMA21; объём ≥ среднего']))
@@ -68,6 +68,6 @@ def analyze(rows,symbol,interval):
         if r.close<r.support and prev.close>=prev.support:conditions.append(('Breakout Detection','EXIT',['Закрытие ниже поддержки 20 предыдущих свечей']))
         for strategy,kind,reasons in conditions:
             key=f'{symbol}:{interval}:{strategy}:{VERSION}:{int(r.time)}:{kind}'
-            signals.append({'id':hashlib.sha256(key.encode()).hexdigest()[:24],'symbol':symbol,'exchange':'Bybit','timeframe':interval,'strategy':strategy,'strategy_version':VERSION,'timestamp':int(r.time)+seconds(interval),'candle_time':int(r.time),'type':kind,'reference_price':r.close,'indicators':{k:float(r[k]) if math.isfinite(r[k]) else None for k in ['ema_fast','ema_slow','atr','adx','rsi','volume_ratio']},'risk_estimates':{'stop':max(r.close-2*r.atr,.01),'target':r.close+4*r.atr},'status':'confirmed','explanation':reasons,'regime':mode,'parameters':PARAMS,'invalidation':'Закрытие ниже стопа / смена режима; исполнение проверяется отдельно','cost_assumption':'Издержки не фиксируются сигналом: актуальный Cost Engine snapshot сохраняется при предпросмотре и исполнении'})
+            signals.append({'id':hashlib.sha256(key.encode()).hexdigest()[:24],'symbol':symbol,'exchange':'Bybit','timeframe':interval,'strategy':strategy,'strategy_version':VERSION,'timestamp':int(r.time)+seconds(interval),'candle_time':int(r.time),'type':kind,'reference_price':r.close,'indicators':{k:float(r[k]) if math.isfinite(r[k]) else None for k in ['ema_fast','ema_slow','atr','adx','rsi','volume_ratio']},'risk_estimates':{'stop':max(r.close-2*r.atr,.01),'target':r.close+4*r.atr},'status':'confirmed' if r.closed else 'POTENTIAL','explanation':reasons,'regime':mode,'parameters':PARAMS,'invalidation':'Закрытие ниже стопа / смена режима; исполнение проверяется отдельно','cost_assumption':'Издержки не фиксируются сигналом: актуальный Cost Engine snapshot сохраняется при предпросмотре и исполнении'})
     closed=f[f.closed]
     return {'overlay':overlay,'signals':signals,'regime':regime(closed.iloc[-1]) if len(closed)>55 else 'Uncertain','atr':float(closed.iloc[-1].atr) if len(closed)>55 else None}

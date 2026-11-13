@@ -147,6 +147,7 @@ def test_snapshot_candle_readiness_without_any_executable_quote():
     feed.status='Synchronizing'
     feed.last_ws=now
     feed.last_candle_event=now
+    feed.last_candle_ts=now  # Accepted source event as well as local receipt.
     feed.transport_connected=True
     feed.stop=threading.Event()
     feed.error=''

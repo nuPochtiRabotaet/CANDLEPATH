@@ -70,12 +70,14 @@ jobs:
           for tag in ('skipped', 'failure', 'error'):
               affected = [c.attrib for c in cases if c.find(tag) is not None]
               assert not affected, f'{tag}: {affected}'
-          for module in ('test_risk_explainability_v09', 'test_signal_scan_v09'):
+          for module in ('test_risk_explainability_v09', 'test_signal_scan_v09', 'test_intrabar_signals_v09'):
               selected = [c for c in cases if c.get('classname', '').endswith(module)]
               assert selected, f'Missing integration tests: {module}'
               print(f'{module}: {len(selected)} passed')
           print(f'PASS: {len(cases)} tests; zero skipped, xfailed, failed or errored')
           PY
+      - name: Intrabar deterministic local replay (synthetic latency only)
+        run: python scripts/benchmark_intrabar_v09.py > intrabar-latency.json
       - name: Browser integration smoke on synthetic candles
         run: python scripts/verify_v09_forecast_browser.py
       - name: Strategy Coliseum Streamlit browser smoke
@@ -111,6 +113,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: candlepath-v09-test-results
-          path: pytest-candlepath-v09.xml
+          path: |
+            pytest-candlepath-v09.xml
+            intrabar-latency.json
           if-no-files-found: ignore
           retention-days: 7
