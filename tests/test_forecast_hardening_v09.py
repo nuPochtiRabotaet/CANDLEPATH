@@ -34,7 +34,7 @@ def feed():
     f.symbol='BTCUSDT';f.interval='15';f.lock=threading.RLock()
     f.rows=[Candle(int(now//STEP)*STEP,100,101,99,100,5,False)]
     f.rules=None;f.quote={};f.status='Synchronizing'
-    f.last_ws=now;f.last_candle_event=now;f.transport_connected=True
+    f.last_ws=now;f.last_candle_event=now;f.last_candle_ts=now;f.transport_connected=True
     f.stop=threading.Event();f.error='';f.events=[];f.version=1
     return f
 

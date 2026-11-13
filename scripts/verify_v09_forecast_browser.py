@@ -283,9 +283,77 @@ def verify():
             assert 'Актуальный сигнал отсутствует' in page.locator('#reasons').text_content()
             assert 'не является исполненной сделкой' not in page.locator('#reasons').text_content()
             assert not errors,errors
-            return 'PASS: forecast geometry, same-version volume, historical correction, append/truncate, indexed signals'
+            verify_intrabar(page)
+            assert not errors,errors
+            return 'PASS: intrabar lifecycle and forecast geometry, same-version volume, historical correction, append/truncate, indexed signals'
         finally:
             browser.close()
+
+
+def verify_intrabar(page):
+    """Actual vendored chart, lifecycle payload, hover and rerenders; synthetic."""
+    page.evaluate("""() => {
+      const d=window._data,t=Math.floor(Date.now()/900000)*900;
+      const old=d.candles.at(-1);d.candles.push({...old,time:t,closed:false});
+      d.ui_payload_at=t+30;d.signal_timing={received_at:d.ui_payload_at};
+      const s={id:'intrabar',symbol:d.symbol,timeframe:d.interval,candle_time:t,
+        timestamp:t+900,type:'BUY',strategy:'Synthetic intrabar',state:'POTENTIAL',
+        potential_detected_at:d.ui_payload_at,confirmed_at:null,reference_price:old.close,
+        source:'SYNTHETIC REPLAY',explanation:['Partial candle condition']};
+      d.lifecycle={active:s,records:[s,{...s,id:'exit',type:'EXIT'},
+        {...s,id:'second',strategy:'Second strategy'}],notifications:[]};window._invoke();
+    }""")
+    def markers():
+        return page.locator('.terminal').evaluate('e=>e.__runtime.markers.markers()')
+    early=[m for m in markers() if m['text'].startswith('POTENTIAL')]
+    assert [m['text'] for m in early]==['POTENTIAL BUY ×2','POTENTIAL EXIT'],early
+    t=page.evaluate('window._data.candles.at(-1).time')
+    assert all(m['time']==t and 'rgba' in m['color'] for m in early)
+    # A repeated payload cannot rebuild identical markers or duplicate them.
+    page.evaluate("""() => {const r=document.querySelector('.terminal').__runtime;
+      const original=r.markers.setMarkers.bind(r.markers);r.markerWrites=0;
+      r.markers.setMarkers=x=>{r.markerWrites++;return original(x)};
+      for(let i=0;i<30;i++)window._invoke();}""")
+    assert page.locator('.terminal').evaluate('e=>e.__runtime.markerWrites')==0
+    page.wait_for_timeout(100)
+    at=page.locator('.terminal').evaluate("""e=>{const r=e.__runtime,
+      c=window._data.candles.at(-1),rect=e.querySelector('#chart').getBoundingClientRect();
+      return {x:rect.left+r.chart.timeScale().timeToCoordinate(c.time),
+        y:rect.top+r.candles.priceToCoordinate(c.close)}}""")
+    page.mouse.move(at['x'],at['y']);page.wait_for_timeout(100)
+    tooltip=page.locator('#signalTooltip').inner_text()
+    assert 'Предварительное условие может исчезнуть' in tooltip and 'SYNTHETIC REPLAY' in tooltip
+    assert 'BUY · Synthetic intrabar' in tooltip and 'EXIT · Synthetic intrabar' in tooltip
+    # Cancel before confirmation: all historical arrows stay exactly intact.
+    historical=[m for m in markers() if not m['text'].startswith('POTENTIAL')]
+    page.evaluate("""() => {window._data.lifecycle.records.forEach(s=>s.state='INVALIDATED');window._invoke()}""")
+    assert markers()==historical
+    # Confirm source candle at receipt, with solid close label (no next bar needed).
+    page.evaluate("""() => {const d=window._data,s=d.lifecycle.records[0];
+      d.candles.at(-1).closed=true;s.state='CONFIRMED';s.status='confirmed';
+      s.confirmed_at=s.timestamp+2;s.available_at=s.confirmed_at;
+      d.signals.push(s);window._invoke()}""")
+    confirmed=[m for m in markers() if m['time']==t]
+    assert len(confirmed)==1 and confirmed[0]['text']=='BUY · close'
+    assert 'rgba' not in confirmed[0]['color']
+    page.evaluate("""() => {window._data.context='ETHUSDT:5';window._data.symbol='ETHUSDT';
+      window._data.interval='5';window._data.signals=[];window._data.lifecycle.records=[];
+      window._invoke()}""")
+    assert markers()==[]
+    # Freshness loss and server-payload expiry suppress a pending marker.
+    page.evaluate("""() => {const d=window._data,t=Math.floor(Date.now()/300000)*300;
+      d.candles=[{time:t,open:100,high:101,low:99,close:100,volume:1,closed:false}];
+      const s={id:'new',symbol:d.symbol,timeframe:d.interval,candle_time:t,
+        timestamp:t+300,type:'BUY',strategy:'Transient',state:'POTENTIAL',confirmed_at:null};
+      d.lifecycle.records=[s];d.readiness.forecast_feed_ready=false;window._invoke()}""")
+    assert markers()==[]
+    page.evaluate("""() => {const d=window._data;d.readiness.forecast_feed_ready=true;
+      d.ui_payload_at=d.candles.at(-1).time+30;d.signal_timing.received_at=d.ui_payload_at-64;window._invoke()}""")
+    assert len(markers())==1
+    page.wait_for_timeout(1200)
+    assert markers()==[], 'Local expiration must remove stale marker without another server render'
+    page.evaluate('window._invoke()')
+    assert markers()==[], 'Re-rendering identical payload cannot renew freshness'
 
 
 if __name__=='__main__':

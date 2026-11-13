@@ -117,9 +117,48 @@ class Feed:
     def event(self,message):
         self.events=(self.events+[{'time':int(time.time()),'message':message}])[-50:]
     def receive(self,b):
+        try:return self._receive(b,time.time(),time.perf_counter())
+        except Exception:
+            with self.lock:
+                self.transport_connected=False
+                self.candle_error=True
+                self.status='Connection Lost'
+            raise
+    def _observe_signals(self,*,initial=False,closed_changed=False,event_time=None,received_at=None):
+        # Observe every accepted kline, including transients between UI reruns.
+        # Reuse SignalLifecycle; this path never reads Paper or runs risk planning.
+        from .analysis import analyze
+        from .lifecycle import SignalLifecycle,provisional
+        started=time.perf_counter();rows=[asdict(c) for c in self.rows]
+        result=analyze(rows,self.symbol,self.interval,include_forming=True,latest_only=not (initial or closed_changed))
+        candidates=provisional(rows,self.symbol,self.interval,evaluated=result)
+        confirmed=[s for s in result['signals'] if s['status']=='confirmed']
+        evaluated=time.perf_counter();now=time.time()
+        fresh=bool(rows) and rows[-1]['time']<=now<rows[-1]['time']+seconds(self.interval)
+        fresh=fresh and (event_time is None or 0<=now-event_time<=65)
+        source='Bybit public REST' if initial else 'Bybit public WebSocket'
+        observed=SignalLifecycle(self.store).observe(confirmed,candidates,self.symbol,self.interval,
+            now=now,fresh=fresh,source=source,event_time=event_time)
+        metadata={r['id']:r for r in observed['records']}
+        fields=('first_seen','potential_detected_at','first_potential_price','confirmed_at',
+                'available_at','observed_at','observed_price','source','source_event_at')
+        # Freeze observed timing with each first publication, including records
+        # later outside the bounded lifecycle UI window. Existing rows stay immutable.
+        self.store.publish([{**s,'confirmed_at':now,'available_at':now,'source':source,
+            **{k:metadata.get(s['id'],{})[k] for k in fields if k in metadata.get(s['id'],{})}}
+            for s in confirmed])
+        finished=time.perf_counter()
+        self.signal_timing={'received_at':received_at,'observed_at':now,'source_event_at':event_time,
+            'indicators_ms':(evaluated-started)*1000,'lifecycle_publish_ms':(finished-evaluated)*1000,
+            'processing_ms':(finished-(started if initial else getattr(self,'receive_started',started)))*1000,
+            'source_clock_delta_ms':(received_at-event_time)*1000 if received_at is not None and event_time is not None else None}
+    def _receive(self,b,received_at,started):
         with self.lock:
             topic=b.get('topic','');ts=b.get('ts',0)/1000
+            self.receive_started=started
             if topic==f'kline.{self.interval}.{self.symbol}':
+                if not math.isfinite(ts) or ts<=0 or ts>received_at+2:
+                    raise MarketError('Некорректное серверное время kline')
                 if ts<getattr(self,'last_candle_ts',0):return
                 incoming=[]
                 for x in b['data']:
@@ -133,15 +172,23 @@ class Feed:
                         raise MarketError('Некорректная свеча в kline WebSocket') from exc
                     incoming.append(candle)
                 validate_live_candle_times(incoming,self.interval)
+                if any(c.time>ts or (c.closed and c.time+seconds(self.interval)>ts) for c in incoming):
+                    raise MarketError('Закрытие не подтверждено временем события источника')
                 merged,gaps=merge_candles(self.rows,incoming,self.interval)
                 if gaps:raise MarketError('Обнаружен пропуск свечей; backfill')
                 if any(not c.closed for c in merged[:-1]):raise MarketError('Пропущено подтверждение закрытия свечи; backfill')
+                if ts==getattr(self,'last_candle_ts',None):
+                    if incoming==getattr(self,'last_candle_batch',None):return
+                    raise MarketError('Противоречивые kline с одинаковым временем события')
+                if not incoming or not any(c.time==merged[-1].time for c in incoming):return
                 # Do not publish a rejected gap/unconfirmed candle, or advance the
                 # event watermark before a durable journal write succeeds.
                 self.store.save_candles(self.symbol,self.interval,incoming)
                 self.rows=merged
                 self.last_candle_ts=ts
-                self.version+=1;self.last_candle_event=time.time()
+                self.version+=1;self.last_candle_event=received_at
+                self.last_candle_batch=incoming
+                self._observe_signals(closed_changed=any(c.closed for c in incoming),event_time=ts,received_at=received_at)
             elif topic==f'tickers.{self.symbol}':
                 x=b['data'];x=x[0] if isinstance(x,list) else x
                 if ts<self.quote.get('ts',0):return
@@ -224,7 +271,8 @@ class Feed:
             # disk error occurs the previous in-memory view remains intact.
             self.store.save_candles(self.symbol,self.interval,recent)
             self.rows=rows;self.rules=rules;self.quote=quote;self.book={}
-            self.last_candle_ts=0
+            self.last_candle_ts=0;self.candle_error=False
+            self._observe_signals(initial=True,received_at=time.time())
             self.version+=1;self.backfills+=1;self.event('REST синхронизация завершена');self.status='Connecting';self.error=''
     async def run(self):
         delay=1
@@ -277,7 +325,7 @@ class Feed:
             # Forecast freshness follows actual kline updates, never order execution readiness.
             # Ticker/quote may be unavailable even while the candle stream is healthy.
             stop_event=getattr(self,'stop',None)
-            candle_stream_active=bool(getattr(self,'transport_connected',False)) and not (stop_event and stop_event.is_set()) and 0<=now-getattr(self,'last_candle_event',0)<=65
+            candle_stream_active=not getattr(self,'candle_error',False) and bool(getattr(self,'transport_connected',False)) and not (stop_event and stop_event.is_set()) and 0<=now-getattr(self,'last_candle_event',0)<=65 and 0<=now-getattr(self,'last_candle_ts',0)<=65
             fresh=active and quote_ok({**self.quote,'fresh':True},now)
             readiness={'transport_connected':getattr(self,'transport_connected',False),'market_stream_active':active,
                        'last_price_fresh':last_fresh,'bid_ask_valid':bid_ask,'candle_data_fresh':candle_fresh,
@@ -286,7 +334,7 @@ class Feed:
             clean_quote={k:v for k,v in self.quote.items() if finite_number(v)}
             readiness['rules_fresh']=bool(self.rules) and 0<=now-self.rules.get('retrieved',0)<=86400
             readiness['trade_execution_ready']=fresh and readiness['rules_fresh']
-            return {'symbol':self.symbol,'interval':self.interval,'candles':[asdict(x) for x in self.rows],'rules':copy.deepcopy(self.rules),'quote':clean_quote,'status':status,'fresh':fresh,'readiness':readiness,'age':age,'error':self.error,'events':list(self.events),'version':self.version}
+            return {'snapshot_at':now,'symbol':self.symbol,'interval':self.interval,'candles':[asdict(x) for x in self.rows],'rules':copy.deepcopy(self.rules),'quote':clean_quote,'status':status,'fresh':fresh,'readiness':readiness,'age':age,'error':self.error,'events':list(self.events),'version':self.version,'signal_timing':copy.deepcopy(getattr(self,'signal_timing',{}))}
 
 
 class Hub:

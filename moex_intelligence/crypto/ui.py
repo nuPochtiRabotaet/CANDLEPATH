@@ -125,7 +125,7 @@ def terminal(store,symbol,interval,mode):
     try:snap,quotes,rules=collect(store,symbol,interval)
     except MarketError as e:st.error(str(e));return
     result=calculation(snap['candles'],symbol,interval)
-    store.publish(result['signals']);signals=store.signals(symbol,interval)
+    signals=[s for s in store.signals(symbol,interval) if s['detected_at']<=snap.get('snapshot_at',time.time())]
     state=paper.mark(quotes);m=metrics(state,quotes,rules=rules)
     key='crypto_terminal'
     context=symbol+':'+interval
@@ -144,7 +144,7 @@ def terminal(store,symbol,interval,mode):
     if price and rule:
         try:preview=plan(state,quotes,symbol,inputs['quantity'],inputs['stop'],inputs['target'],rule,inputs['risk_pct'],portfolio_rules=rules)
         except (ValueError,ArithmeticError,TypeError,KeyError) as e:error=str(e)
-    life=SignalLifecycle(store).update(result['signals'],potential(snap['candles'],symbol,interval),symbol,interval,quotes[symbol],result['regime'],state,rule,inputs['quantity'],inputs['risk_pct'],candle_fresh=snap.get('readiness',{}).get('candle_data_fresh',True),portfolio_quotes=quotes,portfolio_rules=rules)
+    life=SignalLifecycle(store).update([],[],symbol,interval,quotes[symbol],result['regime'],state,rule,inputs['quantity'],inputs['risk_pct'],candle_fresh=snap.get('readiness',{}).get('forecast_feed_ready',False),portfolio_quotes=quotes,portfolio_rules=rules,observe=False,as_of=snap.get('snapshot_at'))
     quality=assess(result['regime'],life['active'],preview,quotes[symbol],error,QualityPolicy(**state.get('quality_policy',{})))
     protection=monitor(str(store.path)).status()
     allocations={}
@@ -178,7 +178,7 @@ def terminal(store,symbol,interval,mode):
                               HistoricalVolatilityBaseline.version,'UNAVAILABLE',
                               reason='Не удалось безопасно сохранить прогноз в журнале')
     decision=DecisionContext(symbol,interval,time.time(),RegimeSnapshot(symbol,interval,research_as_of,result['regime']),life['active'].get('id'),life['active']['state'],quality['quality'],quality['attention'],bool(preview and preview['allowed']),tuple((preview or {}).get('errors',[])),forecast)
-    d={**snap,'intelligence':asdict(decision),'overlay_settings':load_preferences(store),'overlay_defaults':OVERLAY_DEFAULTS,'inventory':allocations,'protection_preview':edit_preview,'protection_error':edit_error,'quality_assessment':quality,'cost_model':CostModel.from_state(state).snapshot(),'lifecycle':life,'protection':protection,'context':context,'mode':mode,'analysis':result,'signals':signals,'account':m,'state':state,'orders':store.orders(),'journal':store.events(),'inputs':inputs,'preview':preview,'input_error':error,'notice':st.session_state.get('crypto_notice',''),'pending':st.session_state.get('crypto_pending')}
+    d={**snap,'ui_payload_at':time.time(),'intelligence':asdict(decision),'overlay_settings':load_preferences(store),'overlay_defaults':OVERLAY_DEFAULTS,'inventory':allocations,'protection_preview':edit_preview,'protection_error':edit_error,'quality_assessment':quality,'cost_model':CostModel.from_state(state).snapshot(),'lifecycle':life,'protection':protection,'context':context,'mode':mode,'analysis':result,'signals':signals,'account':m,'state':state,'orders':store.orders(),'journal':store.events(),'inputs':inputs,'preview':preview,'input_error':error,'notice':st.session_state.get('crypto_notice',''),'pending':st.session_state.get('crypto_pending')}
     def read_event(name):
         widget=st.session_state.get(key,{})
         return widget.get(name) if isinstance(widget,dict) else getattr(widget,name,None)

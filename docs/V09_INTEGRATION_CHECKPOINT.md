@@ -230,3 +230,20 @@ strategy thresholds. See `ACCEPTANCE_SAFETY.md` and `MAC_ACCEPTANCE.md` under
 `docs/research/day_trader_integration/`; final SHA/CI/readiness evidence is in
 PR #51's acceptance section. Mac/Safari remain NOT RUN; sealed holdout unopened,
 Invest/user files untouched, real execution disabled. No merge authorized.
+
+## 2026-11-13 — intrabar observation and honest source-candle markers
+
+Isolated `fix/v09-intrabar-signal-visibility` from actual #51 HEAD `8d91675…`,
+stacked onto `feat/selective-day-trader-integration` by owner instruction.
+Feed observes each accepted partial kline through existing SignalLifecycle;
+UI renders POTENTIAL BUY/EXIT and WATCHING separately from solid `· close`
+confirmations. Records persist actual detection/confirmation, cancellations,
+source and observed price; risk readiness remains a separate unchanged gate.
+Duplicate/out-of-order/source-clock/gap/restart/stale cases are covered.
+No live execution, threshold tuning, new strategy, portfolio migration or holdout use.
+
+Local: 946 Python tests PASS, zero skips; JS chart/intrabar contracts, 41 Forecast
+checks and compilation PASS. 19 new intrabar tests. Chromium launch BLOCKED by
+local socket policy; exact-head remote CI/browser outcome belongs in the Draft PR.
+Mac/Safari NOT RUN. Early-vs-confirmed economics NOT EVALUABLE: no independent
+sequential intrabar/quote tape. [Contracts, latency and Mac protocol](research/intrabar/VALIDATION.md).
