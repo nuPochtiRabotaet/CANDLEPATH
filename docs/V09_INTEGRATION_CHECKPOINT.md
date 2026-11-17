@@ -271,3 +271,7 @@ measurements, not exchange latency. Real Bybit tape and physical Mac/Safari NOT
 verified. GitHub API/workflow inspection blocked by Forbidden; never claim remote
 CI or Draft PR creation unless independently confirmed. Exact logs remain in
 /tmp/evidence-full-final.txt, /tmp/evidence-streamlit-final.log for this task.
+Public web fallback subsequently confirmed PR52 baseline workflow 43426794039
+Success at f56732e (not the new Recorder SHA). Recorder push succeeded; Draft PR
+creation was attempted and rejected by GitHub API route with Forbidden. No new
+head's remote CI result is claimed.

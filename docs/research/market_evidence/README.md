@@ -148,3 +148,13 @@ sleep/wake gaps and status with the owner's permitted public source separately.
 Rollback: stop the app, unset CANDLEPATH_RECORD_EVIDENCE and switch back to the
 PR52 base on a clean checkout, or revert this PR in a reviewable branch. Preserve
 research files as evidence. No user portfolio/schema migration needs reversal.
+
+### Verified delivery evidence
+
+Public workflow page [43426794039](https://github.com/nuPochtiRabotaet/CANDLEPATH/actions/runs/43426794039)
+shows Success for PR52's f56732e revision. This is baseline evidence only, not
+CI for the Recorder branch. It was visible through the public web fallback even
+though GraphQL/workflow API access is denied. PR creation was attempted with
+base fix/v09-intrabar-signal-visibility and failed with
+`Post https://api.github.com/graphql: Forbidden`; no Draft PR number is claimed.
+The feature branch is pushed. New-head remote CI remains unverified.
