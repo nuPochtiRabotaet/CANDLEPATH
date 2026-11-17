@@ -247,3 +247,27 @@ checks and compilation PASS. 19 new intrabar tests. Chromium launch BLOCKED by
 local socket policy; exact-head remote CI/browser outcome belongs in the Draft PR.
 Mac/Safari NOT RUN. Early-vs-confirmed economics NOT EVALUABLE: no independent
 sequential intrabar/quote tape. [Contracts, latency and Mac protocol](research/intrabar/VALIDATION.md).
+
+## Market Evidence Recorder (stacked on PR #52)
+
+Base/head checked: #50 Draft a0ca13d, #51 Draft 8d91675, #52 Draft f56732e;
+all still open. Branch feat/market-evidence-recorder, target
+fix/v09-intrabar-signal-visibility. Optional CANDLEPATH_RECORD_EVIDENCE=1 records
+actual received public WS messages and feed-side signal observations in separate
+bounded research SQLite, not reconstructed candles. Read-only diagnostic in
+Security Center. A/B/C protocol and limitations: docs/research/market_evidence/.
+No thresholds, Cost Engine, user Paper/Invest schema or execution path changed.
+No sealed holdout opened, no economic results calculated.
+
+Actual local checks: 953 pytest passed in 53.54s (7 new tests); compileall,
+JS syntax, 41 projection checks plus chart/intrabar contracts passed. Existing
+Forecast Chromium and both Streamlit/Chromium scripts passed with synthetic data.
+Initial full run had two local WebSocket failures (proxy returned403) and initial
+Streamlit readiness failed; reran with loopback explicitly appended to both
+NO_PROXY/no_proxy while preserving external proxies. No tests skipped/relaxed.
+Synthetic append benchmark 300/3000 records: 6227/6080 events/s; median
+0.117/0.126ms; p95 0.331/0.302ms; integrity scan 5.53ms. These are local SQLite
+measurements, not exchange latency. Real Bybit tape and physical Mac/Safari NOT
+verified. GitHub API/workflow inspection blocked by Forbidden; never claim remote
+CI or Draft PR creation unless independently confirmed. Exact logs remain in
+/tmp/evidence-full-final.txt, /tmp/evidence-streamlit-final.log for this task.

@@ -1,0 +1,23 @@
+{
+  "data": "SYNTHETIC_QA",
+  "measure": "synchronous FULL SQLite append overhead, not network latency",
+  "results": [
+    {
+      "journal_events": 300,
+      "throughput_per_second": 6227.3171271354895,
+      "median_append_ms": 0.11693200002582671,
+      "p95_append_ms": 0.33136700000113706,
+      "status_ms": 0.17454700002872414,
+      "database_bytes": 229376
+    },
+    {
+      "journal_events": 3000,
+      "throughput_per_second": 6080.047130709843,
+      "median_append_ms": 0.12631099997406636,
+      "p95_append_ms": 0.302295000039976,
+      "status_ms": 0.3493840000032833,
+      "database_bytes": 2166784
+    }
+  ],
+  "integrity_scan_ms": 5.525835000014467
+}

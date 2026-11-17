@@ -282,6 +282,8 @@ def terminal(store,symbol,interval,mode):
         st.write('Лимит одного инструмента до 25% equity (12,5% при DD ≥8%); индивидуальный максимум также ограничен cash, занятостью и риском стопа.')
         st.write('Защита: '+protection.get('state','QA / Unknown')+' · последний успешный цикл: '+str(protection.get('last_success','не подтверждён')))
         st.caption('Loopback по умолчанию; XSRF и CORS включены. Права аккаунта не проверены до отдельной Read Only-проверки. Keychain/IP allowlist не реализованы.')
+        st.caption('Market Evidence · read-only research journal')
+        st.json(snap.get('evidence',{'status':'UNVERIFIED'}))
         st.json(snap.get('readiness',{}));st.write(protection['message'])
         st.json(paper.protection_status())
         st.dataframe(life['notifications'],hide_index=True,width='stretch')

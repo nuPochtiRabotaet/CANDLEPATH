@@ -112,13 +112,45 @@ class Bybit:
 class Feed:
     def __init__(self,symbol,interval,store,connector=None):
         self.symbol=symbol;self.interval=interval;self.store=store;self.api=connector or Bybit();self.lock=threading.RLock();self.stop=threading.Event();self.touched=time.monotonic();self.rows=store.candles(symbol,interval);self.rules=None;self.quote={};self.status='Connecting';self.error='';self.events=[];self.last_ws=0;self.version=0;self.backfills=0
+        self.evidence=None;self.evidence_error=''
+        import os
+        if os.getenv('CANDLEPATH_RECORD_EVIDENCE')=='1':
+            try:
+                from .evidence import EvidenceRecorder
+                self.evidence=EvidenceRecorder(store.path.parent/'research-evidence'/f'{symbol}-{interval}.sqlite3')
+            except Exception as exc:self.evidence_error=type(exc).__name__+': '+str(exc)
         validate_live_candle_times(self.rows,self.interval)
         self.thread=threading.Thread(target=lambda:asyncio.run(self.run()),daemon=True);self.thread.start()
     def event(self,message):
+        self._record_evidence('source_status',{'message':message},'status:'+str(time.time_ns()),time.time())
         self.events=(self.events+[{'time':int(time.time()),'message':message}])[-50:]
+    def _record_evidence(self,kind,payload,identity,received_at,event_at=None):
+        recorder=getattr(self,'evidence',None)
+        if recorder is None or recorder.error:return False
+        try:return recorder.append(kind,payload,identity=identity,received_at=received_at,event_at=event_at)
+        except Exception as exc:
+            self.evidence_error=type(exc).__name__+': '+str(exc);recorder.error=self.evidence_error
+            return False
     def receive(self,b):
-        try:return self._receive(b,time.time(),time.perf_counter())
-        except Exception:
+        received_at=time.time();started=time.perf_counter()
+        with self.lock:return self._receive_evidenced(b,received_at,started)
+    def _receive_evidenced(self,b,received_at,started):
+        import hashlib
+        from .evidence import encoded
+        try:identity=hashlib.sha256(encoded(b).encode()).hexdigest()
+        except (ValueError,TypeError):identity=None
+        self.evidence_event_id=identity
+        event_at=b.get('ts',0)/1000 if isinstance(b.get('ts'),(int,float)) else None
+        self._record_evidence('market_message',{'exchange':'Bybit','market':'Spot','symbol':self.symbol,
+            'timeframe':self.interval,'source':'public WebSocket','message':b},'market:'+str(identity),received_at,event_at)
+        try:
+            result=self._receive(b,received_at,started)
+            self._record_evidence('processing_result',{'event_id':identity,'quote':self.quote,
+                'note':'Quote field timestamps are source-specific; missing timestamps remain unknown'},
+                'result:'+str(identity),received_at,event_at)
+            return result
+        except Exception as exc:
+            self._record_evidence('rejected',{'event_id':identity,'reason':str(exc)},'rejected:'+str(identity),received_at,event_at)
             with self.lock:
                 self.transport_connected=False
                 self.candle_error=True
@@ -127,7 +159,7 @@ class Feed:
     def _observe_signals(self,*,initial=False,closed_changed=False,event_time=None,received_at=None):
         # Observe every accepted kline, including transients between UI reruns.
         # Reuse SignalLifecycle; this path never reads Paper or runs risk planning.
-        from .analysis import analyze
+        from .analysis import analyze,PARAMS
         from .lifecycle import SignalLifecycle,provisional
         started=time.perf_counter();rows=[asdict(c) for c in self.rows]
         result=analyze(rows,self.symbol,self.interval,include_forming=True,latest_only=not (initial or closed_changed))
@@ -139,6 +171,13 @@ class Feed:
         source='Bybit public REST' if initial else 'Bybit public WebSocket'
         observed=SignalLifecycle(self.store).observe(confirmed,candidates,self.symbol,self.interval,
             now=now,fresh=fresh,source=source,event_time=event_time)
+        if not initial:
+            self._record_evidence('signal_observation',{'event_id':getattr(self,'evidence_event_id',None),
+                'records':[{k:r[k] for k in ('id','strategy','strategy_version','symbol','timeframe','type','state','candle_time','timestamp','first_seen','potential_detected_at','first_potential_price','confirmed_at','available_at','observed_at','observed_price','changed_at','transitions','historical') if k in r}
+                    for r in observed['records'] if r.get('observed_at')==now or r.get('changed_at')==now],
+                'strategy_parameters':PARAMS,
+                'displayed_at':None,'display_note':'Browser paint receipt is not measured'},
+                'signals:'+str(getattr(self,'evidence_event_id',None)),received_at,event_time)
         metadata={r['id']:r for r in observed['records']}
         fields=('first_seen','potential_detected_at','first_potential_price','confirmed_at',
                 'available_at','observed_at','observed_price','source','source_event_at')
@@ -303,6 +342,11 @@ class Feed:
                     await asyncio.sleep(1)
                 delay=min(delay*2,60)
         self.stop.set()
+    def evidence_status(self):
+        recorder=getattr(self,'evidence',None)
+        if recorder is None:return {'status':'BLOCKED' if getattr(self,'evidence_error','') else 'DISABLED','error':getattr(self,'evidence_error',''),'abc':'NOT EVALUABLE WITH AVAILABLE DATA'}
+        try:return recorder.status()
+        except Exception as exc:return {'status':'BLOCKED','error':str(exc),'abc':'NOT EVALUABLE WITH AVAILABLE DATA'}
     def snapshot(self):
         self.touched=time.monotonic()
         with self.lock:
@@ -334,7 +378,7 @@ class Feed:
             clean_quote={k:v for k,v in self.quote.items() if finite_number(v)}
             readiness['rules_fresh']=bool(self.rules) and 0<=now-self.rules.get('retrieved',0)<=86400
             readiness['trade_execution_ready']=fresh and readiness['rules_fresh']
-            return {'snapshot_at':now,'symbol':self.symbol,'interval':self.interval,'candles':[asdict(x) for x in self.rows],'rules':copy.deepcopy(self.rules),'quote':clean_quote,'status':status,'fresh':fresh,'readiness':readiness,'age':age,'error':self.error,'events':list(self.events),'version':self.version,'signal_timing':copy.deepcopy(getattr(self,'signal_timing',{}))}
+            return {'snapshot_at':now,'symbol':self.symbol,'interval':self.interval,'candles':[asdict(x) for x in self.rows],'rules':copy.deepcopy(self.rules),'quote':clean_quote,'status':status,'fresh':fresh,'readiness':readiness,'age':age,'error':self.error,'events':list(self.events),'version':self.version,'signal_timing':copy.deepcopy(getattr(self,'signal_timing',{})),'evidence':self.evidence_status()}
 
 
 class Hub:
