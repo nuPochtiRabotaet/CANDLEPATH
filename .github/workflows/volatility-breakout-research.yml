@@ -1,0 +1,97 @@
+name: CandlePath v0.9 registered Volatility Breakout
+
+'on':
+  push:
+    branches:
+      - research/v09-volatility-breakout-1h4h
+    paths:
+      - '.github/workflows/volatility-breakout-research.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: candlepath-v09-volatility-breakout
+  cancel-in-progress: false
+
+jobs:
+  research:
+    name: Preregistered BTC/ETH 1h/4h research
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+      MOEX_DATA_DIR: /tmp/candlepath-breakout-isolated-data
+    steps:
+      - name: Check out exact event revision (no persisted credentials)
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify revision and preregistered immutable inputs
+        run: |
+          git rev-parse HEAD
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          sha256sum -c docs/research/volatility_breakout/SHA256SUMS
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - name: Install locked dependencies
+        run: python -m pip install --require-hashes -r requirements-dev.txt
+      - name: Run causal and accounting research tests
+        run: |
+          python -m pytest -q \
+            tests/test_volatility_breakout_research.py \
+            tests/test_trend_1h4h_research.py \
+            tests/test_paper_path_research_v09.py \
+            tests/test_coliseum_statistics.py
+      - name: Run registered real-market development study
+        id: evaluate
+        run: |
+          python scripts/run_volatility_breakout.py --output breakout-first.json
+      - name: Re-run identically and compare output bytes
+        if: success()
+        run: |
+          python scripts/run_volatility_breakout.py --output breakout-second.json
+          cmp breakout-first.json breakout-second.json
+          sha256sum breakout-first.json breakout-second.json
+      - name: Summarize observed result without guessing missing metrics
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report = Path('breakout-first.json')
+          lines = ['## CandlePath — registered Volatility Breakout']
+          lines.append('Source revision: `' + __import__('os').environ['GITHUB_SHA'] + '`')
+          if not report.exists():
+              lines.append('No market report produced. Inspect earlier failure logs. This is NOT EVALUABLE.')
+          else:
+              data = json.loads(report.read_text())
+              lines += [
+                  'Study status: **' + str(data.get('status', 'UNKNOWN')) + '**',
+                  'Decision: **' + str(data.get('decision', 'NOT DETERMINED')) + '**',
+              ]
+              if data.get('error'):
+                  lines.append('Data or execution blocker: `' + str(data['error']) + '`')
+              for label, path in sorted(data.get('paths', {}).items()):
+                  base = path.get('base') or {}
+                  lines.append('- ' + label + ': ' + str(base.get('net_return_pct', 'NOT EVALUABLE')) + ' % net return')
+              lines.append('Market trades and statistical significance are unverified unless the JSON contains actual validated development evaluations.')
+              lines.append('Sealed holdout: do not request, inspect or score.')
+          Path(__import__('os').environ['GITHUB_STEP_SUMMARY']).write_text('\n\n'.join(lines) + '\n')
+          PY
+      - name: Upload development-only results even on network failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: volatility-breakout-development-results
+          path: |
+            breakout-first.json
+            breakout-second.json
+          if-no-files-found: warn
+          retention-days: 14
