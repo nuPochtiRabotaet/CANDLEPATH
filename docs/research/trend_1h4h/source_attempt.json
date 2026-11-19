@@ -1,0 +1,41 @@
+{
+  "archive_error": "BTCUSDT-1h-2024-01.zip.CHECKSUM: 403 Forbidden",
+  "decision": "NO TRADE / INSUFFICIENT EVIDENCE",
+  "error": "Bybit: ProxyError",
+  "folds": [
+    {
+      "end_exclusive": 1722902400,
+      "first_open": 1707609600,
+      "fold": 1,
+      "purge_start": 1707350400
+    },
+    {
+      "end_exclusive": 1738454400,
+      "first_open": 1723161600,
+      "fold": 2,
+      "purge_start": 1722902400
+    },
+    {
+      "end_exclusive": 1754006400,
+      "first_open": 1738713600,
+      "fold": 3,
+      "purge_start": 1738454400
+    }
+  ],
+  "packages": {
+    "httpx": "0.28.1",
+    "numpy": "2.5.4",
+    "pandas": "2.3.3"
+  },
+  "paths": {},
+  "protocol_sha256": "b0c7d1b6a6d949ff76aa9a331fd8516c31209e8b090d579548a1a8676afb3197",
+  "python": "3.12.14",
+  "research_source_sha256": "424293c4fd1f63ae3239c9483ab36f40b30f0e3236bf645867947f23d83723b0",
+  "sealed_evaluated": false,
+  "sealed_utc": [
+    1754006400,
+    1766448000
+  ],
+  "status": "NOT EVALUABLE",
+  "validated": false
+}

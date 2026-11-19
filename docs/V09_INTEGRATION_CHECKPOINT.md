@@ -247,3 +247,27 @@ checks and compilation PASS. 19 new intrabar tests. Chromium launch BLOCKED by
 local socket policy; exact-head remote CI/browser outcome belongs in the Draft PR.
 Mac/Safari NOT RUN. Early-vs-confirmed economics NOT EVALUABLE: no independent
 sequential intrabar/quote tape. [Contracts, latency and Mac protocol](research/intrabar/VALIDATION.md).
+
+## Preregistered BTC/ETH 1h/4h trend research
+
+Branch research/v09-trend-1h4h-preregistered starts at PR #52 f56732e.
+At inspection #50, #51 and #52 were Draft, with heads a0ca13d, 8d91675
+and f56732e respectively. Issue #31 was open. Registration 4d35fe8 was
+pushed before requesting prices. Implementation 42b3cbc reuses the private
+fold loop from Paper-path research. Existing callers keep their sealed
+walk-forward split and report format. Coliseum daily coverage now derives
+the number of bars from the timeframe.
+
+The public acquisition command returned exit 2. Binance Public Data and
+Bybit were blocked by the environment proxy. All eight market paths are
+NOT EVALUABLE. No historical return, candidate, account write or holdout
+score was produced. See docs/research/trend_1h4h/README.md and source_attempt.json.
+
+Linux Python 3.12.14 full pytest on 42b3cbc passed 963 tests in 66.46 s,
+including 17 new cases. These include two complete runs of the synthetic
+archive study with identical results. Compileall, JS syntax, 41 forecast
+geometry checks, chart contracts, and the Forecast, Coliseum and Day Trader
+Chromium smokes passed. Remote research CI and physical Mac/Safari remain
+unverified. The Git push succeeded. GitHub GraphQL rejected Draft PR creation
+with Forbidden. Next research step is a single run of the registered development
+study on an authorized public source with the holdouts still sealed.
