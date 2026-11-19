@@ -1,0 +1,3672 @@
+{
+  "data": {
+    "instruments": {
+      "BTCUSDT": {
+        "bars": 13824,
+        "files": {
+          "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-01.zip": "cf873a185bd5b24b8e00034e49583fcb49928e0c3a45c6fc27a632a683655417",
+          "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-02.zip": "b83aa7319ef1d4baa7b923c0fe802b88dfaf241c7456af295f1f656a24379b33",
+          "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-03.zip": "b0851daf609d6ab82fdf8f1d1c4fbd974bc1b4e6530a832067516ac1c2be63a6",
+          "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-04.zip": "e266707ad2ea3cd4680bf1ac5025f0c1bfeb38e703374a91f8dc193d1ec8d48f",
+          "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-05.zip": "077c71eec71a8ecf2edb6e3a3927b600b8f358fd37066ce120c19fb5302a9ab8",
+          "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-06.zip": "2e1f968fa34b9feabfb19cc6eec47a146e20d64a706f4b17d0babf4d2f475c39",
+          "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-07.zip": "41fd58a70ae40bebb74682555cc5054709f8dde0f5c8193ae2103dac95274e5f",
+          "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-08.zip": "88521a975ee7bfdd21f891d81f4243a01b90b977cf525d11747e27c66e3bad60",
+          "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-09.zip": "123f402c6dbf19b9b72b4af7ad4d5325c73ba4833148cc398b803d7a34ac5c5f",
+          "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-10.zip": "393b18ad2634f0cd3b2fd54321c8286ea143419cf3129b4cc44e089681912b03",
+          "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-11.zip": "7a51fe8811c754ff43a2be0ba10e53a6d4218521e27ac765fbc9a1ca0fc15bac",
+          "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-12.zip": "dfec812f73a84257b195cbdaed34d020fa77e845625c061c13bd6a60e7ef9372",
+          "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-01.zip": "e7f2aaa5396a8062a57ab29ce9fab2d76b2c84ec58815d4ab7b3fe16f78c7118",
+          "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-02.zip": "7420f55c93f61d7e734fc9d2507c7f2fcb5eaf48112277cecd241d4e1dbf3bd5",
+          "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-03.zip": "b5ae8bb57e5e526c2050c9f8229b723871a5af47d80c53453abf61847a5f3aa6",
+          "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-04.zip": "bbec48ed5f7b603bbceff943ad0dccd3c29cae6d14161bcd2eabc9f762ff0a35",
+          "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-05.zip": "da6213bf4c57ea60faed3ef1f6a0ecb87f22ca7a3a67614604cf44d2d6b265fe",
+          "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-06.zip": "d0760943538f48032dd066401e53f46bbf4868e6545929678e23bcdee032a5e8",
+          "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-07.zip": "487738ee596380eaad32a2a93c75d17e1ebdd165a9b544c0e44be36079f5c02e"
+        },
+        "hourly_sha256": "0d45607f14091f7876b809e857932f1aec9bd80ca4e1baed6dc1bd2b7592aeac"
+      },
+      "ETHUSDT": {
+        "bars": 13824,
+        "files": {
+          "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2024-01.zip": "1fdb3a8fa6b77ef30ef17ed4b71b184172ef1f812d83bd0f50bbd08e71a92057",
+          "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2024-02.zip": "f080ff288b2f7e85e78c5370a8a3258b93f85531ff96b4131c1b7889649a8ba4",
+          "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2024-03.zip": "4eb16ab0c5db15e5e0d77827f5c19c215c7ce601a5501d9563b75bda7602f46e",
+          "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2024-04.zip": "8b710fad720ae0bc75eaded37b3add95ca49122ae398f3f6e33e57e864da781e",
+          "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2024-05.zip": "0307d64f0d9ae6ff4001442a014d7b02dcbc5a003dcc36ba139f1c9695996b51",
+          "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2024-06.zip": "59ee6920bd72d93d1130c89711c93ea192bbfd5f82b548dcb0448f66450f6a06",
+          "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2024-07.zip": "83181cfcc1f1e32a542e2c220cbd58acd1c550cc64ad1e2c414e47088266aa7c",
+          "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2024-08.zip": "d908255a48978f6acb769c4b856a3307c58a8c19dbf2b3b7f10067245d5e8b89",
+          "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2024-09.zip": "bfbdda97d03abac469199120ec3c2f1305e2d5947e9155ff84dbeafe33cd4a67",
+          "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2024-10.zip": "cbb13664485b6c9a6365da7ae23299b722ab5926a6aed516add486ef501883bc",
+          "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2024-11.zip": "29cd30419b86d5dff5467a7a81d43e492aaaeb3669db216ab8badaad5fe610ec",
+          "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2024-12.zip": "84312b7dc2b5c903853c78d94f587ef1d24b7960d7bd95f5bfe3afc3db006203",
+          "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2025-01.zip": "f7350a6f3b51de466a0db52ba890cf296d4faeb6e84811b9606f87ad39ccf3ec",
+          "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2025-02.zip": "40c2f73850422d47ca7d044959cecc39ff3416f6e3c88f30636da4a01a0b6e31",
+          "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2025-03.zip": "dc32ecad498d19f8663633196ec84cbd480595c89aa1ae6062c0fa0b8d9bd11d",
+          "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2025-04.zip": "73f39799fae1ba4ef291c6785b934a6c817426ef8ef60e1bdf42078efd27893d",
+          "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2025-05.zip": "720a319face496acff79d8e6279b9b03f31495097d555c74daa076cd66421bee",
+          "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2025-06.zip": "780788805b48a094886590d939ef45372db2ee053aa5d464f8e135121df2b8eb",
+          "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1h/ETHUSDT-1h-2025-07.zip": "d5c4c2482004a49b479ff5bfbdb885b25035ace24e5f95edd8057507718df366"
+        },
+        "hourly_sha256": "aa3fd8a0bd49be23d2fe95e335c7fb122b3786ec17010dd8f2b2624e39ba4f6e"
+      }
+    },
+    "source": "BINANCE_PUBLIC_DATA_HTTPS"
+  },
+  "folds": [
+    {
+      "end_exclusive": 1722902400,
+      "first_open": 1707609600,
+      "fold": 1,
+      "purge_start": 1707350400
+    },
+    {
+      "end_exclusive": 1738454400,
+      "first_open": 1723161600,
+      "fold": 2,
+      "purge_start": 1722902400
+    },
+    {
+      "end_exclusive": 1754006400,
+      "first_open": 1738713600,
+      "fold": 3,
+      "purge_start": 1738454400
+    }
+  ],
+  "four_hour_sha256": {
+    "BTCUSDT": "e04651e74b62ec6416d0316dac02bfccfba515ba61467cc24b8fdc036a7d6323",
+    "ETHUSDT": "1678cb39ac9031fa71263619e7d8128cc626884d6b387050c7ab286c596580e1"
+  },
+  "packages": {
+    "httpx": "0.28.1",
+    "numpy": "2.5.4",
+    "pandas": "2.3.3"
+  },
+  "paths": {
+    "BTCUSDT/240/EMA_PULLBACK": {
+      "base": {
+        "assumed_rules": {
+          "as_of_utc_seconds": 1704240000,
+          "exchange_accepted_fills_verified": false,
+          "historically_verified": false,
+          "maximum": "100",
+          "minimum": "10",
+          "note": "Preregistered illustrative constraints; historical accuracy unverified",
+          "original_sha256": "e767132ade3bfa2c196c850501fdbbe136e033b7049597087069158740714f63",
+          "provenance": "USER_SUPPLIED_UNVERIFIED_HISTORICAL_RULE_ASSUMPTION",
+          "step": "0.00001",
+          "symbol": "BTCUSDT",
+          "tick": "0.01"
+        },
+        "benchmarks_pct": {
+          "HOLD_100": "31.1124859587724411143",
+          "HOLD_25": "7.7766121186121629839",
+          "USDT": "0"
+        },
+        "cost_model": {
+          "execution": {
+            "slippage_bps": "5",
+            "version": "paper-slippage-v1"
+          },
+          "fees": {
+            "buy_currency": "quote",
+            "maker": "0.001",
+            "sell_currency": "quote",
+            "source": "LOCAL PAPER assumption; not account-verified",
+            "taker": "0.001",
+            "version": "paper-default-v1"
+          }
+        },
+        "entry_regimes": {
+          "Falling": {
+            "net_pnl": "0",
+            "trades": 0
+          },
+          "High": {
+            "net_pnl": "44.905877720846424630",
+            "trades": 8
+          },
+          "Low": {
+            "net_pnl": "12.752792756658730980",
+            "trades": 14
+          },
+          "Rising": {
+            "net_pnl": "57.658670477505155610",
+            "trades": 22
+          },
+          "Sideways": {
+            "net_pnl": "0",
+            "trades": 0
+          }
+        },
+        "expectancy": "2.620848658068416164090909091",
+        "folds": [
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "12.7416345749192571966",
+              "HOLD_25": "3.1851039074202639486",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 6,
+              "exits": 6,
+              "forced_fold_close": 0,
+              "ignored_while_open": 3,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "16.022697170925839940",
+            "fold": 1,
+            "marked_drawdown_pct": "1.425965991383861338818185084",
+            "net_return_pct": "0.961361830255550396400",
+            "net_usdt": "96.136183025555039640",
+            "profit_factor": "1.674188470570231428549415758",
+            "trade_count": 6,
+            "win_rate": 0.6666666666666666
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "62.5857042799748633805",
+              "HOLD_25": "15.6435255399183292575",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 10,
+              "exits": 10,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-2.097245635308378495",
+            "fold": 2,
+            "marked_drawdown_pct": "2.234366838517658694882200792",
+            "net_return_pct": "-0.209724563530837849500",
+            "net_usdt": "-20.972456353083784950",
+            "profit_factor": "0.9255477361081160981660130090",
+            "trade_count": 10,
+            "win_rate": 0.5
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "18.0101190214232027658",
+              "HOLD_25": "4.5012069084978957456",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 6,
+              "exits": 6,
+              "forced_fold_close": 0,
+              "ignored_while_open": 6,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-2.917509365827683180",
+            "fold": 3,
+            "marked_drawdown_pct": "0.8113313752681244991695659974",
+            "net_return_pct": "-0.175050561949660990800",
+            "net_usdt": "-17.505056194966099080",
+            "profit_factor": "0.6512685085648117188047142465",
+            "trade_count": 6,
+            "win_rate": 0.16666666666666666
+          }
+        ],
+        "full_spread_bps": 4,
+        "max_drawdown": 2.2343668385176585,
+        "modeled_costs_usdt": {
+          "fee_cost": "99.750117755160074390",
+          "gross_pnl": "227.2339523",
+          "slippage_cost": "49.875110698554770",
+          "spread_cost": "19.95005336878"
+        },
+        "net_pnl": "57.658670477505155610",
+        "net_return_pct": "0.1921955682583505187",
+        "profit_factor": "1.121519255798413890795396760",
+        "regime_at_day_open": {
+          "Bearish": {
+            "days": 119,
+            "net_usdt": "0E-18",
+            "passive_25_usdt": "397.050228365412995550"
+          },
+          "Bullish": {
+            "days": 180,
+            "net_usdt": "57.658670477505155610",
+            "passive_25_usdt": "1383.251113261628693910"
+          },
+          "Range": {
+            "days": 149,
+            "net_usdt": "0E-18",
+            "passive_25_usdt": "1197.421507078457237100"
+          },
+          "Uncertain": {
+            "days": 83,
+            "net_usdt": "0E-18",
+            "passive_25_usdt": "-644.739213121850031390"
+          }
+        },
+        "trades": 22,
+        "turnover_quote": "99749.960346371841724770",
+        "win_rate": 0.45454545454545453
+      },
+      "decision": "NO TRADE / INSUFFICIENT EVIDENCE",
+      "double": {
+        "assumed_rules": {
+          "as_of_utc_seconds": 1704240000,
+          "exchange_accepted_fills_verified": false,
+          "historically_verified": false,
+          "maximum": "100",
+          "minimum": "10",
+          "note": "Preregistered illustrative constraints; historical accuracy unverified",
+          "original_sha256": "e767132ade3bfa2c196c850501fdbbe136e033b7049597087069158740714f63",
+          "provenance": "USER_SUPPLIED_UNVERIFIED_HISTORICAL_RULE_ASSUMPTION",
+          "step": "0.00001",
+          "symbol": "BTCUSDT",
+          "tick": "0.01"
+        },
+        "benchmarks_pct": {
+          "HOLD_100": "30.6681372574771674032",
+          "HOLD_25": "7.6666477020820667456",
+          "USDT": "0"
+        },
+        "cost_model": {
+          "execution": {
+            "slippage_bps": "10",
+            "version": "paper-slippage-v1"
+          },
+          "fees": {
+            "buy_currency": "quote",
+            "maker": "0.001",
+            "sell_currency": "quote",
+            "source": "LOCAL PAPER assumption; not account-verified",
+            "taker": "0.002",
+            "version": "paper-default-v1"
+          }
+        },
+        "entry_regimes": {
+          "Falling": {
+            "net_pnl": "0",
+            "trades": 0
+          },
+          "High": {
+            "net_pnl": "-8.40754128877175688",
+            "trades": 8
+          },
+          "Low": {
+            "net_pnl": "-90.49430071385045328",
+            "trades": 14
+          },
+          "Rising": {
+            "net_pnl": "-98.90184200262221016",
+            "trades": 22
+          },
+          "Sideways": {
+            "net_pnl": "0",
+            "trades": 0
+          }
+        },
+        "expectancy": "-4.495538272846464098181818182",
+        "folds": [
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "12.358655413031023656",
+              "HOLD_25": "3.0893677666402899096",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 6,
+              "exits": 6,
+              "forced_fold_close": 0,
+              "ignored_while_open": 3,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "7.80769745842639504",
+            "fold": 1,
+            "marked_drawdown_pct": "1.638305391123388489132175915",
+            "net_return_pct": "0.468461847505583702400",
+            "net_usdt": "46.84618475055837024",
+            "profit_factor": "1.312792297216269505380136005",
+            "trade_count": 6,
+            "win_rate": 0.6666666666666666
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "62.035616380461041808",
+              "HOLD_25": "15.508904095115260452",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 10,
+              "exits": 10,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-8.489645331483888936",
+            "fold": 2,
+            "marked_drawdown_pct": "2.307165972292473856820099320",
+            "net_return_pct": "-0.848964533148388893600",
+            "net_usdt": "-84.89645331483888936",
+            "profit_factor": "0.7141819901672111773082883053",
+            "trade_count": 10,
+            "win_rate": 0.5
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "17.6101399789394367456",
+              "HOLD_25": "4.4016712444906498752",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 6,
+              "exits": 6,
+              "forced_fold_close": 0,
+              "ignored_while_open": 6,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-10.14192890639028184",
+            "fold": 3,
+            "marked_drawdown_pct": "1.062020562797596522086202605",
+            "net_return_pct": "-0.608515734383416910400",
+            "net_usdt": "-60.85157343834169104",
+            "profit_factor": "0.2835180290951611809162734883",
+            "trade_count": 6,
+            "win_rate": 0.16666666666666666
+          }
+        ],
+        "full_spread_bps": 8,
+        "max_drawdown": 2.307165972292474,
+        "modeled_costs_usdt": {
+          "fee_cost": "188.70153411126593016",
+          "gross_pnl": "221.8910593",
+          "slippage_cost": "94.35095120627628",
+          "spread_cost": "37.74041598508"
+        },
+        "net_pnl": "-98.90184200262221016",
+        "net_return_pct": "-0.3296728066754073672",
+        "profit_factor": "0.8139993659111856615715373917",
+        "regime_at_day_open": {
+          "Bearish": {
+            "days": 119,
+            "net_usdt": "0E-17",
+            "passive_25_usdt": "395.90456583630371328"
+          },
+          "Bullish": {
+            "days": 180,
+            "net_usdt": "-98.90184200262221016",
+            "passive_25_usdt": "1370.15896300516352448"
+          },
+          "Range": {
+            "days": 149,
+            "net_usdt": "0E-17",
+            "passive_25_usdt": "1193.48847019851253560"
+          },
+          "Uncertain": {
+            "days": 83,
+            "net_usdt": "0E-17",
+            "passive_25_usdt": "-659.55768841535974968"
+          }
+        },
+        "trades": 22,
+        "turnover_quote": "94350.58745624874779256",
+        "win_rate": 0.45454545454545453
+      },
+      "gates": {
+        "all_positive": false,
+        "drawdown": true,
+        "provenance": true,
+        "sample": false,
+        "simultaneous": false,
+        "stress": false,
+        "without_best": false
+      }
+    },
+    "BTCUSDT/240/EMA_REGIME": {
+      "base": {
+        "assumed_rules": {
+          "as_of_utc_seconds": 1704240000,
+          "exchange_accepted_fills_verified": false,
+          "historically_verified": false,
+          "maximum": "100",
+          "minimum": "10",
+          "note": "Preregistered illustrative constraints; historical accuracy unverified",
+          "original_sha256": "e767132ade3bfa2c196c850501fdbbe136e033b7049597087069158740714f63",
+          "provenance": "USER_SUPPLIED_UNVERIFIED_HISTORICAL_RULE_ASSUMPTION",
+          "step": "0.00001",
+          "symbol": "BTCUSDT",
+          "tick": "0.01"
+        },
+        "benchmarks_pct": {
+          "HOLD_100": "31.1124859587724411143",
+          "HOLD_25": "7.7766121186121629839",
+          "USDT": "0"
+        },
+        "cost_model": {
+          "execution": {
+            "slippage_bps": "5",
+            "version": "paper-slippage-v1"
+          },
+          "fees": {
+            "buy_currency": "quote",
+            "maker": "0.001",
+            "sell_currency": "quote",
+            "source": "LOCAL PAPER assumption; not account-verified",
+            "taker": "0.001",
+            "version": "paper-default-v1"
+          }
+        },
+        "entry_regimes": {
+          "Falling": {
+            "net_pnl": "0",
+            "trades": 0
+          },
+          "High": {
+            "net_pnl": "369.260934982681350690",
+            "trades": 11
+          },
+          "Low": {
+            "net_pnl": "-131.603956040589029010",
+            "trades": 30
+          },
+          "Rising": {
+            "net_pnl": "237.656978942092321680",
+            "trades": 41
+          },
+          "Sideways": {
+            "net_pnl": "0",
+            "trades": 0
+          }
+        },
+        "expectancy": "5.796511681514446870243902439",
+        "folds": [
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "12.7416345749192571966",
+              "HOLD_25": "3.1851039074202639486",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 12,
+              "exits": 12,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "17.379661766863086195",
+            "fold": 1,
+            "marked_drawdown_pct": "2.797088693350187152340967553",
+            "net_return_pct": "2.085559412023570343400",
+            "net_usdt": "208.555941202357034340",
+            "profit_factor": "2.152518218408985261957946040",
+            "trade_count": 12,
+            "win_rate": 0.5
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "62.5857042799748633805",
+              "HOLD_25": "15.6435255399183292575",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 16,
+              "exits": 16,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-3.02268916141632304875",
+            "fold": 2,
+            "marked_drawdown_pct": "3.515658180876263941200",
+            "net_return_pct": "-0.483630265826611687800",
+            "net_usdt": "-48.363026582661168780",
+            "profit_factor": "0.9030912417342870740444961648",
+            "trade_count": 16,
+            "win_rate": 0.375
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "18.0101190214232027658",
+              "HOLD_25": "4.5012069084978957456",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 13,
+              "exits": 13,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "5.958774178645881240",
+            "fold": 3,
+            "marked_drawdown_pct": "1.723296311160609540534172107",
+            "net_return_pct": "0.774640643223964561200",
+            "net_usdt": "77.464064322396456120",
+            "profit_factor": "1.253323452053534168689131738",
+            "trade_count": 13,
+            "win_rate": 0.38461538461538464
+          }
+        ],
+        "full_spread_bps": 4,
+        "max_drawdown": 3.515658180876264,
+        "modeled_costs_usdt": {
+          "fee_cost": "185.672876039774778320",
+          "gross_pnl": "553.3010710",
+          "slippage_cost": "92.836567061492900",
+          "spread_cost": "37.13464895664"
+        },
+        "net_pnl": "237.656978942092321680",
+        "net_return_pct": "0.7921899298069744056",
+        "profit_factor": "1.241079046711065291039832213",
+        "regime_at_day_open": {
+          "Bearish": {
+            "days": 119,
+            "net_usdt": "16.230948344719586460",
+            "passive_25_usdt": "397.050228365412995550"
+          },
+          "Bullish": {
+            "days": 180,
+            "net_usdt": "393.316987640254093080",
+            "passive_25_usdt": "1383.251113261628693910"
+          },
+          "Range": {
+            "days": 149,
+            "net_usdt": "-62.598906147219907590",
+            "passive_25_usdt": "1197.421507078457237100"
+          },
+          "Uncertain": {
+            "days": 83,
+            "net_usdt": "-109.292050895661450270",
+            "passive_25_usdt": "-644.739213121850031390"
+          }
+        },
+        "trades": 41,
+        "turnover_quote": "185672.452709919796452900",
+        "win_rate": 0.4146341463414634
+      },
+      "decision": "NO TRADE / INSUFFICIENT EVIDENCE",
+      "double": {
+        "assumed_rules": {
+          "as_of_utc_seconds": 1704240000,
+          "exchange_accepted_fills_verified": false,
+          "historically_verified": false,
+          "maximum": "100",
+          "minimum": "10",
+          "note": "Preregistered illustrative constraints; historical accuracy unverified",
+          "original_sha256": "e767132ade3bfa2c196c850501fdbbe136e033b7049597087069158740714f63",
+          "provenance": "USER_SUPPLIED_UNVERIFIED_HISTORICAL_RULE_ASSUMPTION",
+          "step": "0.00001",
+          "symbol": "BTCUSDT",
+          "tick": "0.01"
+        },
+        "benchmarks_pct": {
+          "HOLD_100": "30.6681372574771674032",
+          "HOLD_25": "7.6666477020820667456",
+          "USDT": "0"
+        },
+        "cost_model": {
+          "execution": {
+            "slippage_bps": "10",
+            "version": "paper-slippage-v1"
+          },
+          "fees": {
+            "buy_currency": "quote",
+            "maker": "0.001",
+            "sell_currency": "quote",
+            "source": "LOCAL PAPER assumption; not account-verified",
+            "taker": "0.002",
+            "version": "paper-default-v1"
+          }
+        },
+        "entry_regimes": {
+          "Falling": {
+            "net_pnl": "0",
+            "trades": 0
+          },
+          "High": {
+            "net_pnl": "261.94746184140805656",
+            "trades": 11
+          },
+          "Low": {
+            "net_pnl": "-335.62404621441880968",
+            "trades": 30
+          },
+          "Rising": {
+            "net_pnl": "-73.67658437301075312",
+            "trades": 41
+          },
+          "Sideways": {
+            "net_pnl": "0",
+            "trades": 0
+          }
+        },
+        "expectancy": "-1.796989862756359832195121951",
+        "folds": [
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "12.358655413031023656",
+              "HOLD_25": "3.0893677666402899096",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 12,
+              "exits": 12,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "9.14584880457976854",
+            "fold": 1,
+            "marked_drawdown_pct": "2.806834642903264413863433723",
+            "net_return_pct": "1.097501856549572224800",
+            "net_usdt": "109.75018565495722248",
+            "profit_factor": "1.544033984175698020709518739",
+            "trade_count": 12,
+            "win_rate": 0.5
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "62.035616380461041808",
+              "HOLD_25": "15.508904095115260452",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 16,
+              "exits": 16,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-9.136915746637282905",
+            "fold": 2,
+            "marked_drawdown_pct": "3.647255915497188019200",
+            "net_return_pct": "-1.461906519461965264800",
+            "net_usdt": "-146.19065194619652648",
+            "profit_factor": "0.7248201310429184588175496170",
+            "trade_count": 16,
+            "win_rate": 0.375
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "17.6101399789394367456",
+              "HOLD_25": "4.4016712444906498752",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 13,
+              "exits": 13,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-2.864316775520880701538461538",
+            "fold": 3,
+            "marked_drawdown_pct": "2.130516507757642543553419682",
+            "net_return_pct": "-0.372361180817714491200",
+            "net_usdt": "-37.23611808177144912",
+            "profit_factor": "0.8983316479268944506485381917",
+            "trade_count": 13,
+            "win_rate": 0.38461538461538464
+          }
+        ],
+        "full_spread_bps": 8,
+        "max_drawdown": 3.647255915497188,
+        "modeled_costs_usdt": {
+          "fee_cost": "350.35140004365547312",
+          "gross_pnl": "521.9215118",
+          "slippage_cost": "175.17615187279528",
+          "spread_cost": "70.07054425656"
+        },
+        "net_pnl": "-73.67658437301075312",
+        "net_return_pct": "-0.2455886145767025104",
+        "profit_factor": "0.9329749655198514448303239907",
+        "regime_at_day_open": {
+          "Bearish": {
+            "days": 119,
+            "net_usdt": "2.14808677268184384",
+            "passive_25_usdt": "395.90456583630371328"
+          },
+          "Bullish": {
+            "days": 180,
+            "net_usdt": "288.26683842514080600",
+            "passive_25_usdt": "1370.15896300516352448"
+          },
+          "Range": {
+            "days": 149,
+            "net_usdt": "-190.32529310513007408",
+            "passive_25_usdt": "1193.48847019851253560"
+          },
+          "Uncertain": {
+            "days": 83,
+            "net_usdt": "-173.76621646570332888",
+            "passive_25_usdt": "-659.55768841535974968"
+          }
+        },
+        "trades": 41,
+        "turnover_quote": "175175.14667219639527056",
+        "win_rate": 0.4146341463414634
+      },
+      "gates": {
+        "all_positive": false,
+        "drawdown": true,
+        "provenance": true,
+        "sample": false,
+        "simultaneous": false,
+        "stress": false,
+        "without_best": true
+      }
+    },
+    "BTCUSDT/60/EMA_PULLBACK": {
+      "base": {
+        "assumed_rules": {
+          "as_of_utc_seconds": 1704240000,
+          "exchange_accepted_fills_verified": false,
+          "historically_verified": false,
+          "maximum": "100",
+          "minimum": "10",
+          "note": "Preregistered illustrative constraints; historical accuracy unverified",
+          "original_sha256": "e767132ade3bfa2c196c850501fdbbe136e033b7049597087069158740714f63",
+          "provenance": "USER_SUPPLIED_UNVERIFIED_HISTORICAL_RULE_ASSUMPTION",
+          "step": "0.00001",
+          "symbol": "BTCUSDT",
+          "tick": "0.01"
+        },
+        "benchmarks_pct": {
+          "HOLD_100": "31.1124859587724411143",
+          "HOLD_25": "7.7766121186121629839",
+          "USDT": "0"
+        },
+        "cost_model": {
+          "execution": {
+            "slippage_bps": "5",
+            "version": "paper-slippage-v1"
+          },
+          "fees": {
+            "buy_currency": "quote",
+            "maker": "0.001",
+            "sell_currency": "quote",
+            "source": "LOCAL PAPER assumption; not account-verified",
+            "taker": "0.001",
+            "version": "paper-default-v1"
+          }
+        },
+        "entry_regimes": {
+          "Falling": {
+            "net_pnl": "0",
+            "trades": 0
+          },
+          "High": {
+            "net_pnl": "-630.595649395491891300",
+            "trades": 38
+          },
+          "Low": {
+            "net_pnl": "-537.346601819858519280",
+            "trades": 62
+          },
+          "Rising": {
+            "net_pnl": "-1167.942251215350410580",
+            "trades": 100
+          },
+          "Sideways": {
+            "net_pnl": "0",
+            "trades": 0
+          }
+        },
+        "expectancy": "-11.6794225121535041058",
+        "folds": [
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "12.7416345749192571966",
+              "HOLD_25": "3.1851039074202639486",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 31,
+              "exits": 31,
+              "forced_fold_close": 0,
+              "ignored_while_open": 19,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-12.18125862084904744935483871",
+            "fold": 1,
+            "marked_drawdown_pct": "4.055112189447079432500",
+            "net_return_pct": "-3.776190172463204709300",
+            "net_usdt": "-377.619017246320470930",
+            "profit_factor": "0.3843455623329515304895025191",
+            "trade_count": 31,
+            "win_rate": 0.25806451612903225
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "62.5857042799748633805",
+              "HOLD_25": "15.6435255399183292575",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 41,
+              "exits": 41,
+              "forced_fold_close": 0,
+              "ignored_while_open": 18,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-7.880620439700830649512195122",
+            "fold": 2,
+            "marked_drawdown_pct": "3.908423598735629758068512055",
+            "net_return_pct": "-3.231054380277340566300",
+            "net_usdt": "-323.105438027734056630",
+            "profit_factor": "0.5309996294360770072309930075",
+            "trade_count": 41,
+            "win_rate": 0.34146341463414637
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "18.0101190214232027658",
+              "HOLD_25": "4.5012069084978957456",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 28,
+              "exits": 28,
+              "forced_fold_close": 0,
+              "ignored_while_open": 10,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-16.68634985504628153642857143",
+            "fold": 3,
+            "marked_drawdown_pct": "5.039537550032885126904733542",
+            "net_return_pct": "-4.672177959412958830200",
+            "net_usdt": "-467.217795941295883020",
+            "profit_factor": "0.1254356640737037825379090162",
+            "trade_count": 28,
+            "win_rate": 0.2857142857142857
+          }
+        ],
+        "full_spread_bps": 4,
+        "max_drawdown": 5.039537550032885,
+        "modeled_costs_usdt": {
+          "fee_cost": "487.871757885247510580",
+          "gross_pnl": "-338.5604290",
+          "slippage_cost": "243.935769908942900",
+          "spread_cost": "97.57429442116"
+        },
+        "net_pnl": "-1167.942251215350410580",
+        "net_return_pct": "-3.8931408373845013686",
+        "profit_factor": "0.3640441888326960550852680979",
+        "regime_at_day_open": {
+          "Bearish": {
+            "days": 152,
+            "net_usdt": "-26.423986498539867450",
+            "passive_25_usdt": "395.958380591097406170"
+          },
+          "Bullish": {
+            "days": 154,
+            "net_usdt": "-1025.746041752713897380",
+            "passive_25_usdt": "-4.884146087193138330"
+          },
+          "Range": {
+            "days": 157,
+            "net_usdt": "42.635695262273909100",
+            "passive_25_usdt": "460.686962580086348910"
+          },
+          "Uncertain": {
+            "days": 68,
+            "net_usdt": "-158.407918226370554850",
+            "passive_25_usdt": "1481.222438499658278420"
+          }
+        },
+        "trades": 100,
+        "turnover_quote": "487872.437955740840682900",
+        "win_rate": 0.3
+      },
+      "decision": "NO TRADE / INSUFFICIENT EVIDENCE",
+      "double": {
+        "assumed_rules": {
+          "as_of_utc_seconds": 1704240000,
+          "exchange_accepted_fills_verified": false,
+          "historically_verified": false,
+          "maximum": "100",
+          "minimum": "10",
+          "note": "Preregistered illustrative constraints; historical accuracy unverified",
+          "original_sha256": "e767132ade3bfa2c196c850501fdbbe136e033b7049597087069158740714f63",
+          "provenance": "USER_SUPPLIED_UNVERIFIED_HISTORICAL_RULE_ASSUMPTION",
+          "step": "0.00001",
+          "symbol": "BTCUSDT",
+          "tick": "0.01"
+        },
+        "benchmarks_pct": {
+          "HOLD_100": "30.6681372574771674032",
+          "HOLD_25": "7.6666477020820667456",
+          "USDT": "0"
+        },
+        "cost_model": {
+          "execution": {
+            "slippage_bps": "10",
+            "version": "paper-slippage-v1"
+          },
+          "fees": {
+            "buy_currency": "quote",
+            "maker": "0.001",
+            "sell_currency": "quote",
+            "source": "LOCAL PAPER assumption; not account-verified",
+            "taker": "0.002",
+            "version": "paper-default-v1"
+          }
+        },
+        "entry_regimes": {
+          "Falling": {
+            "net_pnl": "0",
+            "trades": 0
+          },
+          "High": {
+            "net_pnl": "-913.13433339173677464",
+            "trades": 38
+          },
+          "Low": {
+            "net_pnl": "-1034.76346929677957256",
+            "trades": 62
+          },
+          "Rising": {
+            "net_pnl": "-1947.89780268851634720",
+            "trades": 100
+          },
+          "Sideways": {
+            "net_pnl": "0",
+            "trades": 0
+          }
+        },
+        "expectancy": "-19.478978026885163472",
+        "folds": [
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "12.358655413031023656",
+              "HOLD_25": "3.0893677666402899096",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 31,
+              "exits": 31,
+              "forced_fold_close": 0,
+              "ignored_while_open": 19,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-19.83010319298964302967741935",
+            "fold": 1,
+            "marked_drawdown_pct": "6.418724439667600972800",
+            "net_return_pct": "-6.147331989826789339200",
+            "net_usdt": "-614.73319898267893392",
+            "profit_factor": "0.2257997765170116627576616718",
+            "trade_count": 31,
+            "win_rate": 0.1935483870967742
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "62.035616380461041808",
+              "HOLD_25": "15.508904095115260452",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 41,
+              "exits": 41,
+              "forced_fold_close": 0,
+              "ignored_while_open": 18,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-15.75282109056223106341463415",
+            "fold": 2,
+            "marked_drawdown_pct": "6.57029377057230063600",
+            "net_return_pct": "-6.45865664713051473600",
+            "net_usdt": "-645.86566471305147360",
+            "profit_factor": "0.2857458481596675807659546147",
+            "trade_count": 41,
+            "win_rate": 0.24390243902439024
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "17.6101399789394367456",
+              "HOLD_25": "4.4016712444906498752",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 28,
+              "exits": 28,
+              "forced_fold_close": 0,
+              "ignored_while_open": 10,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-24.54639067831378356",
+            "fold": 3,
+            "marked_drawdown_pct": "7.142285293667906689035788814",
+            "net_return_pct": "-6.872989389927859396800",
+            "net_usdt": "-687.29893899278593968",
+            "profit_factor": "0.03019901776377772758716238251",
+            "trade_count": 28,
+            "win_rate": 0.10714285714285714
+          }
+        ],
+        "full_spread_bps": 8,
+        "max_drawdown": 7.142285293667907,
+        "modeled_costs_usdt": {
+          "fee_cost": "957.28214243334490720",
+          "gross_pnl": "-320.5189286",
+          "slippage_cost": "478.64055924157144",
+          "spread_cost": "191.45617241360"
+        },
+        "net_pnl": "-1947.89780268851634720",
+        "net_return_pct": "-6.492992675628387824",
+        "profit_factor": "0.1907283457072496246480687946",
+        "regime_at_day_open": {
+          "Bearish": {
+            "days": 152,
+            "net_usdt": "-42.17766323173414032",
+            "passive_25_usdt": "394.72770223276905312"
+          },
+          "Bullish": {
+            "days": 154,
+            "net_usdt": "-1661.29077219799532832",
+            "passive_25_usdt": "-21.95061484692943440"
+          },
+          "Range": {
+            "days": 157,
+            "net_usdt": "-48.29170136275786560",
+            "passive_25_usdt": "450.80617075363098096"
+          },
+          "Uncertain": {
+            "days": 68,
+            "net_usdt": "-196.13766589602901296",
+            "passive_25_usdt": "1476.41105248514942400"
+          }
+        },
+        "trades": 100,
+        "turnover_quote": "478643.05244799296394288",
+        "win_rate": 0.19
+      },
+      "gates": {
+        "all_positive": false,
+        "drawdown": true,
+        "provenance": true,
+        "sample": false,
+        "simultaneous": false,
+        "stress": false,
+        "without_best": false
+      }
+    },
+    "BTCUSDT/60/EMA_REGIME": {
+      "base": {
+        "assumed_rules": {
+          "as_of_utc_seconds": 1704240000,
+          "exchange_accepted_fills_verified": false,
+          "historically_verified": false,
+          "maximum": "100",
+          "minimum": "10",
+          "note": "Preregistered illustrative constraints; historical accuracy unverified",
+          "original_sha256": "e767132ade3bfa2c196c850501fdbbe136e033b7049597087069158740714f63",
+          "provenance": "USER_SUPPLIED_UNVERIFIED_HISTORICAL_RULE_ASSUMPTION",
+          "step": "0.00001",
+          "symbol": "BTCUSDT",
+          "tick": "0.01"
+        },
+        "benchmarks_pct": {
+          "HOLD_100": "31.1124859587724411143",
+          "HOLD_25": "7.7766121186121629839",
+          "USDT": "0"
+        },
+        "cost_model": {
+          "execution": {
+            "slippage_bps": "5",
+            "version": "paper-slippage-v1"
+          },
+          "fees": {
+            "buy_currency": "quote",
+            "maker": "0.001",
+            "sell_currency": "quote",
+            "source": "LOCAL PAPER assumption; not account-verified",
+            "taker": "0.001",
+            "version": "paper-default-v1"
+          }
+        },
+        "entry_regimes": {
+          "Falling": {
+            "net_pnl": "0",
+            "trades": 0
+          },
+          "High": {
+            "net_pnl": "-452.026534018029566670",
+            "trades": 75
+          },
+          "Low": {
+            "net_pnl": "-314.201010586674512070",
+            "trades": 83
+          },
+          "Rising": {
+            "net_pnl": "-766.227544604704078740",
+            "trades": 158
+          },
+          "Sideways": {
+            "net_pnl": "0",
+            "trades": 0
+          }
+        },
+        "expectancy": "-4.849541421548759992025316456",
+        "folds": [
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "12.7416345749192571966",
+              "HOLD_25": "3.1851039074202639486",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 51,
+              "exits": 51,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-3.961310759637633894705882353",
+            "fold": 1,
+            "marked_drawdown_pct": "3.819900748245704141565699706",
+            "net_return_pct": "-2.020268487415193286300",
+            "net_usdt": "-202.026848741519328630",
+            "profit_factor": "0.7607206726699398341320916390",
+            "trade_count": 51,
+            "win_rate": 0.37254901960784315
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "62.5857042799748633805",
+              "HOLD_25": "15.6435255399183292575",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 52,
+              "exits": 52,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-2.297914126194202895769230769",
+            "fold": 2,
+            "marked_drawdown_pct": "2.296485649682441799472054815",
+            "net_return_pct": "-1.194915345620985505800",
+            "net_usdt": "-119.491534562098550580",
+            "profit_factor": "0.8792553780861406194860307146",
+            "trade_count": 52,
+            "win_rate": 0.4423076923076923
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "18.0101190214232027658",
+              "HOLD_25": "4.5012069084978957456",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 55,
+              "exits": 55,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-8.085621114565203627818181818",
+            "fold": 3,
+            "marked_drawdown_pct": "5.888157338148622345155407549",
+            "net_return_pct": "-4.447091613010861995300",
+            "net_usdt": "-444.709161301086199530",
+            "profit_factor": "0.5130101184027060879258053348",
+            "trade_count": 55,
+            "win_rate": 0.32727272727272727
+          }
+        ],
+        "full_spread_bps": 4,
+        "max_drawdown": 5.8881573381486225,
+        "modeled_costs_usdt": {
+          "fee_cost": "776.631597818157418740",
+          "gross_pnl": "554.0463334",
+          "slippage_cost": "388.315898589066660",
+          "spread_cost": "155.32638159748"
+        },
+        "net_pnl": "-766.227544604704078740",
+        "net_return_pct": "-2.5540918153490135958",
+        "profit_factor": "0.7210792207365984120210775179",
+        "regime_at_day_open": {
+          "Bearish": {
+            "days": 152,
+            "net_usdt": "-320.499782976301387380",
+            "passive_25_usdt": "395.958380591097406170"
+          },
+          "Bullish": {
+            "days": 154,
+            "net_usdt": "-183.460158795898723860",
+            "passive_25_usdt": "-4.884146087193138330"
+          },
+          "Range": {
+            "days": 157,
+            "net_usdt": "-270.595398832594905870",
+            "passive_25_usdt": "460.686962580086348910"
+          },
+          "Uncertain": {
+            "days": 68,
+            "net_usdt": "8.327796000090938370",
+            "passive_25_usdt": "1481.222438499658278420"
+          }
+        },
+        "trades": 158,
+        "turnover_quote": "776631.587414104205286660",
+        "win_rate": 0.379746835443038
+      },
+      "decision": "NO TRADE / INSUFFICIENT EVIDENCE",
+      "double": {
+        "assumed_rules": {
+          "as_of_utc_seconds": 1704240000,
+          "exchange_accepted_fills_verified": false,
+          "historically_verified": false,
+          "maximum": "100",
+          "minimum": "10",
+          "note": "Preregistered illustrative constraints; historical accuracy unverified",
+          "original_sha256": "e767132ade3bfa2c196c850501fdbbe136e033b7049597087069158740714f63",
+          "provenance": "USER_SUPPLIED_UNVERIFIED_HISTORICAL_RULE_ASSUMPTION",
+          "step": "0.00001",
+          "symbol": "BTCUSDT",
+          "tick": "0.01"
+        },
+        "benchmarks_pct": {
+          "HOLD_100": "30.6681372574771674032",
+          "HOLD_25": "7.6666477020820667456",
+          "USDT": "0"
+        },
+        "cost_model": {
+          "execution": {
+            "slippage_bps": "10",
+            "version": "paper-slippage-v1"
+          },
+          "fees": {
+            "buy_currency": "quote",
+            "maker": "0.001",
+            "sell_currency": "quote",
+            "source": "LOCAL PAPER assumption; not account-verified",
+            "taker": "0.002",
+            "version": "paper-default-v1"
+          }
+        },
+        "entry_regimes": {
+          "Falling": {
+            "net_pnl": "0",
+            "trades": 0
+          },
+          "High": {
+            "net_pnl": "-1028.39359975594594128",
+            "trades": 75
+          },
+          "Low": {
+            "net_pnl": "-984.29483924076880008",
+            "trades": 83
+          },
+          "Rising": {
+            "net_pnl": "-2012.68843899671474136",
+            "trades": 158
+          },
+          "Sideways": {
+            "net_pnl": "0",
+            "trades": 0
+          }
+        },
+        "expectancy": "-12.73853442402984013518987342",
+        "folds": [
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "12.358655413031023656",
+              "HOLD_25": "3.0893677666402899096",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 51,
+              "exits": 51,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-11.91596408977228259764705882",
+            "fold": 1,
+            "marked_drawdown_pct": "6.696852836539665099368862902",
+            "net_return_pct": "-6.077141685783864124800",
+            "net_usdt": "-607.71416857838641248",
+            "profit_factor": "0.4418091584484510278875784118",
+            "trade_count": 51,
+            "win_rate": 0.29411764705882354
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "62.035616380461041808",
+              "HOLD_25": "15.508904095115260452",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 52,
+              "exits": 52,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-10.11474002280354567230769231",
+            "fold": 2,
+            "marked_drawdown_pct": "5.582808319511937427200",
+            "net_return_pct": "-5.259664811857843749600",
+            "net_usdt": "-525.96648118578437496",
+            "profit_factor": "0.5584560226467654117205612695",
+            "trade_count": 52,
+            "win_rate": 0.38461538461538464
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "17.6101399789394367456",
+              "HOLD_25": "4.4016712444906498752",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 55,
+              "exits": 55,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-15.98195980422807188945454545",
+            "fold": 3,
+            "marked_drawdown_pct": "9.457437616869057486762466639",
+            "net_return_pct": "-8.790077892325439539200",
+            "net_usdt": "-879.00778923254395392",
+            "profit_factor": "0.2704385346694917117432899050",
+            "trade_count": 55,
+            "win_rate": 0.23636363636363636
+          }
+        ],
+        "full_spread_bps": 8,
+        "max_drawdown": 9.457437616869058,
+        "modeled_costs_usdt": {
+          "fee_cost": "1510.87222817725190136",
+          "gross_pnl": "555.7947929",
+          "slippage_cost": "755.43636770878284",
+          "spread_cost": "302.17463601068"
+        },
+        "net_pnl": "-2012.68843899671474136",
+        "net_return_pct": "-6.7089614633223824712",
+        "profit_factor": "0.4224318561329618927327718992",
+        "regime_at_day_open": {
+          "Bearish": {
+            "days": 152,
+            "net_usdt": "-538.69556359262880768",
+            "passive_25_usdt": "394.72770223276905312"
+          },
+          "Bullish": {
+            "days": 154,
+            "net_usdt": "-415.05532707898372344",
+            "passive_25_usdt": "-21.95061484692943440"
+          },
+          "Range": {
+            "days": 157,
+            "net_usdt": "-800.96457055613342400",
+            "passive_25_usdt": "450.80617075363098096"
+          },
+          "Uncertain": {
+            "days": 68,
+            "net_usdt": "-257.97297776896878624",
+            "passive_25_usdt": "1476.41105248514942400"
+          }
+        },
+        "trades": 158,
+        "turnover_quote": "755437.11772104758960568",
+        "win_rate": 0.3037974683544304
+      },
+      "gates": {
+        "all_positive": false,
+        "drawdown": true,
+        "provenance": true,
+        "sample": true,
+        "simultaneous": false,
+        "stress": false,
+        "without_best": false
+      }
+    },
+    "ETHUSDT/240/EMA_PULLBACK": {
+      "base": {
+        "assumed_rules": {
+          "as_of_utc_seconds": 1704240000,
+          "exchange_accepted_fills_verified": false,
+          "historically_verified": false,
+          "maximum": "100",
+          "minimum": "10",
+          "note": "Preregistered illustrative constraints; historical accuracy unverified",
+          "original_sha256": "d8c7e8bfb07d315444e5ac1e731154ed515a0e26bd7683f0abc121658177175f",
+          "provenance": "USER_SUPPLIED_UNVERIFIED_HISTORICAL_RULE_ASSUMPTION",
+          "step": "0.0001",
+          "symbol": "ETHUSDT",
+          "tick": "0.01"
+        },
+        "benchmarks_pct": {
+          "HOLD_100": "15.740528208604858686",
+          "HOLD_25": "3.934786689459572412",
+          "USDT": "0"
+        },
+        "cost_model": {
+          "execution": {
+            "slippage_bps": "5",
+            "version": "paper-slippage-v1"
+          },
+          "fees": {
+            "buy_currency": "quote",
+            "maker": "0.001",
+            "sell_currency": "quote",
+            "source": "LOCAL PAPER assumption; not account-verified",
+            "taker": "0.001",
+            "version": "paper-default-v1"
+          }
+        },
+        "entry_regimes": {
+          "Falling": {
+            "net_pnl": "0",
+            "trades": 0
+          },
+          "High": {
+            "net_pnl": "92.48058386076356010",
+            "trades": 8
+          },
+          "Low": {
+            "net_pnl": "88.92311097175674300",
+            "trades": 11
+          },
+          "Rising": {
+            "net_pnl": "181.40369483252030310",
+            "trades": 19
+          },
+          "Sideways": {
+            "net_pnl": "0",
+            "trades": 0
+          }
+        },
+        "expectancy": "9.547562885922121215789473684",
+        "folds": [
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "-3.554142048606457224",
+              "HOLD_25": "-0.888535512151614306",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 5,
+              "exits": 5,
+              "forced_fold_close": 0,
+              "ignored_while_open": 1,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "52.34590459449225234",
+            "fold": 1,
+            "marked_drawdown_pct": "0.4685752104411618000574521622",
+            "net_return_pct": "2.61729522972461261700",
+            "net_usdt": "261.72952297246126170",
+            "profit_factor": "21.41944961069832903313493165",
+            "trade_count": 5,
+            "win_rate": 0.6
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "15.82308409980603114",
+              "HOLD_25": "3.955452139741918788",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 6,
+              "exits": 6,
+              "forced_fold_close": 0,
+              "ignored_while_open": 2,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-3.85274013160675905",
+            "fold": 2,
+            "marked_drawdown_pct": "2.030053836813155610767693922",
+            "net_return_pct": "-0.23116440789640554300",
+            "net_usdt": "-23.11644078964055430",
+            "profit_factor": "0.8969248136965032042569160340",
+            "trade_count": 6,
+            "win_rate": 0.5
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "34.952642574615002142",
+              "HOLD_25": "8.737443440788412754",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 8,
+              "exits": 8,
+              "forced_fold_close": 0,
+              "ignored_while_open": 6,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-7.1511734187875505375",
+            "fold": 3,
+            "marked_drawdown_pct": "1.340878279098652805216987885",
+            "net_return_pct": "-0.57209387350300404300",
+            "net_usdt": "-57.20938735030040430",
+            "profit_factor": "0.7375408557191876781078535953",
+            "trade_count": 8,
+            "win_rate": 0.25
+          }
+        ],
+        "full_spread_bps": 4,
+        "max_drawdown": 2.0300538368131558,
+        "modeled_costs_usdt": {
+          "fee_cost": "68.53713928087399690",
+          "gross_pnl": "297.916943",
+          "slippage_cost": "34.26864069280570",
+          "spread_cost": "13.7074681938"
+        },
+        "net_pnl": "181.40369483252030310",
+        "net_return_pct": "0.604678982775067677",
+        "profit_factor": "1.398636991187298427689829011",
+        "regime_at_day_open": {
+          "Bearish": {
+            "days": 148,
+            "net_usdt": "0E-17",
+            "passive_25_usdt": "-303.80367310868792250"
+          },
+          "Bullish": {
+            "days": 147,
+            "net_usdt": "207.47297714405365350",
+            "passive_25_usdt": "2641.06316158090864110"
+          },
+          "High Volatility": {
+            "days": 10,
+            "net_usdt": "0",
+            "passive_25_usdt": "87.23609171545637160"
+          },
+          "Range": {
+            "days": 175,
+            "net_usdt": "-26.06928231153335040",
+            "passive_25_usdt": "-113.71083666101596170"
+          },
+          "Uncertain": {
+            "days": 51,
+            "net_usdt": "0E-17",
+            "passive_25_usdt": "-1130.34873668878940490"
+          }
+        },
+        "trades": 19,
+        "turnover_quote": "68536.88934003988350570",
+        "win_rate": 0.42105263157894735
+      },
+      "decision": "NO TRADE / INSUFFICIENT EVIDENCE",
+      "double": {
+        "assumed_rules": {
+          "as_of_utc_seconds": 1704240000,
+          "exchange_accepted_fills_verified": false,
+          "historically_verified": false,
+          "maximum": "100",
+          "minimum": "10",
+          "note": "Preregistered illustrative constraints; historical accuracy unverified",
+          "original_sha256": "d8c7e8bfb07d315444e5ac1e731154ed515a0e26bd7683f0abc121658177175f",
+          "provenance": "USER_SUPPLIED_UNVERIFIED_HISTORICAL_RULE_ASSUMPTION",
+          "step": "0.0001",
+          "symbol": "ETHUSDT",
+          "tick": "0.01"
+        },
+        "benchmarks_pct": {
+          "HOLD_100": "15.3477145953093508",
+          "HOLD_25": "3.836849870284179672",
+          "USDT": "0"
+        },
+        "cost_model": {
+          "execution": {
+            "slippage_bps": "10",
+            "version": "paper-slippage-v1"
+          },
+          "fees": {
+            "buy_currency": "quote",
+            "maker": "0.001",
+            "sell_currency": "quote",
+            "source": "LOCAL PAPER assumption; not account-verified",
+            "taker": "0.002",
+            "version": "paper-default-v1"
+          }
+        },
+        "entry_regimes": {
+          "Falling": {
+            "net_pnl": "0",
+            "trades": 0
+          },
+          "High": {
+            "net_pnl": "42.8260079480147880",
+            "trades": 8
+          },
+          "Low": {
+            "net_pnl": "19.7323706284586616",
+            "trades": 11
+          },
+          "Rising": {
+            "net_pnl": "62.5583785764734496",
+            "trades": 19
+          },
+          "Sideways": {
+            "net_pnl": "0",
+            "trades": 0
+          }
+        },
+        "expectancy": "3.292546240867023663157894737",
+        "folds": [
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "-3.88147448487233904",
+              "HOLD_25": "-0.97036862121808476",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 5,
+              "exits": 5,
+              "forced_fold_close": 0,
+              "ignored_while_open": 1,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "43.05031507947912336",
+            "fold": 1,
+            "marked_drawdown_pct": "0.4725544365167092216280513177",
+            "net_return_pct": "2.15251575397395616800",
+            "net_usdt": "215.2515753973956168",
+            "profit_factor": "10.07405053652374962361753328",
+            "trade_count": 5,
+            "win_rate": 0.6
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "15.430015135280987136",
+              "HOLD_25": "3.857503783820246784",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 6,
+              "exits": 6,
+              "forced_fold_close": 0,
+              "ignored_while_open": 2,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-9.2373930722174500",
+            "fold": 2,
+            "marked_drawdown_pct": "2.090263017582008085645373922",
+            "net_return_pct": "-0.55424358433304700",
+            "net_usdt": "-55.4243584333047000",
+            "profit_factor": "0.7525624269090639425245612669",
+            "trade_count": 6,
+            "win_rate": 0.5
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "34.494603135519404304",
+              "HOLD_25": "8.623414448250376992",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 8,
+              "exits": 8,
+              "forced_fold_close": 0,
+              "ignored_while_open": 6,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-12.1586047984521834",
+            "fold": 3,
+            "marked_drawdown_pct": "1.602682135160813616616309649",
+            "net_return_pct": "-0.97268838387617467200",
+            "net_usdt": "-97.2688383876174672",
+            "profit_factor": "0.5844506140397922848292831905",
+            "trade_count": 8,
+            "win_rate": 0.25
+          }
+        ],
+        "full_spread_bps": 8,
+        "max_drawdown": 2.090263017582008,
+        "modeled_costs_usdt": {
+          "fee_cost": "126.9499757098209504",
+          "gross_pnl": "278.373736",
+          "slippage_cost": "63.4752408385056",
+          "spread_cost": "25.3901408752"
+        },
+        "net_pnl": "62.5583785764734496",
+        "net_return_pct": "0.208527928588244832",
+        "profit_factor": "1.129846322271772995790886302",
+        "regime_at_day_open": {
+          "Bearish": {
+            "days": 148,
+            "net_usdt": "0E-16",
+            "passive_25_usdt": "-302.7752095211366544"
+          },
+          "Bullish": {
+            "days": 147,
+            "net_usdt": "98.8133472455361120",
+            "passive_25_usdt": "2623.6918170636363624"
+          },
+          "High Volatility": {
+            "days": 10,
+            "net_usdt": "0",
+            "passive_25_usdt": "78.4596386276501568"
+          },
+          "Range": {
+            "days": 175,
+            "net_usdt": "-36.2549686690626624",
+            "passive_25_usdt": "-113.2736664838594032"
+          },
+          "Uncertain": {
+            "days": 51,
+            "net_usdt": "0E-16",
+            "passive_25_usdt": "-1135.0476186010365600"
+          }
+        },
+        "trades": 19,
+        "turnover_quote": "63474.6088382019026112",
+        "win_rate": 0.42105263157894735
+      },
+      "gates": {
+        "all_positive": false,
+        "drawdown": true,
+        "provenance": true,
+        "sample": false,
+        "simultaneous": false,
+        "stress": true,
+        "without_best": false
+      }
+    },
+    "ETHUSDT/240/EMA_REGIME": {
+      "base": {
+        "assumed_rules": {
+          "as_of_utc_seconds": 1704240000,
+          "exchange_accepted_fills_verified": false,
+          "historically_verified": false,
+          "maximum": "100",
+          "minimum": "10",
+          "note": "Preregistered illustrative constraints; historical accuracy unverified",
+          "original_sha256": "d8c7e8bfb07d315444e5ac1e731154ed515a0e26bd7683f0abc121658177175f",
+          "provenance": "USER_SUPPLIED_UNVERIFIED_HISTORICAL_RULE_ASSUMPTION",
+          "step": "0.0001",
+          "symbol": "ETHUSDT",
+          "tick": "0.01"
+        },
+        "benchmarks_pct": {
+          "HOLD_100": "15.740528208604858686",
+          "HOLD_25": "3.934786689459572412",
+          "USDT": "0"
+        },
+        "cost_model": {
+          "execution": {
+            "slippage_bps": "5",
+            "version": "paper-slippage-v1"
+          },
+          "fees": {
+            "buy_currency": "quote",
+            "maker": "0.001",
+            "sell_currency": "quote",
+            "source": "LOCAL PAPER assumption; not account-verified",
+            "taker": "0.001",
+            "version": "paper-default-v1"
+          }
+        },
+        "entry_regimes": {
+          "Falling": {
+            "net_pnl": "0",
+            "trades": 0
+          },
+          "High": {
+            "net_pnl": "73.56305670592796460",
+            "trades": 8
+          },
+          "Low": {
+            "net_pnl": "-418.95883042223217120",
+            "trades": 26
+          },
+          "Rising": {
+            "net_pnl": "-345.39577371630420660",
+            "trades": 34
+          },
+          "Sideways": {
+            "net_pnl": "0",
+            "trades": 0
+          }
+        },
+        "expectancy": "-10.15869922695012372352941176",
+        "folds": [
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "-3.554142048606457224",
+              "HOLD_25": "-0.888535512151614306",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 13,
+              "exits": 13,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-11.64509152430332382307692308",
+            "fold": 1,
+            "marked_drawdown_pct": "3.573001440459841925445377706",
+            "net_return_pct": "-1.51386189815943209700",
+            "net_usdt": "-151.38618981594320970",
+            "profit_factor": "0.6480345870359505849578011384",
+            "trade_count": 13,
+            "win_rate": 0.3076923076923077
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "15.82308409980603114",
+              "HOLD_25": "3.955452139741918788",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 10,
+              "exits": 10,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-0.00864280476104958",
+            "fold": 2,
+            "marked_drawdown_pct": "2.613383815938034683324627797",
+            "net_return_pct": "-0.00086428047610495800",
+            "net_usdt": "-0.08642804761049580",
+            "profit_factor": "0.9997082550847154596766918947",
+            "trade_count": 10,
+            "win_rate": 0.5
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "34.952642574615002142",
+              "HOLD_25": "8.737443440788412754",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 11,
+              "exits": 11,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-17.62937780479550010",
+            "fold": 3,
+            "marked_drawdown_pct": "3.251871832792866708406771752",
+            "net_return_pct": "-1.93923155852750501100",
+            "net_usdt": "-193.92315585275050110",
+            "profit_factor": "0.5659568127615979542804734727",
+            "trade_count": 11,
+            "win_rate": 0.18181818181818182
+          }
+        ],
+        "full_spread_bps": 4,
+        "max_drawdown": 3.573001440459842,
+        "modeled_costs_usdt": {
+          "fee_cost": "131.20043683459540660",
+          "gross_pnl": "-122.355088",
+          "slippage_cost": "65.60018126850880",
+          "spread_cost": "26.2400676132"
+        },
+        "net_pnl": "-345.39577371630420660",
+        "net_return_pct": "-1.151319245721014022",
+        "profit_factor": "0.7055813474238839909303129187",
+        "regime_at_day_open": {
+          "Bearish": {
+            "days": 148,
+            "net_usdt": "23.14760499307165230",
+            "passive_25_usdt": "-303.80367310868792250"
+          },
+          "Bullish": {
+            "days": 147,
+            "net_usdt": "-266.40258765122617290",
+            "passive_25_usdt": "2641.06316158090864110"
+          },
+          "High Volatility": {
+            "days": 10,
+            "net_usdt": "0E-17",
+            "passive_25_usdt": "87.23609171545637160"
+          },
+          "Range": {
+            "days": 175,
+            "net_usdt": "39.79370796830957790",
+            "passive_25_usdt": "-113.71083666101596170"
+          },
+          "Uncertain": {
+            "days": 51,
+            "net_usdt": "-141.93449902645926390",
+            "passive_25_usdt": "-1130.34873668878940490"
+          }
+        },
+        "trades": 34,
+        "turnover_quote": "131200.65102993228830880",
+        "win_rate": 0.3235294117647059
+      },
+      "decision": "NO TRADE / INSUFFICIENT EVIDENCE",
+      "double": {
+        "assumed_rules": {
+          "as_of_utc_seconds": 1704240000,
+          "exchange_accepted_fills_verified": false,
+          "historically_verified": false,
+          "maximum": "100",
+          "minimum": "10",
+          "note": "Preregistered illustrative constraints; historical accuracy unverified",
+          "original_sha256": "d8c7e8bfb07d315444e5ac1e731154ed515a0e26bd7683f0abc121658177175f",
+          "provenance": "USER_SUPPLIED_UNVERIFIED_HISTORICAL_RULE_ASSUMPTION",
+          "step": "0.0001",
+          "symbol": "ETHUSDT",
+          "tick": "0.01"
+        },
+        "benchmarks_pct": {
+          "HOLD_100": "15.3477145953093508",
+          "HOLD_25": "3.836849870284179672",
+          "USDT": "0"
+        },
+        "cost_model": {
+          "execution": {
+            "slippage_bps": "10",
+            "version": "paper-slippage-v1"
+          },
+          "fees": {
+            "buy_currency": "quote",
+            "maker": "0.001",
+            "sell_currency": "quote",
+            "source": "LOCAL PAPER assumption; not account-verified",
+            "taker": "0.002",
+            "version": "paper-default-v1"
+          }
+        },
+        "entry_regimes": {
+          "Falling": {
+            "net_pnl": "0",
+            "trades": 0
+          },
+          "High": {
+            "net_pnl": "28.5695409208226304",
+            "trades": 8
+          },
+          "Low": {
+            "net_pnl": "-548.0710097831567928",
+            "trades": 26
+          },
+          "Rising": {
+            "net_pnl": "-519.5014688623341624",
+            "trades": 34
+          },
+          "Sideways": {
+            "net_pnl": "0",
+            "trades": 0
+          }
+        },
+        "expectancy": "-15.27945496653924007058823529",
+        "folds": [
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "-3.88147448487233904",
+              "HOLD_25": "-0.97036862121808476",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 13,
+              "exits": 13,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-16.8524755194779928",
+            "fold": 1,
+            "marked_drawdown_pct": "3.764631315806284667305399775",
+            "net_return_pct": "-2.19082181753213906400",
+            "net_usdt": "-219.0821817532139064",
+            "profit_factor": "0.5108400511019516405339250492",
+            "trade_count": 13,
+            "win_rate": 0.3076923076923077
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "15.430015135280987136",
+              "HOLD_25": "3.857503783820246784",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 10,
+              "exits": 10,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-5.54097203007067272",
+            "fold": 2,
+            "marked_drawdown_pct": "2.500627534208638829210074303",
+            "net_return_pct": "-0.55409720300706727200",
+            "net_usdt": "-55.4097203007067272",
+            "profit_factor": "0.8173900332931264104455468807",
+            "trade_count": 10,
+            "win_rate": 0.4
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "34.494603135519404304",
+              "HOLD_25": "8.623414448250376992",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 11,
+              "exits": 11,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-22.27359698258304807272727273",
+            "fold": 3,
+            "marked_drawdown_pct": "3.364680996090240660315523534",
+            "net_return_pct": "-2.45009566808413528800",
+            "net_usdt": "-245.0095668084135288",
+            "profit_factor": "0.4709427369905480253631288975",
+            "trade_count": 11,
+            "win_rate": 0.18181818181818182
+          }
+        ],
+        "full_spread_bps": 8,
+        "max_drawdown": 3.7646313158062847,
+        "modeled_costs_usdt": {
+          "fee_cost": "240.3835659382753624",
+          "gross_pnl": "-110.849647",
+          "slippage_cost": "120.1916240428588",
+          "spread_cost": "48.0766318812"
+        },
+        "net_pnl": "-519.5014688623341624",
+        "net_return_pct": "-1.731671562874447208",
+        "profit_factor": "0.5722198719546379790007238872",
+        "regime_at_day_open": {
+          "Bearish": {
+            "days": 148,
+            "net_usdt": "-1.6342681790982792",
+            "passive_25_usdt": "-302.7752095211366544"
+          },
+          "Bullish": {
+            "days": 147,
+            "net_usdt": "-270.3164081547044136",
+            "passive_25_usdt": "2623.6918170636363624"
+          },
+          "High Volatility": {
+            "days": 10,
+            "net_usdt": "0E-16",
+            "passive_25_usdt": "78.4596386276501568"
+          },
+          "Range": {
+            "days": 175,
+            "net_usdt": "-83.4678294304452864",
+            "passive_25_usdt": "-113.2736664838594032"
+          },
+          "Uncertain": {
+            "days": 51,
+            "net_usdt": "-164.0829630980861832",
+            "passive_25_usdt": "-1135.0476186010365600"
+          }
+        },
+        "trades": 34,
+        "turnover_quote": "120192.3412049435293176",
+        "win_rate": 0.29411764705882354
+      },
+      "gates": {
+        "all_positive": false,
+        "drawdown": true,
+        "provenance": true,
+        "sample": false,
+        "simultaneous": false,
+        "stress": false,
+        "without_best": false
+      }
+    },
+    "ETHUSDT/60/EMA_PULLBACK": {
+      "base": {
+        "assumed_rules": {
+          "as_of_utc_seconds": 1704240000,
+          "exchange_accepted_fills_verified": false,
+          "historically_verified": false,
+          "maximum": "100",
+          "minimum": "10",
+          "note": "Preregistered illustrative constraints; historical accuracy unverified",
+          "original_sha256": "d8c7e8bfb07d315444e5ac1e731154ed515a0e26bd7683f0abc121658177175f",
+          "provenance": "USER_SUPPLIED_UNVERIFIED_HISTORICAL_RULE_ASSUMPTION",
+          "step": "0.0001",
+          "symbol": "ETHUSDT",
+          "tick": "0.01"
+        },
+        "benchmarks_pct": {
+          "HOLD_100": "15.740528208604858686",
+          "HOLD_25": "3.934786689459572412",
+          "USDT": "0"
+        },
+        "cost_model": {
+          "execution": {
+            "slippage_bps": "5",
+            "version": "paper-slippage-v1"
+          },
+          "fees": {
+            "buy_currency": "quote",
+            "maker": "0.001",
+            "sell_currency": "quote",
+            "source": "LOCAL PAPER assumption; not account-verified",
+            "taker": "0.001",
+            "version": "paper-default-v1"
+          }
+        },
+        "entry_regimes": {
+          "Falling": {
+            "net_pnl": "0",
+            "trades": 0
+          },
+          "High": {
+            "net_pnl": "-562.11395955204895110",
+            "trades": 34
+          },
+          "Low": {
+            "net_pnl": "-438.92133238381392540",
+            "trades": 39
+          },
+          "Rising": {
+            "net_pnl": "-1001.03529193586287650",
+            "trades": 73
+          },
+          "Sideways": {
+            "net_pnl": "0",
+            "trades": 0
+          }
+        },
+        "expectancy": "-13.71281221829949145890410959",
+        "folds": [
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "-3.554142048606457224",
+              "HOLD_25": "-0.888535512151614306",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 25,
+              "exits": 25,
+              "forced_fold_close": 0,
+              "ignored_while_open": 14,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-0.75108864337810020",
+            "fold": 1,
+            "marked_drawdown_pct": "1.836505884417339948420393908",
+            "net_return_pct": "-0.1877721608445250500",
+            "net_usdt": "-18.77721608445250500",
+            "profit_factor": "0.9561265644269152054392732064",
+            "trade_count": 25,
+            "win_rate": 0.4
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "15.82308409980603114",
+              "HOLD_25": "3.955452139741918788",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 1,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 26,
+              "exits": 26,
+              "forced_fold_close": 0,
+              "ignored_while_open": 8,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-14.39622754853228615769230769",
+            "fold": 2,
+            "marked_drawdown_pct": "4.7574166252756230900",
+            "net_return_pct": "-3.74301916261839440100",
+            "net_usdt": "-374.30191626183944010",
+            "profit_factor": "0.3639320185202163638395939499",
+            "trade_count": 26,
+            "win_rate": 0.23076923076923078
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "34.952642574615002142",
+              "HOLD_25": "8.737443440788412754",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 22,
+              "exits": 22,
+              "forced_fold_close": 0,
+              "ignored_while_open": 9,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-27.63437089043504233636363636",
+            "fold": 3,
+            "marked_drawdown_pct": "6.617069116796832990877761697",
+            "net_return_pct": "-6.07956159589570931400",
+            "net_usdt": "-607.95615958957093140",
+            "profit_factor": "0.1499510519689889875331936348",
+            "trade_count": 22,
+            "win_rate": 0.18181818181818182
+          }
+        ],
+        "full_spread_bps": 4,
+        "max_drawdown": 6.617069116796833,
+        "modeled_costs_usdt": {
+          "fee_cost": "348.56586155301177650",
+          "gross_pnl": "-408.473511",
+          "slippage_cost": "174.28281122985110",
+          "spread_cost": "69.7131081530"
+        },
+        "net_pnl": "-1001.03529193586287650",
+        "net_return_pct": "-3.336784306452876255",
+        "profit_factor": "0.4219180586646736856541664675",
+        "regime_at_day_open": {
+          "Bearish": {
+            "days": 151,
+            "net_usdt": "-43.37157595201367490",
+            "passive_25_usdt": "-532.06775457430906170"
+          },
+          "Bullish": {
+            "days": 145,
+            "net_usdt": "-790.66814846635427580",
+            "passive_25_usdt": "-547.65354867886690380"
+          },
+          "Range": {
+            "days": 158,
+            "net_usdt": "-133.65357711664441320",
+            "passive_25_usdt": "1586.69748686741710050"
+          },
+          "Uncertain": {
+            "days": 77,
+            "net_usdt": "-33.34199040085051260",
+            "passive_25_usdt": "673.45982322363058860"
+          }
+        },
+        "trades": 73,
+        "turnover_quote": "348566.51402244215935110",
+        "win_rate": 0.273972602739726
+      },
+      "decision": "NO TRADE / INSUFFICIENT EVIDENCE",
+      "double": {
+        "assumed_rules": {
+          "as_of_utc_seconds": 1704240000,
+          "exchange_accepted_fills_verified": false,
+          "historically_verified": false,
+          "maximum": "100",
+          "minimum": "10",
+          "note": "Preregistered illustrative constraints; historical accuracy unverified",
+          "original_sha256": "d8c7e8bfb07d315444e5ac1e731154ed515a0e26bd7683f0abc121658177175f",
+          "provenance": "USER_SUPPLIED_UNVERIFIED_HISTORICAL_RULE_ASSUMPTION",
+          "step": "0.0001",
+          "symbol": "ETHUSDT",
+          "tick": "0.01"
+        },
+        "benchmarks_pct": {
+          "HOLD_100": "15.3477145953093508",
+          "HOLD_25": "3.836849870284179672",
+          "USDT": "0"
+        },
+        "cost_model": {
+          "execution": {
+            "slippage_bps": "10",
+            "version": "paper-slippage-v1"
+          },
+          "fees": {
+            "buy_currency": "quote",
+            "maker": "0.001",
+            "sell_currency": "quote",
+            "source": "LOCAL PAPER assumption; not account-verified",
+            "taker": "0.002",
+            "version": "paper-default-v1"
+          }
+        },
+        "entry_regimes": {
+          "Falling": {
+            "net_pnl": "0",
+            "trades": 0
+          },
+          "High": {
+            "net_pnl": "-798.6175844014848816",
+            "trades": 34
+          },
+          "Low": {
+            "net_pnl": "-734.3508366096407400",
+            "trades": 39
+          },
+          "Rising": {
+            "net_pnl": "-1532.9684210111256216",
+            "trades": 73
+          },
+          "Sideways": {
+            "net_pnl": "0",
+            "trades": 0
+          }
+        },
+        "expectancy": "-20.99956741111130988493150685",
+        "folds": [
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "-3.88147448487233904",
+              "HOLD_25": "-0.97036862121808476",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 25,
+              "exits": 25,
+              "forced_fold_close": 0,
+              "ignored_while_open": 14,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-8.631370633205639424",
+            "fold": 1,
+            "marked_drawdown_pct": "2.40895350287616964800",
+            "net_return_pct": "-2.15784265830140985600",
+            "net_usdt": "-215.7842658301409856",
+            "profit_factor": "0.5996867343030906775172185701",
+            "trade_count": 25,
+            "win_rate": 0.36
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "15.430015135280987136",
+              "HOLD_25": "3.857503783820246784",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 1,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 26,
+              "exits": 26,
+              "forced_fold_close": 0,
+              "ignored_while_open": 8,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-21.84151993176167796923076923",
+            "fold": 2,
+            "marked_drawdown_pct": "6.5909686258762046400",
+            "net_return_pct": "-5.67879518225803627200",
+            "net_usdt": "-567.8795182258036272",
+            "profit_factor": "0.2307684470018114983352886789",
+            "trade_count": 26,
+            "win_rate": 0.11538461538461539
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "34.494603135519404304",
+              "HOLD_25": "8.623414448250376992",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 22,
+              "exits": 22,
+              "forced_fold_close": 0,
+              "ignored_while_open": 9,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-34.05930167978095494545454545",
+            "fold": 3,
+            "marked_drawdown_pct": "7.862065664063795542989627390",
+            "net_return_pct": "-7.49304636955181008800",
+            "net_usdt": "-749.3046369551810088",
+            "profit_factor": "0.09776547551173328830332614800",
+            "trade_count": 22,
+            "win_rate": 0.13636363636363635
+          }
+        ],
+        "full_spread_bps": 8,
+        "max_drawdown": 7.862065664063795,
+        "modeled_costs_usdt": {
+          "fee_cost": "680.5915829879228216",
+          "gross_pnl": "-375.963507",
+          "slippage_cost": "340.2952794124028",
+          "spread_cost": "136.1180516108"
+        },
+        "net_pnl": "-1532.9684210111256216",
+        "net_return_pct": "-5.109894736703752072",
+        "profit_factor": "0.2727094315717949127801452047",
+        "regime_at_day_open": {
+          "Bearish": {
+            "days": 151,
+            "net_usdt": "-51.6294515570190504",
+            "passive_25_usdt": "-530.1845135652723336"
+          },
+          "Bullish": {
+            "days": 145,
+            "net_usdt": "-1222.7647977409941216",
+            "passive_25_usdt": "-554.3376628606359480"
+          },
+          "Range": {
+            "days": 158,
+            "net_usdt": "-213.3595952557785072",
+            "passive_25_usdt": "1564.3684686282729048"
+          },
+          "Uncertain": {
+            "days": 77,
+            "net_usdt": "-45.2145764573339424",
+            "passive_25_usdt": "671.2086688828892784"
+          }
+        },
+        "trades": 73,
+        "turnover_quote": "340297.4962476374572056",
+        "win_rate": 0.2054794520547945
+      },
+      "gates": {
+        "all_positive": false,
+        "drawdown": true,
+        "provenance": true,
+        "sample": false,
+        "simultaneous": false,
+        "stress": false,
+        "without_best": false
+      }
+    },
+    "ETHUSDT/60/EMA_REGIME": {
+      "base": {
+        "assumed_rules": {
+          "as_of_utc_seconds": 1704240000,
+          "exchange_accepted_fills_verified": false,
+          "historically_verified": false,
+          "maximum": "100",
+          "minimum": "10",
+          "note": "Preregistered illustrative constraints; historical accuracy unverified",
+          "original_sha256": "d8c7e8bfb07d315444e5ac1e731154ed515a0e26bd7683f0abc121658177175f",
+          "provenance": "USER_SUPPLIED_UNVERIFIED_HISTORICAL_RULE_ASSUMPTION",
+          "step": "0.0001",
+          "symbol": "ETHUSDT",
+          "tick": "0.01"
+        },
+        "benchmarks_pct": {
+          "HOLD_100": "15.740528208604858686",
+          "HOLD_25": "3.934786689459572412",
+          "USDT": "0"
+        },
+        "cost_model": {
+          "execution": {
+            "slippage_bps": "5",
+            "version": "paper-slippage-v1"
+          },
+          "fees": {
+            "buy_currency": "quote",
+            "maker": "0.001",
+            "sell_currency": "quote",
+            "source": "LOCAL PAPER assumption; not account-verified",
+            "taker": "0.001",
+            "version": "paper-default-v1"
+          }
+        },
+        "entry_regimes": {
+          "Falling": {
+            "net_pnl": "0",
+            "trades": 0
+          },
+          "High": {
+            "net_pnl": "-256.28509786215664620",
+            "trades": 82
+          },
+          "Low": {
+            "net_pnl": "-1092.10493178559980540",
+            "trades": 86
+          },
+          "Rising": {
+            "net_pnl": "-1348.39002964775645160",
+            "trades": 168
+          },
+          "Sideways": {
+            "net_pnl": "0",
+            "trades": 0
+          }
+        },
+        "expectancy": "-8.026131128855693164285714286",
+        "folds": [
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "-3.554142048606457224",
+              "HOLD_25": "-0.888535512151614306",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 48,
+              "exits": 48,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-0.0519564271136054625",
+            "fold": 1,
+            "marked_drawdown_pct": "2.242067982480579473430055996",
+            "net_return_pct": "-0.02493908501453062200",
+            "net_usdt": "-2.49390850145306220",
+            "profit_factor": "0.9965339370804994441706651400",
+            "trade_count": 48,
+            "win_rate": 0.4791666666666667
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "15.82308409980603114",
+              "HOLD_25": "3.955452139741918788",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 58,
+              "exits": 58,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-12.58621300022758741551724138",
+            "fold": 2,
+            "marked_drawdown_pct": "7.49772460063827494100",
+            "net_return_pct": "-7.30000354013200070100",
+            "net_usdt": "-730.00035401320007010",
+            "profit_factor": "0.4908627309796991176192236131",
+            "trade_count": 58,
+            "win_rate": 0.3103448275862069
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "34.952642574615002142",
+              "HOLD_25": "8.737443440788412754",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 62,
+              "exits": 62,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-9.933802695695214827419354839",
+            "fold": 3,
+            "marked_drawdown_pct": "7.895569268484686585505041625",
+            "net_return_pct": "-6.15895767133103319300",
+            "net_usdt": "-615.89576713310331930",
+            "profit_factor": "0.6408261431874328008170320240",
+            "trade_count": 62,
+            "win_rate": 0.3387096774193548
+          }
+        ],
+        "full_spread_bps": 4,
+        "max_drawdown": 7.895569268484687,
+        "modeled_costs_usdt": {
+          "fee_cost": "797.73135086187785160",
+          "gross_pnl": "7.753214",
+          "slippage_cost": "398.86563748267860",
+          "spread_cost": "159.5462553032"
+        },
+        "net_pnl": "-1348.39002964775645160",
+        "net_return_pct": "-4.494633432159188172",
+        "profit_factor": "0.6514056202175025720121916064",
+        "regime_at_day_open": {
+          "Bearish": {
+            "days": 151,
+            "net_usdt": "-217.83240959720895180",
+            "passive_25_usdt": "-532.06775457430906170"
+          },
+          "Bullish": {
+            "days": 145,
+            "net_usdt": "-467.43516379910507850",
+            "passive_25_usdt": "-547.65354867886690380"
+          },
+          "Range": {
+            "days": 158,
+            "net_usdt": "-843.16116020267080800",
+            "passive_25_usdt": "1586.69748686741710050"
+          },
+          "Uncertain": {
+            "days": 77,
+            "net_usdt": "180.03870395122838670",
+            "passive_25_usdt": "673.45982322363058860"
+          }
+        },
+        "trades": 168,
+        "turnover_quote": "797731.90152055663747860",
+        "win_rate": 0.36904761904761907
+      },
+      "decision": "NO TRADE / INSUFFICIENT EVIDENCE",
+      "double": {
+        "assumed_rules": {
+          "as_of_utc_seconds": 1704240000,
+          "exchange_accepted_fills_verified": false,
+          "historically_verified": false,
+          "maximum": "100",
+          "minimum": "10",
+          "note": "Preregistered illustrative constraints; historical accuracy unverified",
+          "original_sha256": "d8c7e8bfb07d315444e5ac1e731154ed515a0e26bd7683f0abc121658177175f",
+          "provenance": "USER_SUPPLIED_UNVERIFIED_HISTORICAL_RULE_ASSUMPTION",
+          "step": "0.0001",
+          "symbol": "ETHUSDT",
+          "tick": "0.01"
+        },
+        "benchmarks_pct": {
+          "HOLD_100": "15.3477145953093508",
+          "HOLD_25": "3.836849870284179672",
+          "USDT": "0"
+        },
+        "cost_model": {
+          "execution": {
+            "slippage_bps": "10",
+            "version": "paper-slippage-v1"
+          },
+          "fees": {
+            "buy_currency": "quote",
+            "maker": "0.001",
+            "sell_currency": "quote",
+            "source": "LOCAL PAPER assumption; not account-verified",
+            "taker": "0.002",
+            "version": "paper-default-v1"
+          }
+        },
+        "entry_regimes": {
+          "Falling": {
+            "net_pnl": "0",
+            "trades": 0
+          },
+          "High": {
+            "net_pnl": "-826.7583234469430592",
+            "trades": 82
+          },
+          "Low": {
+            "net_pnl": "-1757.0521526790866424",
+            "trades": 86
+          },
+          "Rising": {
+            "net_pnl": "-2583.8104761260297016",
+            "trades": 168
+          },
+          "Sideways": {
+            "net_pnl": "0",
+            "trades": 0
+          }
+        },
+        "expectancy": "-15.3798242626549387",
+        "folds": [
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "-3.88147448487233904",
+              "HOLD_25": "-0.97036862121808476",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 48,
+              "exits": 48,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-8.13626890854003625",
+            "fold": 1,
+            "marked_drawdown_pct": "4.913617333203038500908593100",
+            "net_return_pct": "-3.905409076099217400",
+            "net_usdt": "-390.5409076099217400",
+            "profit_factor": "0.5785617967578156831777304673",
+            "trade_count": 48,
+            "win_rate": 0.375
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "15.430015135280987136",
+              "HOLD_25": "3.857503783820246784",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 58,
+              "exits": 58,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-19.57954252260419193103448276",
+            "fold": 2,
+            "marked_drawdown_pct": "11.5447175014409708400",
+            "net_return_pct": "-11.3561346631104313200",
+            "net_usdt": "-1135.6134663110431320",
+            "profit_factor": "0.3229107327575861965581634448",
+            "trade_count": 58,
+            "win_rate": 0.27586206896551724
+          },
+          {
+            "benchmarks_pct": {
+              "HOLD_100": "34.494603135519404304",
+              "HOLD_25": "8.623414448250376992",
+              "USDT": "0"
+            },
+            "events": {
+              "ambiguous_stop_first": 0,
+              "blocked_day_loss": 0,
+              "blocked_drawdown": 0,
+              "blocked_week_loss": 0,
+              "buys": 62,
+              "exits": 62,
+              "forced_fold_close": 0,
+              "ignored_while_open": 0,
+              "rejected_entry": 0,
+              "rejected_rules": 0
+            },
+            "expectancy_usdt": "-17.05896939040427144516129032",
+            "fold": 3,
+            "marked_drawdown_pct": "11.4162298623657085200",
+            "net_return_pct": "-10.57656102205064829600",
+            "net_usdt": "-1057.6561022050648296",
+            "profit_factor": "0.4588288507570575162403902295",
+            "trade_count": 62,
+            "win_rate": 0.3064516129032258
+          }
+        ],
+        "full_spread_bps": 8,
+        "max_drawdown": 11.54471750144097,
+        "modeled_costs_usdt": {
+          "fee_cost": "1537.5595851644037016",
+          "gross_pnl": "30.040435",
+          "slippage_cost": "768.7795151108260",
+          "spread_cost": "307.5118108508"
+        },
+        "net_pnl": "-2583.8104761260297016",
+        "net_return_pct": "-8.612701587086765672",
+        "profit_factor": "0.4331597012352768548104043874",
+        "regime_at_day_open": {
+          "Bearish": {
+            "days": 151,
+            "net_usdt": "-450.9710913108459072",
+            "passive_25_usdt": "-530.1845135652723336"
+          },
+          "Bullish": {
+            "days": 145,
+            "net_usdt": "-612.1079543183625048",
+            "passive_25_usdt": "-554.3376628606359480"
+          },
+          "Range": {
+            "days": 158,
+            "net_usdt": "-1431.5212070319176688",
+            "passive_25_usdt": "1564.3684686282729048"
+          },
+          "Uncertain": {
+            "days": 77,
+            "net_usdt": "-89.2102234649036208",
+            "passive_25_usdt": "671.2086688828892784"
+          }
+        },
+        "trades": 168,
+        "turnover_quote": "768781.8850839837740520",
+        "win_rate": 0.31547619047619047
+      },
+      "gates": {
+        "all_positive": false,
+        "drawdown": true,
+        "provenance": true,
+        "sample": true,
+        "simultaneous": false,
+        "stress": false,
+        "without_best": false
+      }
+    }
+  },
+  "protocol_sha256": "b0c7d1b6a6d949ff76aa9a331fd8516c31209e8b090d579548a1a8676afb3197",
+  "python": "3.12.14",
+  "research_source_sha256": "424293c4fd1f63ae3239c9483ab36f40b30f0e3236bf645867947f23d83723b0",
+  "sealed_evaluated": false,
+  "sealed_utc": [
+    1754006400,
+    1766448000
+  ],
+  "statistics": {
+    "columns": [
+      "BTCUSDT/60/EMA_REGIME/USDT",
+      "BTCUSDT/60/EMA_REGIME/HOLD_25",
+      "BTCUSDT/60/EMA_PULLBACK/USDT",
+      "BTCUSDT/60/EMA_PULLBACK/HOLD_25",
+      "BTCUSDT/240/EMA_REGIME/USDT",
+      "BTCUSDT/240/EMA_REGIME/HOLD_25",
+      "BTCUSDT/240/EMA_PULLBACK/USDT",
+      "BTCUSDT/240/EMA_PULLBACK/HOLD_25",
+      "ETHUSDT/60/EMA_REGIME/USDT",
+      "ETHUSDT/60/EMA_REGIME/HOLD_25",
+      "ETHUSDT/60/EMA_PULLBACK/USDT",
+      "ETHUSDT/60/EMA_PULLBACK/HOLD_25",
+      "ETHUSDT/240/EMA_REGIME/USDT",
+      "ETHUSDT/240/EMA_REGIME/HOLD_25",
+      "ETHUSDT/240/EMA_PULLBACK/USDT",
+      "ETHUSDT/240/EMA_PULLBACK/HOLD_25"
+    ],
+    "dependence": {
+      "correlation": [
+        [
+          0.9999999999999972,
+          -0.04881452532314063,
+          0.09635232139458116,
+          -0.28102867256798747,
+          0.07511637352802644,
+          -0.29041939409962747,
+          0.17496350873182018,
+          -0.2724423691655094,
+          0.21763502891550465,
+          -0.18738198188333027,
+          0.08274065785892885,
+          -0.22904974385416196,
+          0.07438862769516974,
+          -0.23550544823241243,
+          0.10002038529647687,
+          -0.2332012055568744
+        ],
+        [
+          -0.04881452532314063,
+          1.0,
+          -0.2032812188397278,
+          0.955008885324226,
+          -0.33375103919139526,
+          0.9450704318324397,
+          -0.19034593095929953,
+          0.9633478958935435,
+          -0.13573077251309562,
+          0.7446035825046846,
+          -0.11349132660115792,
+          0.7465343522604735,
+          -0.16946515370338536,
+          0.755185966216062,
+          -0.0748690469735211,
+          0.7666437717087916
+        ],
+        [
+          0.09635232139458116,
+          -0.2032812188397278,
+          0.9999999999999984,
+          -0.0375998916554911,
+          0.22621011942664698,
+          -0.1779521692591838,
+          0.06333078185094103,
+          -0.21381853345571433,
+          0.08652299319661753,
+          -0.1577825254555172,
+          0.03986307641415633,
+          -0.17134985651819018,
+          0.04939040012065942,
+          -0.17373529362548396,
+          -0.036680698301682614,
+          -0.1848602132167234
+        ],
+        [
+          -0.28102867256798747,
+          0.955008885324226,
+          -0.0375998916554911,
+          1.0,
+          -0.3040617330580191,
+          0.9665185733779982,
+          -0.21879804191353097,
+          0.9732586227820053,
+          -0.17164733468034676,
+          0.747831060923673,
+          -0.12464653930578479,
+          0.7576636859024987,
+          -0.17566316190715975,
+          0.7673243796576206,
+          -0.10534506828154717,
+          0.7759124162244093
+        ],
+        [
+          0.07511637352802644,
+          -0.33375103919139526,
+          0.22621011942664698,
+          -0.3040617330580191,
+          1.0,
+          -0.12580657143815815,
+          0.012894822495461316,
+          -0.3438619800445005,
+          0.17047455252498356,
+          -0.2664083600361403,
+          0.04515235472791229,
+          -0.29936200498689236,
+          0.2625833962419606,
+          -0.26922260803886305,
+          -0.03703061003826045,
+          -0.31572192803142585
+        ],
+        [
+          -0.29041939409962747,
+          0.9450704318324397,
+          -0.1779521692591838,
+          0.9665185733779982,
+          -0.12580657143815815,
+          0.9999999999999993,
+          -0.23438040874221905,
+          0.9635430376128802,
+          -0.1539613676134316,
+          0.738614414920573,
+          -0.12553391550887483,
+          0.7437372929780499,
+          -0.12975849827841116,
+          0.7610854229556211,
+          -0.10995781140400285,
+          0.7613375340415331
+        ],
+        [
+          0.17496350873182018,
+          -0.19034593095929953,
+          0.06333078185094103,
+          -0.21879804191353097,
+          0.012894822495461316,
+          -0.23438040874221905,
+          1.0,
+          -0.08049589292979381,
+          0.04895017741277748,
+          -0.1938648176170713,
+          0.20178077170559036,
+          -0.17121988031206128,
+          0.03316598699329874,
+          -0.20228714239286422,
+          0.12220663820913844,
+          -0.1905462916598562
+        ],
+        [
+          -0.2724423691655094,
+          0.9633478958935435,
+          -0.21381853345571433,
+          0.9732586227820053,
+          -0.3438619800445005,
+          0.9635430376128802,
+          -0.08049589292979381,
+          1.0,
+          -0.18022212498832235,
+          0.7473855364776649,
+          -0.1016952029380293,
+          0.7631226014188472,
+          -0.17970244242894481,
+          0.7685615726706339,
+          -0.08011923880624867,
+          0.7809674556680357
+        ],
+        [
+          0.21763502891550465,
+          -0.13573077251309562,
+          0.08652299319661753,
+          -0.17164733468034676,
+          0.17047455252498356,
+          -0.1539613676134316,
+          0.04895017741277748,
+          -0.18022212498832235,
+          0.9999999999999979,
+          0.012413451744560322,
+          0.11746520915566624,
+          -0.24002383215637768,
+          0.08646400363614544,
+          -0.25023973199759664,
+          0.03368879949027385,
+          -0.25809913852583294
+        ],
+        [
+          -0.18738198188333027,
+          0.7446035825046846,
+          -0.1577825254555172,
+          0.747831060923673,
+          -0.2664083600361403,
+          0.738614414920573,
+          -0.1938648176170713,
+          0.7473855364776649,
+          0.012413451744560322,
+          1.0,
+          -0.1167919933597473,
+          0.9554861555974836,
+          -0.2813731626800211,
+          0.950893349568599,
+          -0.267266753116157,
+          0.9553658566520296
+        ],
+        [
+          0.08274065785892885,
+          -0.11349132660115792,
+          0.03986307641415633,
+          -0.12464653930578479,
+          0.04515235472791229,
+          -0.12553391550887483,
+          0.20178077170559036,
+          -0.1016952029380293,
+          0.11746520915566624,
+          -0.1167919933597473,
+          0.9999999999999951,
+          0.009892756824249088,
+          0.06997895220805538,
+          -0.1376683025344812,
+          0.07665478648730979,
+          -0.13857406837004782
+        ],
+        [
+          -0.22904974385416196,
+          0.7465343522604735,
+          -0.17134985651819018,
+          0.7576636859024987,
+          -0.29936200498689236,
+          0.7437372929780499,
+          -0.17121988031206128,
+          0.7631226014188472,
+          -0.24002383215637768,
+          0.9554861555974836,
+          0.009892756824249088,
+          1.0,
+          -0.2873952431298599,
+          0.9752897854022542,
+          -0.25829981754617615,
+          0.9816440703849674
+        ],
+        [
+          0.07438862769516974,
+          -0.16946515370338536,
+          0.04939040012065942,
+          -0.17566316190715975,
+          0.2625833962419606,
+          -0.12975849827841116,
+          0.03316598699329874,
+          -0.17970244242894481,
+          0.08646400363614544,
+          -0.2813731626800211,
+          0.06997895220805538,
+          -0.2873952431298599,
+          1.0,
+          -0.1337872241838645,
+          0.09362095363355473,
+          -0.2912229812059406
+        ],
+        [
+          -0.23550544823241243,
+          0.755185966216062,
+          -0.17373529362548396,
+          0.7673243796576206,
+          -0.26922260803886305,
+          0.7610854229556211,
+          -0.20228714239286422,
+          0.7685615726706339,
+          -0.25023973199759664,
+          0.950893349568599,
+          -0.1376683025344812,
+          0.9752897854022542,
+          -0.1337872241838645,
+          0.9999999999999991,
+          -0.2612396924415531,
+          0.9795268815459306
+        ],
+        [
+          0.10002038529647687,
+          -0.0748690469735211,
+          -0.036680698301682614,
+          -0.10534506828154717,
+          -0.03703061003826045,
+          -0.10995781140400285,
+          0.12220663820913844,
+          -0.08011923880624867,
+          0.03368879949027385,
+          -0.267266753116157,
+          0.07665478648730979,
+          -0.25829981754617615,
+          0.09362095363355473,
+          -0.2612396924415531,
+          0.9999999999999978,
+          -0.14983109382660198
+        ],
+        [
+          -0.2332012055568744,
+          0.7666437717087916,
+          -0.1848602132167234,
+          0.7759124162244093,
+          -0.31572192803142585,
+          0.7613375340415331,
+          -0.1905462916598562,
+          0.7809674556680357,
+          -0.25809913852583294,
+          0.9553658566520296,
+          -0.13857406837004782,
+          0.9816440703849674,
+          -0.2912229812059406,
+          0.9795268815459306,
+          -0.14983109382660198,
+          0.9999999999999998
+        ]
+      ],
+      "groups": [
+        0,
+        1,
+        2,
+        1,
+        4,
+        1,
+        6,
+        1,
+        8,
+        9,
+        10,
+        9,
+        12,
+        9,
+        14,
+        9
+      ],
+      "interpretation": "Dependence clusters, not proof of independent hypotheses",
+      "near_duplicates": []
+    },
+    "mean_without_best_day": [
+      -0.00016226716590445685,
+      -0.0006405956615995413,
+      -0.00023624381177472618,
+      -0.000716390889261927,
+      2.4799381118222262e-05,
+      -0.00045118348734542906,
+      -7.363702796734847e-06,
+      -0.00048514543233874725,
+      -0.0002769229635823892,
+      -0.0005451662382176775,
+      -0.00020364525273338044,
+      -0.0004796276084607165,
+      -8.995816004708772e-05,
+      -0.0003559220389853278,
+      1.2534955022010225e-05,
+      -0.0002565259128440402
+    ],
+    "observations": 531,
+    "stable_candidates": [],
+    "statistically_validated": false,
+    "status": "EXPERIMENTAL",
+    "tests": [
+      {
+        "adjusted_p": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.9645,
+          1.0,
+          0.996,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.955,
+          1.0
+        ],
+        "block": 3,
+        "eligible": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "lower": [
+          -0.00037579100374050985,
+          -0.0014540111837707185,
+          -0.00038108669898947355,
+          -0.0015791981424813973,
+          -0.00016723387313021172,
+          -0.0012614643872224183,
+          -0.000123864320603058,
+          -0.001330819362837027,
+          -0.000576087227265367,
+          -0.001624116757127632,
+          -0.0003781740360115883,
+          -0.0016030057464250637,
+          -0.00027094304722502624,
+          -0.0014226221234374407,
+          -0.00011369630266176908,
+          -0.0013302001328188513
+        ],
+        "mean": [
+          -0.00014429897261858835,
+          -0.0005836555894893317,
+          -0.00021995145973923726,
+          -0.0006593080766099803,
+          4.4756493209433604e-05,
+          -0.00039460012366131003,
+          1.0858506681262747e-05,
+          -0.0004284981101894807,
+          -0.0002539340922123833,
+          -0.00047623842495021253,
+          -0.00018851888737021899,
+          -0.0004108232201080481,
+          -6.504628506898384e-05,
+          -0.00028735061780681267,
+          3.416265439407162e-05,
+          -0.00018814167834375724
+        ],
+        "replicates": 1999,
+        "status": "EXPERIMENTAL_BOOTSTRAP",
+        "upper": [
+          8.719305850333318e-05,
+          0.0002867000047920551,
+          -5.881622048900097e-05,
+          0.00026058198926143673,
+          0.0002567468595490789,
+          0.0004722641398997983,
+          0.00014558133396558347,
+          0.0004738231424580656,
+          6.821904284060038e-05,
+          0.0006716399072272069,
+          1.1362612711503283e-06,
+          0.0007813593062089674,
+          0.00014085047708705853,
+          0.0008479208878238154,
+          0.00018202161144991233,
+          0.0009539167761313369
+        ]
+      },
+      {
+        "adjusted_p": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.9685,
+          1.0,
+          0.998,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.9495,
+          1.0
+        ],
+        "block": 7,
+        "eligible": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "lower": [
+          -0.000367071225170076,
+          -0.0014684029677066884,
+          -0.00035430086673562673,
+          -0.00159102689217395,
+          -0.00016929998444485374,
+          -0.0012550084680146621,
+          -0.00011571414872409227,
+          -0.0013422469088140042,
+          -0.0005690695827209971,
+          -0.001674845569320987,
+          -0.0003787456563261138,
+          -0.0016849371950366041,
+          -0.00027828580569734594,
+          -0.0014529919135407043,
+          -0.00011092495955101668,
+          -0.001380680844862197
+        ],
+        "mean": [
+          -0.00014429897261858835,
+          -0.0005836555894893317,
+          -0.00021995145973923726,
+          -0.0006593080766099803,
+          4.4756493209433604e-05,
+          -0.00039460012366131003,
+          1.0858506681262747e-05,
+          -0.0004284981101894807,
+          -0.0002539340922123833,
+          -0.00047623842495021253,
+          -0.00018851888737021899,
+          -0.0004108232201080481,
+          -6.504628506898384e-05,
+          -0.00028735061780681267,
+          3.416265439407162e-05,
+          -0.00018814167834375724
+        ],
+        "replicates": 1999,
+        "status": "EXPERIMENTAL_BOOTSTRAP",
+        "upper": [
+          7.847327993289931e-05,
+          0.00030109178872802513,
+          -8.56020527428478e-05,
+          0.0002724107389539893,
+          0.00025881297086372093,
+          0.0004658082206920421,
+          0.00013743116208661776,
+          0.0004852506884350426,
+          6.120139829623051e-05,
+          0.0007223687194205619,
+          1.7078815856757872e-06,
+          0.0008632907548205078,
+          0.0001481932355593783,
+          0.0008782906779270789,
+          0.0001792502683391599,
+          0.0010043974881746825
+        ]
+      },
+      {
+        "adjusted_p": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.9715,
+          1.0,
+          0.995,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.942,
+          1.0
+        ],
+        "block": 14,
+        "eligible": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "lower": [
+          -0.00034888932695997837,
+          -0.001447796321714994,
+          -0.00034204259617092716,
+          -0.0015481555277514357,
+          -0.0001667915333752476,
+          -0.0011976765869704008,
+          -0.00011052740944854479,
+          -0.0013019275942958328,
+          -0.0005400347138912389,
+          -0.0016266609385670759,
+          -0.0003759989128760635,
+          -0.0016979190897573387,
+          -0.0002650649589564424,
+          -0.0014235616190295833,
+          -9.867851030426673e-05,
+          -0.001365535021552484
+        ],
+        "mean": [
+          -0.00014429897261858835,
+          -0.0005836555894893317,
+          -0.00021995145973923726,
+          -0.0006593080766099803,
+          4.4756493209433604e-05,
+          -0.00039460012366131003,
+          1.0858506681262747e-05,
+          -0.0004284981101894807,
+          -0.0002539340922123833,
+          -0.00047623842495021253,
+          -0.00018851888737021899,
+          -0.0004108232201080481,
+          -6.504628506898384e-05,
+          -0.00028735061780681267,
+          3.416265439407162e-05,
+          -0.00018814167834375724
+        ],
+        "replicates": 1999,
+        "status": "EXPERIMENTAL_BOOTSTRAP",
+        "upper": [
+          6.0291381722801666e-05,
+          0.0002804851427363306,
+          -9.786032330754739e-05,
+          0.00022953937453147502,
+          0.0002563045197941148,
+          0.0004084763396477807,
+          0.00013224442281107028,
+          0.0004449313739168714,
+          3.216652946647227e-05,
+          0.0006741840886666508,
+          -1.038861864374464e-06,
+          0.0008762726495412424,
+          0.00013497238881847467,
+          0.000848860383415958,
+          0.00016700381909241,
+          0.0009892516648649695
+        ]
+      }
+    ],
+    "version": "block-max-0.2.1"
+  },
+  "status": "EXPLORATORY",
+  "validated": false
+}

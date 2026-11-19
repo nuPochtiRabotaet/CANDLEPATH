@@ -1,0 +1,30 @@
+{
+  "source_head": "f7022087be76156bcec67688ebfc2a25d550c3f4",
+  "branch": "research/v09-trend-1h4h-preregistered",
+  "python": "3.12.14",
+  "packages": {
+    "numpy": "2.5.4",
+    "pandas": "2.3.3",
+    "httpx": "0.28.1",
+    "pytest": "9.1.1"
+  },
+  "source_modified": false,
+  "focused_tests": {
+    "passed": 17,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 18.72
+  },
+  "network_preflight": {
+    "binance_checksum": "HTTP 200; SHA-256 text received",
+    "bybit_time": "HTTP 200 but HTML Site Unavailable, not valid API JSON"
+  },
+  "environment_network_configuration_changed": false,
+  "environment_change_tool_available": false,
+  "live_or_demo_trading_started": false,
+  "run_exit_code": 0,
+  "status": "EXPLORATORY",
+  "report_sha256": "6e59b432eff9994247cc3a5c0619e588c11de07da1abf1c0df7f2e566b5b561a",
+  "report_reconciliation": "PASS",
+  "sealed_evaluated": false
+}
