@@ -1,0 +1,91 @@
+{
+  "code_commit": "498a2ac013e798f87809c7b89a5ec3b0dca43ae2",
+  "decision": "NO TRADE / INSUFFICIENT EVIDENCE",
+  "development_folds": [
+    {
+      "end_exclusive": 1722902400,
+      "first_open": 1707609600,
+      "fold": 1,
+      "purge_start": 1707350400
+    },
+    {
+      "end_exclusive": 1738454400,
+      "first_open": 1723161600,
+      "fold": 2,
+      "purge_start": 1722902400
+    },
+    {
+      "end_exclusive": 1754006400,
+      "first_open": 1738713600,
+      "fold": 3,
+      "purge_start": 1738454400
+    }
+  ],
+  "error": "BTCUSDT-1h-2024-01.zip.CHECKSUM: 403 Forbidden",
+  "implementation_sha256": "7ebb5dbd33bdb924f23a690f9bb5e262b170381ab4f3331aeb3c6286cab3e79d",
+  "new_paths": 4,
+  "packages": {
+    "httpx": "0.28.1",
+    "numpy": "2.5.4",
+    "pandas": "2.3.3"
+  },
+  "paths": {
+    "BTCUSDT/240": {
+      "base": null,
+      "double": null,
+      "status": "NOT EVALUABLE"
+    },
+    "BTCUSDT/60": {
+      "base": null,
+      "double": null,
+      "status": "NOT EVALUABLE"
+    },
+    "ETHUSDT/240": {
+      "base": null,
+      "double": null,
+      "status": "NOT EVALUABLE"
+    },
+    "ETHUSDT/60": {
+      "base": null,
+      "double": null,
+      "status": "NOT EVALUABLE"
+    }
+  },
+  "preregistration_commit": "edf3aa8352f6ca00fcf72dd15dc8c899b9fcdf7d",
+  "previous_paths": 8,
+  "previous_primary_contrasts": 16,
+  "previous_study_reference_only": {
+    "BTCUSDT/240": {
+      "HOLD_100": "31.1124859587724411143",
+      "HOLD_25": "7.7766121186121629839",
+      "USDT": "0"
+    },
+    "BTCUSDT/60": {
+      "HOLD_100": "31.1124859587724411143",
+      "HOLD_25": "7.7766121186121629839",
+      "USDT": "0"
+    },
+    "ETHUSDT/240": {
+      "HOLD_100": "15.740528208604858686",
+      "HOLD_25": "3.934786689459572412",
+      "USDT": "0"
+    },
+    "ETHUSDT/60": {
+      "HOLD_100": "15.740528208604858686",
+      "HOLD_25": "3.934786689459572412",
+      "USDT": "0"
+    }
+  },
+  "primary_contrasts": 8,
+  "protocol_sha256": "07feec2b7db1fd55752794b3db5fd5c6ec1c69ac33bf8328d947ab292140767c",
+  "python": "3.12.14",
+  "reserved_interval": [
+    1754006400,
+    1766448000
+  ],
+  "sealed_evaluated": false,
+  "seed": 20261105,
+  "statistics": null,
+  "status": "NOT EVALUABLE",
+  "validated": false
+}
