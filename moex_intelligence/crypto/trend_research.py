@@ -68,7 +68,7 @@ def fold_windows(timeframe):
         yield n + 1, (start - START) // step - 1, (end - START) // step
 
 
-def portfolio_paths(rows, symbol, timeframe, hypothesis, multiplier):
+def portfolio_paths(rows, symbol, timeframe, hypothesis, multiplier, *, signal_provider=signals):
     check_development(rows, timeframe)
     if multiplier not in (1, 2):
         raise ValueError("Unregistered cost scenario")
@@ -78,7 +78,7 @@ def portfolio_paths(rows, symbol, timeframe, hypothesis, multiplier):
     spread = 4 * multiplier
     folds = _replay_folds(
         rows, symbol, timeframe, fold_windows(timeframe), names=(hypothesis,), strategy=hypothesis,
-        research_signal_provider=lambda prefix, _, tf: signals(prefix, tf, hypothesis, rules),
+        research_signal_provider=lambda prefix, _, tf: signal_provider(prefix, tf, hypothesis, rules),
         model=model, cash_start=CAPITAL, assumed_spread_bps=spread, assumed_rules=rules,
         max_hold_bars=16, record_equity=True)
     return dict(folds=folds, timeframe=timeframe), model, spread

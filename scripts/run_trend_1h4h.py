@@ -32,6 +32,10 @@ def sum_field(rows, field):
 
 def evaluate_path(rows, symbol, timeframe, hypothesis, multiplier):
     report, model, spread = portfolio_paths(rows, symbol, timeframe, hypothesis, multiplier)
+    return summarize_path(rows, symbol, timeframe, report, model, spread)
+
+
+def summarize_path(rows, symbol, timeframe, report, model, spread):
     diagnostic = trade_diagnostics(report, rows, model, spread)
     keys = [(d["fold"], d["day"]) for d in diagnostic["daily"] if d["complete"]]
     if len(keys) != 3 * 177 or len(set(keys)) != len(diagnostic["daily"]):
@@ -84,8 +88,13 @@ def evaluate_path(rows, symbol, timeframe, hypothesis, multiplier):
 
 
 def assess_family(results, contrasts, source):
+    verified = source in ("BINANCE_PUBLIC_DATA_HTTPS", "BYBIT_V5_PUBLIC_HTTPS")
+    return assess_paths(results, contrasts, expected_count=16, provenance_verified=verified)
+
+
+def assess_paths(results, contrasts, *, expected_count, provenance_verified):
     ids = list(contrasts)
-    if len(ids) != 16:
+    if len(ids) != expected_count:
         raise ValueError("Incomplete family of strategy and baseline contrasts")
     keys = sorted(contrasts[ids[0]])
     if any(contrasts[c].keys() != set(keys) for c in ids):
@@ -98,7 +107,7 @@ def assess_family(results, contrasts, source):
         folds = base["folds"]
         fold_pnl = [D(f["net_usdt"]) for f in folds]
         gates = dict(
-            provenance=source in ("BINANCE_PUBLIC_DATA_HTTPS", "BYBIT_V5_PUBLIC_HTTPS"),
+            provenance=provenance_verified,
             sample=all(f["trade_count"] >= 30 for f in folds),
             all_positive=all(x > 0 for x in fold_pnl),
             stress=D(stress["net_pnl"]) > 0,
