@@ -163,10 +163,62 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
     closed = _closed_rows(candles, timeframe)
     rows = [dict(c) if isinstance(c, dict) else asdict(c)
             for c in candles[:len(closed)]]
+    windows = [(f.number, f.validation_start_index, f.validation_end_exclusive) for f in split.folds]
+    reports = _replay_folds(rows, symbol, timeframe, windows, names=names, strategy=strategy,
+                            research_signal_provider=research_signal_provider, model=model,
+                            cash_start=cash_start, assumed_spread_bps=assumed_spread_bps,
+                            assumed_rules=assumed_rules, max_hold_bars=max_hold_bars,
+                            record_equity=record_equity)
+    sufficient=split.status=="EVALUATED_DEVELOPMENT_ONLY" and all(
+        f["trade_count"]>=30 for f in reports)
+    return {
+        "mode":"ISOLATED_SEALED_DEV_SINGLE_LONG_PATH_RESEARCH",
+        "status":"DESCRIPTIVE_DEV_ONLY" if sufficient else "INSUFFICIENT_TRADE_SAMPLE",
+        "symbol":symbol,"timeframe":timeframe,"version":VERSION,
+        "strategy_filter":strategy,
+        "rules_version":RULES_VERSION,"cost_model":model.snapshot(),
+        "spread_assumed_full_bps":str(D(assumed_spread_bps)),
+        "assumed_spot_rules":assumed_rules.snapshot() if assumed_rules else None,
+        "max_hold_bars":max_hold_bars,"virtual_step":str(assumed_rules.step if assumed_rules else QTY_STEP),
+        "safety_limits":{
+            "maximum_symbol_fraction":str(CAP_FRACTION),
+            "maximum_initial_stop_risk_fraction":str(RISK_FRACTION),
+            "marked_drawdown_entry_halt_fraction":str(HALT_DD_FRACTION),
+            "marked_day_loss_entry_halt_fraction":str(D(PROFILE["day_loss"])),
+            "marked_week_loss_entry_halt_fraction":str(D(PROFILE["week_loss"])),
+            "mark_basis":"AFTER_COST_HYPOTHETICAL_LIQUIDATION_AT_OPEN_AND_CLOSE",
+            "max_open_positions":1},
+        "final_holdout_sha256":split.sealed_final.sha256,
+        "final_holdout_evaluated":False,
+        "fold_evaluation_status":split.status,
+        "folds":reports,
+        "trading_edge_verified":False,"live_trading_enabled":False,
+        "note":"Research on OHLCV, not production Paper, exchange execution, "
+               "signal-certified strategy PnL or real trades. Opens use the "
+               "next available candle OPEN; spread is assumed, not observed. "
+               "At intrabar stop/target collisions STOP is first; gap exits "
+               "use the OPEN, stop/target fills at thresholds are optimistic. "
+               "Terminal liquidation at last fold close is optimistic. "
+               "One long at a time, folds reset bankroll; exchange constraints "
+               "are not verified. If provided, quantity and stop/target tick "
+               "plus min-notional and projected full sellability are filtered "
+               "against the supplied, UNVERIFIED hypothetical rules. An "
+               "unexecutable actual exit FAILS CLOSED without invented PnL. "
+               "Only capital allocation, "
+               "initial stop risk, marked-equity drawdown and UTC day/week "
+               "historical entry gates are modeled; not full production Paper "
+               "gating, ongoing intrabar equity drawdown, "
+               "min notional, partial fills or protective worker operations. "
+               "Last 20% strictly sealed. No automatic trading-model promotion."}
+
+
+def _replay_folds(rows, symbol, timeframe, windows, *, names, strategy,
+                  research_signal_provider, model, cash_start, assumed_spread_bps,
+                  assumed_rules, max_hold_bars, record_equity):
+    """Execute validated development windows; callers own the sealed time boundary."""
     step=seconds(timeframe)
     reports=[]
-    for fold in split.folds:
-        start,end = fold.validation_start_index,fold.validation_end_exclusive
+    for number, start, end in windows:
         # No signal engine can observe the sealed final 20% or future folds.
         discovered=(analyze(rows[:end], symbol, timeframe)["signals"] if research_signal_provider is None else research_signal_provider(rows[:end], symbol, timeframe))
         by_index={}
@@ -295,53 +347,11 @@ def simulate_paper_paths(candles, symbol, timeframe, *, assumed_spread_bps=4,
         if counts["buys"]!=len(trades) or counts["exits"]!=len(trades):
             raise ValueError("Unbalanced hypothetical virtual positions")
         reports.append({
-            "fold":fold.number,"start_index":start,"end_exclusive":end,
+            "fold":number,"start_index":start,"end_exclusive":end,
             "starting_cash":str(cash_start),"ending_cash":str(cash),
             "net_return_pct":str(Decimal(100)*(cash/cash_start-1)),
             "max_realized_drawdown_pct":str(Decimal(100)*max_drawdown),
             "marked_equity_guards":risk_ledger.snapshot(),
             "trade_count":len(trades),"events":counts,
             "trades":trades,**({"equity_marks":equity_marks} if record_equity else {})})
-    sufficient=split.status=="EVALUATED_DEVELOPMENT_ONLY" and all(
-        f["trade_count"]>=30 for f in reports)
-    return {
-        "mode":"ISOLATED_SEALED_DEV_SINGLE_LONG_PATH_RESEARCH",
-        "status":"DESCRIPTIVE_DEV_ONLY" if sufficient else "INSUFFICIENT_TRADE_SAMPLE",
-        "symbol":symbol,"timeframe":timeframe,"version":VERSION,
-        "strategy_filter":strategy,
-        "rules_version":RULES_VERSION,"cost_model":model.snapshot(),
-        "spread_assumed_full_bps":str(D(assumed_spread_bps)),
-        "assumed_spot_rules":assumed_rules.snapshot() if assumed_rules else None,
-        "max_hold_bars":max_hold_bars,"virtual_step":str(assumed_rules.step if assumed_rules else QTY_STEP),
-        "safety_limits":{
-            "maximum_symbol_fraction":str(CAP_FRACTION),
-            "maximum_initial_stop_risk_fraction":str(RISK_FRACTION),
-            "marked_drawdown_entry_halt_fraction":str(HALT_DD_FRACTION),
-            "marked_day_loss_entry_halt_fraction":str(D(PROFILE["day_loss"])),
-            "marked_week_loss_entry_halt_fraction":str(D(PROFILE["week_loss"])),
-            "mark_basis":"AFTER_COST_HYPOTHETICAL_LIQUIDATION_AT_OPEN_AND_CLOSE",
-            "max_open_positions":1},
-        "final_holdout_sha256":split.sealed_final.sha256,
-        "final_holdout_evaluated":False,
-        "fold_evaluation_status":split.status,
-        "folds":reports,
-        "trading_edge_verified":False,"live_trading_enabled":False,
-        "note":"Research on OHLCV, not production Paper, exchange execution, "
-               "signal-certified strategy PnL or real trades. Opens use the "
-               "next available candle OPEN; spread is assumed, not observed. "
-               "At intrabar stop/target collisions STOP is first; gap exits "
-               "use the OPEN, stop/target fills at thresholds are optimistic. "
-               "Terminal liquidation at last fold close is optimistic. "
-               "One long at a time, folds reset bankroll; exchange constraints "
-               "are not verified. If provided, quantity and stop/target tick "
-               "plus min-notional and projected full sellability are filtered "
-               "against the supplied, UNVERIFIED hypothetical rules. An "
-               "unexecutable actual exit FAILS CLOSED without invented PnL. "
-               "Only capital allocation, "
-               "initial stop risk, marked-equity drawdown and UTC day/week "
-               "historical entry gates are modeled; not full production Paper "
-               "gating, ongoing intrabar equity drawdown, "
-               "min notional, partial fills or protective worker operations. "
-               "Last 20% strictly sealed. No automatic trading-model promotion."}
-
-
+    return reports

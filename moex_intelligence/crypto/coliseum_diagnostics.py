@@ -4,6 +4,7 @@ from collections import defaultdict
 from .costs import estimate
 from .paper_path_research import _quote_at
 from .analysis import indicators
+from .market import seconds
 
 def trade_diagnostics(report, rows, model, spread):
     if model.fees.buy_currency!='quote' or model.fees.sell_currency!='quote':
@@ -41,13 +42,14 @@ def trade_diagnostics(report, rows, model, spread):
     for label in ('Rising','Falling','Sideways','High','Low'):
         selected=[t for t in details if label in (t['regime_at_entry'],t['volatility_at_entry'])]
         regime[label]=dict(trades=len(selected),net_pnl=str(sum((D(t['net_pnl']) for t in selected),D(0))))
+    bars_per_day = 86400 // seconds(report["timeframe"])
     daily=[]
     for fold in report['folds']:
         previous=D(fold['starting_cash']);buckets=defaultdict(lambda:[D(0),0])
         for stamp,equity in fold['equity_marks']:
             day=(stamp-1)//86400;value=D(equity);buckets[day][0]+=value-previous;buckets[day][1]+=1;previous=value
         for day,(pnl,count) in sorted(buckets.items()):
-            daily.append(dict(fold=fold['fold'],day=day,net_pnl=str(pnl),bars=count,complete=count==288))
+            daily.append(dict(fold=fold['fold'],day=day,net_pnl=str(pnl),bars=count,complete=count==bars_per_day))
         if abs(sum((v[0] for v in buckets.values()),D(0))-(D(fold['ending_cash'])-D(fold['starting_cash'])))>D('1e-8'):
             raise ValueError('Daily equity does not reconcile')
     return dict(trades=details,daily=daily,regimes=regime,
