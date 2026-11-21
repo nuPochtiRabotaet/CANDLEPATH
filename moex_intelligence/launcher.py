@@ -72,7 +72,7 @@ def start(open_browser=True):
     info = read_state()
     if process_owned(info):
         if not healthy(info['url']):
-            raise RuntimeError('Свой процесс запускается или не отвечает. Выполните stop.command и повторите.')
+            raise RuntimeError('Свой процесс запускается или не отвечает. Выполните stop и повторите.')
         print('Уже запущено: ' + info['url'])
         if open_browser:
             webbrowser.open(info['url'])
@@ -83,14 +83,22 @@ def start(open_browser=True):
         control_port = sock.getsockname()[1]
     STATE.mkdir(exist_ok=True, mode=0o700)
     logpath = STATE / 'app.log'
-    with logpath.open('a') as log:
-        process = subprocess.Popen([sys.executable, str(Path(__file__).resolve()), 'worker', '--token', token,
-                                    '--port', str(port), '--control-port', str(control_port)], cwd=ROOT,
-                                   stdout=log, stderr=log, start_new_session=True)
+    worker_command = [sys.executable, str(Path(__file__).resolve()), 'worker', '--token', token,
+                      '--port', str(port), '--control-port', str(control_port)]
+    popen_options = {'cwd': ROOT, 'stdout': None, 'stderr': None}
+    if os.name == 'nt':
+        # Keep the supervisor in its own console process group on Windows.
+        popen_options['creationflags'] = subprocess.CREATE_NEW_PROCESS_GROUP
+    else:
+        popen_options['start_new_session'] = True
+    with logpath.open('a', encoding='utf-8') as log:
+        popen_options.update(stdout=log, stderr=log)
+        process = subprocess.Popen(worker_command, **popen_options)
     info = {'pid': process.pid, 'token': token, 'control_port': control_port, 'url': f'http://127.0.0.1:{port}'}
     temp = PIDFILE.with_suffix('.tmp')
-    temp.write_text(json.dumps(info))
-    temp.chmod(0o600)
+    temp.write_text(json.dumps(info), encoding='utf-8')
+    if os.name != 'nt':
+        temp.chmod(0o600)
     temp.replace(PIDFILE)
     for _ in range(100):
         if process.poll() is not None:
@@ -121,7 +129,7 @@ def stop():
             print('MOEX Intelligence остановлен.')
             return
         time.sleep(.1)
-    raise RuntimeError('Остановка ещё не завершена. Повторите stop.command.')
+    raise RuntimeError('Остановка ещё не завершена. Повторите stop.')
 
 
 def worker(port, control_port, token):
