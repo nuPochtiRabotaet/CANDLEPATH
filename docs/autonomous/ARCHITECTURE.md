@@ -33,18 +33,21 @@ flowchart LR
   Agent -->|ResearchRequest| Lab
   Lab -->|досье проверки| Owner
   Owner --> Registry
-  Owner --> Mandate
+  Owner -->|аутентификация| View["Dashboard"]
+  View --> Control["Control API владельца"]
+  Control -->|проверка полномочий и новая ревизия| Mandate
+  Control -->|durable halt| Risk
   Agent -->|Intent| Decision
   Registry --> Decision
   Evidence --> Decision
+  Mandate --> Decision
   Decision --> Risk
   Mandate --> Risk
   Ledger --> Risk
   Risk -->|разрешение на конкретный приказ| Exec
   Exec <-->|официальный адаптер| Venue
   Exec --> Ledger
-  Ledger --> View["Dashboard и оповещения"]
-  View -->|команды владельца| Owner
+  Ledger -->|состояние и оповещения| View
 ```
 
 | Компонент | Вход → выход и владелец записи |
@@ -117,7 +120,7 @@ sequenceDiagram
 | Поле | Проверка перед потреблением |
 |---|---|
 | grant_id, intent_id, decision_id, canonical_request_hash | Идентификаторы уникальны в mode/account, digest канонического приказа совпадает. Повтор с изменённым телом отклоняется. |
-| strategy_id/version, registry_revision, mandate_revision, owner_epoch | Стратегия и мандат активны для данного счёта и площадки, runtime сохранил владение. |
+| strategy_id/version, registry_revision, mandate_revision, owner_epoch | Вход требует действующих стратегии и торгового мандата для счёта и площадки. Защитная заявка при остановке требует отдельного действующего разрешения владельца на конкретное действие из плана защиты позиции. В обоих случаях обязательны владение runtime и новый допуск Risk. |
 | side, instrument, quantity_base, max_debit_quote, price/slippage_bound, exit_plan_hash | Точные Decimal-строки и единицы. Порог проскальзывания проверяется по возможности адаптера; неподдерживаемая гарантия блокирует приказ. |
 | reservation_id, account_revision, quote_id, rules_version, valid_until | Сумма покрыта резервом, котировка/правила и счёт актуальны. Изменившийся риск или истёкший TTL возвращают решение на повторную проверку. |
 
