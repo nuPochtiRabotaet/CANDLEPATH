@@ -1,10 +1,10 @@
-"""Tests for single-owner local Paper background execution."""
+"""Local Paper ownership on Linux/macOS; the runtime requires POSIX flock."""
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing, contextmanager
 from decimal import Decimal
 import json
 import os
 from pathlib import Path
-from select import select
 import signal
 import sqlite3
 import subprocess
@@ -13,6 +13,7 @@ import sys
 import pytest
 
 from moex_intelligence.crypto import runtime
+from tests.paper_crash_worker import read_line
 
 
 def test_runtime_starts_without_trade_and_is_singleton(tmp_path, monkeypatch):
@@ -96,7 +97,7 @@ def test_failed_monitor_startup_releases_process_ownership(tmp_path, monkeypatch
 def _paper_process(directory, role):
     script = Path(__file__).with_name('paper_crash_worker.py').resolve()
     # Allowlist the child environment; do not inherit credentials or user settings.
-    env = {'MOEX_DATA_DIR': str(directory), 'MOEX_PAPER_CAPITAL': '10000',
+    env = {'CANDLEPATH_BASE01_DIR': str(directory.resolve()), 'MOEX_PAPER_CAPITAL': '10000',
            'PYTHONPATH': str(script.parents[1])}
     with subprocess.Popen([sys.executable, str(script), role], cwd=directory, env=env,
                           stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True) as child:
@@ -109,10 +110,26 @@ def _paper_process(directory, role):
 
 
 def _message(child):
-    assert select([child.stdout], [], [], 15)[0], 'Paper child timed out before its checkpoint'
-    line = child.stdout.readline()
-    assert line, f'Paper child exited before its checkpoint (status {child.poll()})'
-    return json.loads(line)
+    return json.loads(read_line(child.stdout, timeout=15))
+
+
+def test_partial_checkpoint_respects_deadline():
+    reader, writer = os.pipe()
+    # On failure, closing the writer unblocks the reader before the executor joins.
+    with (ThreadPoolExecutor(max_workers=1) as pool, os.fdopen(reader, 'rb') as stream,
+          os.fdopen(writer, 'wb', buffering=0) as sender):
+        sender.write(b'{')
+        with pytest.raises(TimeoutError, match='Paper IPC line'):
+            pool.submit(read_line, stream, 0.1).result(timeout=5)
+
+
+def test_crash_worker_rejects_ambient_data_directory(tmp_path):
+    script = Path(__file__).with_name('paper_crash_worker.py').resolve()
+    result = subprocess.run([sys.executable, str(script), 'recover'], cwd=tmp_path,
+                            env={'MOEX_DATA_DIR': str(tmp_path), 'PYTHONPATH': str(script.parents[1])},
+                            stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=10)
+    assert result.returncode != 0 and 'BASE-01 requires a test directory' in result.stderr
+    assert not list(tmp_path.iterdir())
 
 
 def _financial_snapshot(path):

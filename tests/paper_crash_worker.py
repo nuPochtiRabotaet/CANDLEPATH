@@ -4,6 +4,7 @@ from decimal import Decimal
 import json
 import os
 from pathlib import Path
+from select import select
 import sys
 import time
 from unittest.mock import patch
@@ -35,6 +36,21 @@ def report(message):
     print(json.dumps(message), flush=True)
 
 
+def read_line(stream, timeout):
+    """Read one outstanding pipe message; the deadline covers its final newline."""
+    deadline = time.monotonic() + timeout
+    data = bytearray()
+    while not data.endswith(b'\n'):
+        remaining = deadline - time.monotonic()
+        if remaining <= 0 or not select([stream], [], [], remaining)[0]:
+            raise TimeoutError('Paper IPC line did not finish before its deadline')
+        chunk = os.read(stream.fileno(), 8192)
+        if not chunk:
+            raise EOFError('Paper IPC closed before a complete line')
+        data.extend(chunk)
+    return data.decode().removesuffix('\n')
+
+
 def interrupt_confirm(gateway):
     """Stop at the context-manager boundary immediately before SQLite COMMIT."""
     connect = gateway.store.connect
@@ -52,7 +68,7 @@ def interrupt_confirm(gateway):
                 assert Decimal(state['realized']) < 0
                 report('sell staged before commit')
                 # Only SIGKILL should end this wait. EOF or a command rolls back.
-                sys.stdin.readline()
+                read_line(sys.stdin, timeout=60)
                 raise AssertionError('interrupted sale must never commit')
 
     with patch.object(gateway.store, 'connect', pause_writer):
@@ -61,7 +77,13 @@ def interrupt_confirm(gateway):
 
 
 def main():
-    db_path = Path(os.environ['MOEX_DATA_DIR']) / 'crypto-v08.sqlite3'
+    directory = os.environ.get('CANDLEPATH_BASE01_DIR')
+    if not directory or Path(directory) != Path.cwd() or sys.argv[1:] not in (['initial'], ['recover']):
+        raise SystemExit('BASE-01 requires a test directory and worker role from the harness')
+    db_path = Path(directory) / 'crypto-v08.sqlite3'
+    if sys.argv[1] == 'initial' and db_path.exists():
+        raise SystemExit('BASE-01 initial owner requires a new fixture ledger')
+    os.environ['MOEX_DATA_DIR'] = directory
 
     def isolate(event, args):
         if event.startswith('socket.') or (event == 'sqlite3.connect' and Path(args[0]) != db_path):
@@ -98,7 +120,7 @@ def main():
             worker.tick()
             assert worker.status()['active']
             report(fill)
-            command = sys.stdin.readline().strip()
+            command = read_line(sys.stdin, timeout=60)
             if command == 'stage sale':
                 interrupt_confirm(gateway)
             else:
