@@ -1,46 +1,120 @@
-"""Isolated SQLite v1 schema; never opens or migrates the MOEX portfolio ledger."""
-import json,sqlite3,time
+"""SQLite storage for the isolated Local Paper ledger."""
+from contextlib import closing
+from hashlib import file_digest
+import json
+import os
 from pathlib import Path
-from .market import Candle,MarketError
+import sqlite3
+import tempfile
+import time
+
+from .market import Candle, MarketError
+
+
+SCHEMA_VERSION = 5
+_BACKUP_SUFFIX = {1: ".before-v081", 2: ".before-v082", 3: ".before-rc2", 4: ".before-rc3"}
+_SCHEMA = (
+    "CREATE TABLE IF NOT EXISTS candles(symbol TEXT,interval TEXT,time INTEGER,body TEXT NOT NULL,PRIMARY KEY(symbol,interval,time))",
+    "CREATE TABLE IF NOT EXISTS signals(id TEXT PRIMARY KEY,body TEXT NOT NULL,detected_at REAL NOT NULL)",
+    "CREATE TABLE IF NOT EXISTS paper(id INTEGER PRIMARY KEY CHECK(id=1),body TEXT NOT NULL)",
+    "CREATE TABLE IF NOT EXISTS orders(id TEXT PRIMARY KEY,body TEXT NOT NULL)",
+    "CREATE TABLE IF NOT EXISTS events(id INTEGER PRIMARY KEY AUTOINCREMENT,time REAL,body TEXT)",
+    "CREATE TABLE IF NOT EXISTS protective(id TEXT PRIMARY KEY,body TEXT NOT NULL)",
+    "CREATE TABLE IF NOT EXISTS lifecycle(id TEXT PRIMARY KEY,body TEXT NOT NULL)",
+    "CREATE TABLE IF NOT EXISTS notifications(id TEXT PRIMARY KEY,time REAL,body TEXT NOT NULL)",
+    "CREATE TABLE IF NOT EXISTS intents(id TEXT PRIMARY KEY,body TEXT NOT NULL)",
+    "CREATE TABLE IF NOT EXISTS equity_samples(id INTEGER PRIMARY KEY AUTOINCREMENT,time REAL NOT NULL,body TEXT NOT NULL)",
+    "CREATE TABLE IF NOT EXISTS ui_preferences(id TEXT PRIMARY KEY,body TEXT NOT NULL)",
+    "CREATE TABLE IF NOT EXISTS forecasts(id TEXT PRIMARY KEY,published_at REAL NOT NULL,body TEXT NOT NULL)",
+    "CREATE TABLE IF NOT EXISTS forecast_outcomes(forecast_id TEXT,target_time INTEGER,body TEXT NOT NULL,PRIMARY KEY(forecast_id,target_time))",
+    "CREATE TRIGGER IF NOT EXISTS forecasts_no_update BEFORE UPDATE ON forecasts BEGIN SELECT RAISE(ABORT,'immutable forecast'); END",
+    "CREATE TRIGGER IF NOT EXISTS forecasts_no_delete BEFORE DELETE ON forecasts BEGIN SELECT RAISE(ABORT,'immutable forecast'); END",
+    "CREATE TRIGGER IF NOT EXISTS outcomes_no_update BEFORE UPDATE ON forecast_outcomes BEGIN SELECT RAISE(ABORT,'immutable outcome'); END",
+    "CREATE TRIGGER IF NOT EXISTS outcomes_no_delete BEFORE DELETE ON forecast_outcomes BEGIN SELECT RAISE(ABORT,'immutable outcome'); END",
+)
+_CORE_TABLES = {"paper", "orders", "events", "candles"}
+
+
+def _verify_existing_backup(backup, snapshot):
+    # Preserve the first backup. A retry can reuse the same standalone image,
+    # but cannot silently accept a stale, damaged, or still-active database.
+    if (backup.is_symlink() or not backup.is_file()
+            or any(Path(str(backup) + ext).exists() for ext in ("-journal", "-wal"))):
+        raise ValueError(f"Expected a standalone Crypto backup at {backup}")
+    with backup.open("rb") as existing, open(snapshot, "rb") as fresh:
+        if file_digest(existing, "sha256").digest() != file_digest(fresh, "sha256").digest():
+            raise ValueError(f"Existing Crypto backup differs from the current ledger: {backup}")
+
+
+def _backup_locked(path, version):
+    backup = path.with_name(path.name + _BACKUP_SUFFIX[version])
+    fd, name = tempfile.mkstemp(dir=path.parent)
+    os.close(fd)
+    try:
+        # Use a separate reader: SQLite backup cannot copy from the connection
+        # holding BEGIN IMMEDIATE. Its lock keeps this snapshot valid until DDL commits.
+        uri = path.resolve().as_uri() + "?mode=ro"
+        with closing(sqlite3.connect(uri, uri=True)) as source, closing(sqlite3.connect(name)) as dest:
+            source.backup(dest)
+            dest.execute("PRAGMA journal_mode=DELETE")
+            if dest.execute("PRAGMA integrity_check").fetchall() != [("ok",)]:
+                raise sqlite3.DatabaseError("Crypto backup failed its SQLite integrity check")
+        try:
+            os.link(name, backup)
+        except FileExistsError:
+            _verify_existing_backup(backup, name)
+        # Persist the published name before committing the new schema.
+        if os.name == "posix":
+            directory = os.open(path.parent, os.O_RDONLY)
+            try:
+                os.fsync(directory)
+            finally:
+                os.close(directory)
+    finally:
+        os.unlink(name)
+
+
+def _version(db):
+    version = db.execute("PRAGMA user_version").fetchone()[0]
+    if version > SCHEMA_VERSION:
+        raise ValueError("Crypto database is newer than this application")
+    return version
+
 
 class Store:
-    def __init__(self,path):
-        self.path=Path(path);self.path.parent.mkdir(parents=True,exist_ok=True)
-        with self.connect() as db:
-            version=db.execute('PRAGMA user_version').fetchone()[0]
-            if version>5:raise ValueError('Crypto database is newer than this application')
-            if version in (1,2,3,4):
-                backup=self.path.with_name(self.path.name+('.before-v081' if version==1 else '.before-v082' if version==2 else '.before-rc2' if version==3 else '.before-rc3'))
-                if not backup.exists():
-                    import os,tempfile
-                    fd,name=tempfile.mkstemp(dir=self.path.parent);os.close(fd)
-                    try:
-                        with sqlite3.connect(name) as dest:db.backup(dest)
-                        try:os.link(name,backup)
-                        except FileExistsError:pass
-                    finally:os.unlink(name)
-            db.executescript('''BEGIN IMMEDIATE;
-CREATE TABLE IF NOT EXISTS candles(symbol TEXT,interval TEXT,time INTEGER,body TEXT NOT NULL,PRIMARY KEY(symbol,interval,time));
-CREATE TABLE IF NOT EXISTS signals(id TEXT PRIMARY KEY,body TEXT NOT NULL,detected_at REAL NOT NULL);
-CREATE TABLE IF NOT EXISTS paper(id INTEGER PRIMARY KEY CHECK(id=1),body TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS orders(id TEXT PRIMARY KEY,body TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS events(id INTEGER PRIMARY KEY AUTOINCREMENT,time REAL,body TEXT);
-CREATE TABLE IF NOT EXISTS protective(id TEXT PRIMARY KEY,body TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS lifecycle(id TEXT PRIMARY KEY,body TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS notifications(id TEXT PRIMARY KEY,time REAL,body TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS intents(id TEXT PRIMARY KEY,body TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS equity_samples(id INTEGER PRIMARY KEY AUTOINCREMENT,time REAL NOT NULL,body TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS ui_preferences(id TEXT PRIMARY KEY,body TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS forecasts(id TEXT PRIMARY KEY,published_at REAL NOT NULL,body TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS forecast_outcomes(forecast_id TEXT,target_time INTEGER,body TEXT NOT NULL,PRIMARY KEY(forecast_id,target_time));
-CREATE TRIGGER IF NOT EXISTS forecasts_no_update BEFORE UPDATE ON forecasts BEGIN SELECT RAISE(ABORT,'immutable forecast'); END;
-CREATE TRIGGER IF NOT EXISTS forecasts_no_delete BEFORE DELETE ON forecasts BEGIN SELECT RAISE(ABORT,'immutable forecast'); END;
-CREATE TRIGGER IF NOT EXISTS outcomes_no_update BEFORE UPDATE ON forecast_outcomes BEGIN SELECT RAISE(ABORT,'immutable outcome'); END;
-CREATE TRIGGER IF NOT EXISTS outcomes_no_delete BEFORE DELETE ON forecast_outcomes BEGIN SELECT RAISE(ABORT,'immutable outcome'); END;
-PRAGMA user_version=5;
-COMMIT;''')
+    def __init__(self, path):
+        self.path = Path(path)
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        existed = self.path.exists()
+        # A normal connect enables WAL, which is itself a persistent mutation.
+        # Identify the ledger and make the backup before changing journal mode.
+        with closing(sqlite3.connect(self.path, timeout=10)) as db, db:
+            db.execute("BEGIN IMMEDIATE")
+            version = _version(db)
+            tables = {r[0] for r in db.execute("SELECT name FROM sqlite_schema WHERE type='table'")}
+            if version == 0:
+                if existed or tables:
+                    raise ValueError("Refusing to initialize an existing unversioned Crypto database")
+            elif version not in (*_BACKUP_SUFFIX, SCHEMA_VERSION) or not _CORE_TABLES <= tables:
+                raise ValueError("Unrecognized Crypto ledger schema")
+            if version in _BACKUP_SUFFIX:
+                _backup_locked(self.path, version)
+            if version < SCHEMA_VERSION:
+                for statement in _SCHEMA:
+                    db.execute(statement)
+                db.execute(f"PRAGMA user_version={SCHEMA_VERSION}")
+
     def connect(self):
-        db=sqlite3.connect(self.path,timeout=10);db.execute('PRAGMA journal_mode=WAL');return db
+        db = sqlite3.connect(self.path, timeout=10)
+        try:
+            if _version(db) != SCHEMA_VERSION:
+                raise ValueError("Crypto ledger version changed; reopen the store")
+            db.execute("PRAGMA journal_mode=WAL")
+        except (ValueError, sqlite3.Error):
+            db.close()
+            raise
+        return db
+
     def candles(self,symbol,interval):
         with self.connect() as db:return [Candle(**json.loads(r[0])) for r in db.execute('SELECT body FROM candles WHERE symbol=? AND interval=? ORDER BY time',(symbol,interval))]
     def save_candles(self,symbol,interval,rows):
